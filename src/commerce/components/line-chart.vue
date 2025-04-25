@@ -32,14 +32,14 @@ export default {
         labels: this.labels,
         datasets: [
           {
-            label: 'Current incomes',
+            label: 'Incomes',
             data: this.incomes,
             borderColor: '#0066cc',
             tension: 0.4,
             fill: false
           },
           {
-            label: 'Goal expected',
+            label: 'Expenses',
             data: this.expenses,
             borderColor: '#ff9999',
             borderDash: [5, 5],
@@ -72,6 +72,7 @@ export default {
 
 <style scoped>
 canvas {
-  max-height: 350px;
+  max-height: 100%;
+  height: 100%;
 }
 </style>
