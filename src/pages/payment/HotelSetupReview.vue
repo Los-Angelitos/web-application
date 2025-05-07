@@ -1,12 +1,12 @@
 <script>
 export default {
-    name: "HotelSetupPage"
+    name: "HotelSetupReview"
 }
 </script>
 
 <template>
  <div>
-    <h1>Hotel Setup with details Page</h1>
+    <h1>Hotel Set up review Page</h1>
   </div>
 </template>
 
