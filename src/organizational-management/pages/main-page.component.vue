@@ -1,7 +1,7 @@
 <script>
-import TopBarComponent from "../../shared/components/TopBarComponent.vue";
-import SearchBar from "../../shared/components/SearchBarComponent.vue";
-import ButtonComponent from "../../shared/components/ButtonComponent.vue";
+import TopBarComponent from "../../shared/components/top-bar.component.vue";
+import SearchBar from "../../shared/components/search-bar.component.vue";
+import ButtonComponent from "../../shared/components/button.component.vue";
 
 export default {
     name: "MainPage",

@@ -1,5 +1,5 @@
 <!--
-import BasicCardComponent from "../../shared/components/BasicCardComponent.vue";
+import BasicCardComponent from "../../shared/components/basic-card.component.vue";
 
 export default {
     name: "MainPage",
