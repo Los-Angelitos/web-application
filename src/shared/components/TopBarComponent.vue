@@ -67,23 +67,22 @@
         localStorage.setItem('userLanguage', langCode.toLowerCase());
       },
       goToPreferences() {
-        this.$router.push('/preferences');
+        this.$router.push('/home/profile/1/preferences');
       },
       goToHotel() {
-        this.$router.push('/hotel');
+        this.$router.push('/home/hotel/1/overview');
       },
       goToProfile() {
-        this.$router.push('/profile');
+        this.$router.push('/home/profile/1');
         this.showUserMenu = false;
       },
       goToSettings() {
-        this.$router.push('/settings');
+        this.$router.push('/home/profile/1/account');
         this.showUserMenu = false;
       },
       logout() {
         // Implement logout logic
-        this.$store.dispatch('auth/logout');
-        this.$router.push('/login');
+        this.$router.push('/auth/sign-in');
         this.showUserMenu = false;
       },
       toggleUserMenu() {
