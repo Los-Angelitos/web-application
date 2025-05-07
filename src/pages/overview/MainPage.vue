@@ -1,16 +1,16 @@
 <script>
+import TopBarComponent from "../../shared/components/TopBarComponent.vue";
+import SearchBar from "../../shared/components/SearchBarComponent.vue";
+
 export default {
-    name: "MainPage"
+    name: "MainPage",
+  components: {SearchBar, TopBarComponent}
 }
 </script>
 
 <template>
- <div>
-    <h1>Main Page</h1>
-    <p>This is a testing page.</p>
-    <p>Click the button below to test the functionality.</p>
-    <button>Test Button</button>
-  </div>
+  <TopBarComponent />
+  <SearchBar />
 </template>
 
 <style scoped>
