@@ -1,12 +1,12 @@
 <script>
 export default {
-  name: "testing"
+    name: "MainPage"
 }
 </script>
 
 <template>
-  <div>
-    <h1>Testing Page</h1>
+ <div>
+    <h1>Main Page</h1>
     <p>This is a testing page.</p>
     <p>Click the button below to test the functionality.</p>
     <button>Test Button</button>
@@ -14,5 +14,4 @@ export default {
 </template>
 
 <style scoped>
-
 </style>
