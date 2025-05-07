@@ -1,12 +1,12 @@
 <script>
 export default {
-    name: "SignInPage"
+    name: "SignUpRolePage"
 }
 </script>
 
 <template>
  <div>
-    <h1>Sign In Page</h1>
+    <h1>Sign Up Role Page</h1>
   </div>
 </template>
 
