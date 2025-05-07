@@ -1,5 +1,5 @@
 <!--
-import PicturePlaceholderComponent from "../../shared/components/PicturePlaceholderComponent.vue";
+import PicturePlaceholderComponent from "../../shared/components/picture-placeholder.component.vue";
 
 export default {
     name: "MainPage",
