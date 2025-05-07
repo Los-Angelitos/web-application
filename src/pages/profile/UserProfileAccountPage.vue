@@ -1,12 +1,12 @@
 <script>
 export default {
-    name: "GuestPreferencesPage"
+    name: "UserProfileAccountPage"
 }
 </script>
 
 <template>
  <div>
-    <h1>Guest preferences Page</h1>
+    <h1>User Profile account Page</h1>
   </div>
 </template>
 
