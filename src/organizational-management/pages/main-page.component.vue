@@ -22,7 +22,6 @@ export default {
 </script>
 
 <template>
-  <TopBarComponent />
   <SearchBar />
   <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
 

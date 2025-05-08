@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="topbar-container">
       <div class="topbar">
         <div class="logo-container">
           <router-link to="/">
@@ -108,6 +108,9 @@
   </script>
   
 <style scoped>
+.topbar-container {
+  margin-bottom: 2rem;
+}
 .topbar {
   display: flex;
   justify-content: space-between;

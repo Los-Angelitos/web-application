@@ -1,8 +1,10 @@
 <script setup>
+import TopBarComponent from './shared/components/top-bar.component.vue';
 </script>
 
 <template>
   <div>
+    <TopBarComponent />
     <router-view/>
   </div>
 </template>
