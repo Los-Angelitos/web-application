@@ -94,10 +94,15 @@ export default {
 
 ::v-deep(.card) {
   padding: 0;
+  max-height: max-content;
 }
 
 ::v-deep(.card-body) {
   padding: 0 1rem;
+}
+
+::v-deep(.card-image) {
+  width: 100%;
 }
 
 .user-profile-container {
@@ -109,25 +114,33 @@ export default {
   font-size: .8rem;
 }
 
+
+.account-info-personal {
+  width: 60%;
+}
+
+.account-info-card {
+  width: 40%;
+  display: flex;
+  justify-content: center;
+}
+
 .account-content {
   display: flex;
   justify-content: center;
   align-items: stretch;
+  width: 100%;
 }
 
-.account-info-personal, .account-info-card {
-  width: 50%;
-} 
-
-.account-info-card {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.account-details {
+  width: 80%;
 }
+
 
 .card {
-  max-width: 50%;
+  max-width: 80%;
   height: 100%;
+  margin: 0;
 }
 
 .card-header-content {
@@ -151,7 +164,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 1rem;
+  margin: 1rem 0;
 }
 
 </style>
