@@ -3,13 +3,15 @@ import userMock from "../../mocks/iam/user-profile-account.json";
 import BasicCardComponent from "../../shared/components/basic-card.component.vue";
 import AccountInfoOverview from "../components/account-info-overview.component.vue";
 import AccountDetailFormEdit from "../components/account-detail-form-edit.component.vue";
+import ButtonComponent from "../../shared/components/button.component.vue";
 
 export default {
     name: "UserProfilePage",
     components: {
         BasicCardComponent,
         AccountInfoOverview,
-        AccountDetailFormEdit
+        AccountDetailFormEdit,
+        ButtonComponent
     },
     data() {
         return {
@@ -45,15 +47,22 @@ export default {
 
       <div class="account-info-card" v-if="userData">
         
-        <BasicCardComponent title="">
+        <BasicCardComponent title="" class="card">
           <template #image>
             <img :src="userData.image" alt="User Image" class="user-image" />
           </template>
-          <template #header-content>
-            <h2>Mis Preferencias</h2>
-          </template>
           
-        </BasicCardComponent>
+          <template #header-content class="card-header-content">
+            <h2>My Preferences</h2>
+          </template>
+
+          <p class="card-body-content">When we have your preferences as a guest, SweetManager it will understand your comfort and will it useful to the hotels!</p>
+
+          <div class="card-wrapper">
+            <ButtonComponent :text="'Join'" :width="'80%'" :state="'basic'" :onClick="() => this.$router.push(`/home/profile/${userData.id}/preferences`)" class="button-preferences" />
+          </div>
+          
+          </BasicCardComponent>
       </div>
     </div>
   </div>
@@ -72,8 +81,12 @@ export default {
   padding: 0;
 }
 
+::v-deep(.card-body) {
+  padding: 0 1rem;
+}
+
 .user-profile-container {
-  margin: 0 2rem;
+  margin: 2rem;
 }
 
 .account-path {
@@ -83,10 +96,8 @@ export default {
 
 .account-content {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  gap: 10em;
+  justify-content: center;
+  align-items: stretch;
 }
 
 .account-info-personal, .account-info-card {
@@ -97,6 +108,35 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.card {
+  max-width: 50%;
+  height: 100%;
+}
+
+.card-header-content {
+  padding: 1.5rem;
+}
+
+.card-header-content h2 {
+  color: #000;
+  font-size: 1.2rem;
+  font-weight: 400;
+}
+
+.card-body-content {
+  font-size: .8rem;
+  color: var(--gray-light-color);
+  margin-top: .5rem;
+  text-align: center;
+}
+
+.card-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
 }
 
 </style>
