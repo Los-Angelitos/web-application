@@ -13,7 +13,7 @@ export default {
         },
         notShowFields: {
             type: Array,
-            default: () => ["id", "type", "created_at", "updated_at", "image", "preferences"]
+            default: () => ["id", "type", "created_at", "updated_at", "image", "preferences", "hotelId"]
         }
     },
     computed: {
