@@ -27,7 +27,15 @@ export default {
           this.userData = userMock;
           console.log("User data fetched:", this.userData);
         }, 300);
-      }
+      },
+      saveField(field, value) {
+        console.log("Saving field:", field, "New value:", value);
+        this.userData[field] = value; 
+      },
+      editField(field, value) {
+        console.log("Editing field:", field, "Current value:", value);
+
+      },
     }
 }
 </script>
@@ -42,7 +50,7 @@ export default {
       <div class="account-info-personal">
         <AccountInfoOverview v-if="userData" :username="userData.name" :userType="userData.type" />
         
-        <AccountDetailFormEdit v-if="userData" :userData="userData" />
+        <AccountDetailFormEdit v-if="userData" :userData="userData" @edit="editField" @save="saveField" />
       </div>
 
       <div class="account-info-card" v-if="userData">

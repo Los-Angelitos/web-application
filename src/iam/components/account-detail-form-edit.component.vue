@@ -1,6 +1,11 @@
 <script>
+import InputTextComponent from '../../shared/components/input-text.component.vue';
+
 export default {
     name: "AccountDetailFormEdit",
+    components: {
+        InputTextComponent
+    },
     props: {
         userData: {
             type: Object,
@@ -17,13 +22,27 @@ export default {
         return Object.keys(this.userData).filter(key => !this.notShowFields.includes(key));
       }
     },
+    data() {
+        return {
+            editingField: null,
+        }
+    },
     methods: {
         formatFieldName(field) {
             return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
         },
         editField(field) {
-            // Logic to edit the field
-            console.log(`Editing field: ${field}`);
+            console.log("Edit field:", field, "Current value:", this.userData[field]);
+            
+            if(this.editingField === field) {
+                console.log("asd");
+                this.editingField = null;
+                this.$emit("save", field, this.userData[field]);
+            } else {
+                console.log("else");
+                this.editingField = field;
+                this.$emit("edit", field, this.userData[field]);
+            }
         }
     }
 }
@@ -34,13 +53,19 @@ export default {
         <div v-for="(key, index) in filteredFields" :key="index" class="account-detail-item">
         <div class="item-fields">
             <p class="account-detail-item__field">{{ formatFieldName(key) }}</p> 
-            <p class="account-detail-item__field-value">{{ userData[key] }}</p>
+            <p v-if="editingField !== key" class="account-detail-item__field-value">{{ userData[key] }}</p>
+            <InputTextComponent v-else v-model="userData[key]" :label="formatFieldName(key)" class="account-detail-item__field-value" />
         </div>
 
         <div class="item-edit" @click="editField(key)">
-            <img src="/icon_pen.svg" alt="Edit Icon" class="edit-icon" />
-            <p class="account-detail-item__edit">Edit</p>
+            <img
+                :src="editingField === key ? '/icon_save.svg' : '/icon_pen.svg'"
+                :alt="editingField === key ? 'Save Icon' : 'Edit Icon'"
+                class="edit-icon"
+            />
+            <p class="account-detail-item__edit">{{ editingField === key ? 'Save' : 'Edit' }}</p>
         </div>
+
         </div>
     </div>
 </template>
