@@ -146,5 +146,22 @@ export default {
   left: 0;
 }
 
+@media screen and (max-width: 380px) {
+ .account-overview {
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 2rem 0;
+ }
+
+ .user-image {
+  margin: 0;
+  order: 1;
+ }
+
+ .account-info {
+  order: 2;
+ }
+}
+
 
 </style>
