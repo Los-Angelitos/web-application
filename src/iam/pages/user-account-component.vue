@@ -7,9 +7,9 @@ export default {
     return {
       userData: null,
       possiblePaths: [
-        { name: "Personal Information", link: "/profile" },
-        { name: "My preferences as a Guest", link: "/preferences" },
-        { name: "My Reservations", link: "/reservations" },
+        { name: "Personal Information", link: "" },
+        { name: "My preferences as a Guest", link: "" },
+        { name: "My Reservations", link: "" },
         { name: "Logout", link: ""}
       ]
     };
@@ -23,7 +23,13 @@ export default {
       setTimeout(() => {
         this.userData = userMock;
         console.log("User data loaded:", this.userData);
+
+        this.possiblePaths[0].link = `/home/profile/${this.userData.id}`;
+        this.possiblePaths[1].link = `/home/profile/${this.userData.id}/preferences`;
+        this.possiblePaths[2].link = `/home/profile/${this.userData.id}/reservations`;
+        this.possiblePaths[3].link = `/`;
       }, 500);
+      
     },
     discoverTypeOfUser() {
       switch(this.userData.type) {
