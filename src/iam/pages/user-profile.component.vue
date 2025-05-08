@@ -33,8 +33,8 @@ export default {
           this.userData = userMock;
           console.log("User data fetched:", this.userData);
 
-          this.breadcrumbPath[0].route = `/home/profile/${this.userData.id}/account`;
-          this.breadcrumbPath[1].route = `/home/profile/${this.userData.id}`;
+          this.breadcrumbPath[0].route = `/home/profile/${this.userData.id}`;
+          this.breadcrumbPath[1].route = `/home/profile/${this.userData.id}/account`;
         }, 300);
       },
       saveField(field, value) {

@@ -36,8 +36,8 @@ export default {
             console.log("User data fetched:", this.userData);
 
 
-            this.breadcrumbPath[0].route = `/home/profile/${this.userData.id}/account`;
-            this.breadcrumbPath[1].route = `/home/profile/${this.userData.id}`;
+            this.breadcrumbPath[0].route = `/home/profile/${this.userData.id}`;
+            this.breadcrumbPath[1].route = `/home/profile/${this.userData.id}/account`;
             this.breadcrumbPath[2].route = `/home/profile/${this.userData.id}/preferences`;
         }, 300);
       },

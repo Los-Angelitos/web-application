@@ -32,12 +32,12 @@ export default {
         this.userData = userMock;
         console.log("User data loaded:", this.userData);
 
-        this.possiblePaths[0].link = `/home/profile/${this.userData.id}`;
+        this.possiblePaths[0].link = `/home/profile/${this.userData.id}/account`;
         this.possiblePaths[1].link = `/home/profile/${this.userData.id}/preferences`;
         this.possiblePaths[2].link = `/home/profile/${this.userData.id}/reservations`;
         this.possiblePaths[3].link = `/`;
 
-        this.breadcrumbPath[0].route = `/home/profile/${this.userData.id}/account`;
+        this.breadcrumbPath[0].route = `/home/profile/${this.userData.id}`;
       }, 500);
       
     },
