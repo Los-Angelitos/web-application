@@ -5,7 +5,14 @@ export default {
     data() {
         return {
             userData: null,
+            notShowFields: ["id", "type", "created_at", "updated_at", "image", "preferences"],
         };
+    },
+    computed: {
+      filteredFields() {
+        if (!this.userData) return [];
+        return Object.keys(this.userData).filter(key => !this.notShowFields.includes(key));
+      }
     },
     mounted() {
         this.fetchUserData();
@@ -50,7 +57,7 @@ export default {
         </div>
       </div>
       <div v-if="userData" class="account-details">
-        <div v-for="(key, index) in Object.keys(userData)" :key="index" class="account-detail-item">
+        <div v-for="(key, index) in filteredFields" :key="index" class="account-detail-item">
           <div class="item-fields">
             <p class="account-detail-item__field">{{ formatFieldName(key) }}</p> 
             <p class="account-detail-item__field-value">{{ userData[key] }}</p>
@@ -101,6 +108,8 @@ export default {
   align-items: center;
   padding: 1rem 0;
   border-bottom: 1px solid var(--gray-light-color);
+  width: 40%;
+  
 }
 
 .item-fields{
