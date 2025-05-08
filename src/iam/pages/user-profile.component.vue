@@ -62,7 +62,7 @@ export default {
 
       <div class="account-info-card" v-if="userData">
         
-        <BasicCardComponent title="" class="card">
+        <BasicCardComponent title="" class="card" v-if="userData.type === 'guest'">
           <template #image>
             <img :src="userData.image" alt="User Image" class="user-image" />
           </template>
@@ -77,7 +77,27 @@ export default {
             <ButtonComponent :text="'Join'" :width="'80%'" :state="'basic'" :onClick="() => this.$router.push(`/home/profile/${userData.id}/preferences`)" class="button-preferences" />
           </div>
           
-          </BasicCardComponent>
+        </BasicCardComponent>
+
+        <BasicCardComponent title="" class="card" v-else>
+          <template #image>
+            <img :src="userData.image" alt="User Image" class="user-image" />
+          </template>
+          
+          <template #header-content class="card-header-content">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
+              <img src="../../assets/iam/my-hotel-icon.svg" alt="My Hotel Icon" class="hotel-icon" />
+              <h2>My Hotel</h2>
+            </div>
+          </template>
+
+          <p class="card-body-content">Modify and edit your hotel with the best way. SweetManager will take care of the rest!</p>
+
+          <div class="card-wrapper">
+            <ButtonComponent :text="'Join'" :width="'80%'" :state="'basic'" :onClick="() => this.$router.push(`/home/hotel/${userData.hotelId}/overview`)" class="button-preferences" />
+          </div>
+          
+        </BasicCardComponent>
       </div>
     </div>
   </div>
