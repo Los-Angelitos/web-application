@@ -167,4 +167,46 @@ export default {
   margin: 1rem 0;
 }
 
+@media screen and (max-width: 790px) {
+  .account-content {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .account-info-card {
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card {
+    max-width: 50%;
+  }
+
+  .account-info-personal {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .account-overview {
+    align-self:flex-start;
+  }
+
+  .account-details {
+    margin-top: 0;
+    margin-bottom: 2rem;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .card {
+    width:auto;
+    max-width: 100%;
+  }
+}
+
 </style>

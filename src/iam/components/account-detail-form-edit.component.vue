@@ -116,4 +116,10 @@ export default {
   font-size: .9rem;
   color: #000;
 }
+
+@media screen and (max-width: 460px) {
+  .account-detail-item__edit {
+    display: none;
+  }
+}
 </style>
