@@ -198,4 +198,10 @@ export default {
 ::v-deep(.modal-footer) {
   justify-content: space-around;
 }
+
+@media screen and (max-width: 460px) {
+  .account-detail-item__edit {
+    display: none;
+  }
+}
 </style>
