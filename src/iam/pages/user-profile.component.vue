@@ -1,18 +1,20 @@
 <script>
 import userMock from "../../mocks/iam/user-profile-account.json";
+import BasicCardComponent from "../../shared/components/basic-card.component.vue";
+import AccountInfoOverview from "../components/account-info-overview.component.vue";
+import AccountDetailFormEdit from "../components/account-detail-form-edit.component.vue";
+
 export default {
     name: "UserProfilePage",
+    components: {
+        BasicCardComponent,
+        AccountInfoOverview,
+        AccountDetailFormEdit
+    },
     data() {
         return {
             userData: null,
-            notShowFields: ["id", "type", "created_at", "updated_at", "image", "preferences"],
         };
-    },
-    computed: {
-      filteredFields() {
-        if (!this.userData) return [];
-        return Object.keys(this.userData).filter(key => !this.notShowFields.includes(key));
-      }
     },
     mounted() {
         this.fetchUserData();
@@ -23,25 +25,6 @@ export default {
           this.userData = userMock;
           console.log("User data fetched:", this.userData);
         }, 300);
-      },
-      discoverTypeOfUser() {
-        switch(this.userData.type) {
-          case "guest":
-            return "Guest";
-          case "admin":
-            return "Administrator";
-          case "owner":
-            return "Chief Owner";
-          default:
-            return "Unknown Type";
-        }
-      },
-      formatFieldName(field) {
-        return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
-      },
-      editField(field) {
-        // Logic to edit the field
-        console.log(`Editing field: ${field}`);
       }
     }
 }
@@ -55,25 +38,22 @@ export default {
 
     <div class="account-content">
       <div class="account-info-personal">
-        <div v-if="userData" class="account-overview">
+        <AccountInfoOverview v-if="userData" :username="userData.name" :userType="userData.type" />
+        
+        <AccountDetailFormEdit v-if="userData" :userData="userData" />
       </div>
-        <div class="account-info">
-          <h2>{{ userData.name }}</h2>
-          <p>{{ discoverTypeOfUser() }}</p>
-        </div>
-        <div v-if="userData" class="account-details">
-      </div>
-        <div v-for="(key, index) in filteredFields" :key="index" class="account-detail-item">
-          <div class="item-fields">
-            <p class="account-detail-item__field">{{ formatFieldName(key) }}</p> 
-            <p class="account-detail-item__field-value">{{ userData[key] }}</p>
-          </div>
 
-          <div class="item-edit" @click="editField(key)">
-            <img src="/icon_pen.svg" alt="Edit Icon" class="edit-icon" />
-            <p class="account-detail-item__edit">Edit</p>
-          </div>
-        </div>
+      <div class="account-info-card" v-if="userData">
+        
+        <BasicCardComponent title="">
+          <template #image>
+            <img :src="userData.image" alt="User Image" class="user-image" />
+          </template>
+          <template #header-content>
+            <h2>Mis Preferencias</h2>
+          </template>
+          
+        </BasicCardComponent>
       </div>
     </div>
   </div>
@@ -81,6 +61,17 @@ export default {
 </template>
 
 <style scoped>
+::v-deep(.card-image .user-image) {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 15px 15px 0 0;
+}
+
+::v-deep(.card) {
+  padding: 0;
+}
+
 .user-profile-container {
   margin: 0 2rem;
 }
@@ -90,65 +81,22 @@ export default {
   font-size: .8rem;
 }
 
-.account-overview {
-  display: flex;
-  align-items: center;
-}
-
-.account-info h2 {
-  font-size: 2rem;
-  font-weight: 400;
-}
-
-.account-info p {
-  font-size: 1.2rem;
-  color: var(--gray-light-color);
-}
-
-.account-details {
-  margin-top: 2rem;
-}
-
-.account-detail-item {
+.account-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--gray-extra-light-color);
-  width: 40%;
-  
+  width: 100%;
+  gap: 10em;
 }
 
-.item-fields{
+.account-info-personal, .account-info-card {
+  width: 50%;
+} 
+
+.account-info-card {
   display: flex;
-  flex-direction: column;
-  padding: 1rem 0;
-}
-
-.account-detail-item__field {
-  font-size: 1.2rem;
-}
-
-.account-detail-item__field-value {
-  font-size: .9rem;
-  color: var(--gray-light-color);
-}
-
-.item-edit {
-  display: flex;
+  justify-content: center;
   align-items: center;
-  cursor: pointer;
-}
-
-.edit-icon {
-  width: .8rem;
-  height: .8rem;
-  margin-right: .5rem;
-}
-
-.account-detail-item__edit {
-  font-size: .9rem;
-  color: #000;
 }
 
 </style>
