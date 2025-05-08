@@ -38,6 +38,10 @@ export default {
       },
       formatFieldName(field) {
         return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+      },
+      editField(field) {
+        // Logic to edit the field
+        console.log(`Editing field: ${field}`);
       }
     }
 }
@@ -50,20 +54,23 @@ export default {
     </div>
 
     <div class="account-content">
-      <div v-if="userData" class="account-overview">
+      <div class="account-info-personal">
+        <div v-if="userData" class="account-overview">
+      </div>
         <div class="account-info">
           <h2>{{ userData.name }}</h2>
           <p>{{ discoverTypeOfUser() }}</p>
         </div>
+        <div v-if="userData" class="account-details">
       </div>
-      <div v-if="userData" class="account-details">
         <div v-for="(key, index) in filteredFields" :key="index" class="account-detail-item">
           <div class="item-fields">
             <p class="account-detail-item__field">{{ formatFieldName(key) }}</p> 
             <p class="account-detail-item__field-value">{{ userData[key] }}</p>
           </div>
 
-          <div class="item-edit">
+          <div class="item-edit" @click="editField(key)">
+            <img src="/icon_pen.svg" alt="Edit Icon" class="edit-icon" />
             <p class="account-detail-item__edit">Edit</p>
           </div>
         </div>
@@ -107,7 +114,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 0;
-  border-bottom: 1px solid var(--gray-light-color);
+  border-bottom: 1px solid var(--gray-extra-light-color);
   width: 40%;
   
 }
@@ -125,6 +132,23 @@ export default {
 .account-detail-item__field-value {
   font-size: .9rem;
   color: var(--gray-light-color);
+}
+
+.item-edit {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.edit-icon {
+  width: .8rem;
+  height: .8rem;
+  margin-right: .5rem;
+}
+
+.account-detail-item__edit {
+  font-size: .9rem;
+  color: #000;
 }
 
 </style>
