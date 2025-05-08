@@ -1,0 +1,15 @@
+{
+    "id": "1",
+    "image": "https://i.ibb.co/BHLMbj9x/mono2.png",
+    "name": "Arian Rodriguez",
+    "type": "guest",
+    "email": "arianmrv12@gmail.com",
+    "phone": "+34 654 123 456",
+    "address": "Calle de la Libertad, 123",
+    "preferences": {
+        "temperature": "24",
+        "lighting": "Cálido",
+        "food": "Carnes",
+        "drink": "Gaseosa, Agua"
+    }
+}
