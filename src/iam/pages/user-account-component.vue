@@ -1,8 +1,13 @@
 <script>
+import { Breadcrumb } from "primevue";
 import userMock from "../../mocks/iam/user-profile-account.json";
+import BreadCrumb from "../../shared/components/breadcrumb.component.vue";
 
 export default {
   name: "UserProfileAccountPage",
+  components: {
+    BreadCrumb
+  },
   data() {
     return {
       userData: null,
@@ -11,6 +16,9 @@ export default {
         { name: "My preferences as a Guest", link: "" },
         { name: "My Reservations", link: "" },
         { name: "Logout", link: ""}
+      ],
+      breadcrumbPath: [
+        { name: "Account", route: "" }
       ]
     };
   },
@@ -28,6 +36,8 @@ export default {
         this.possiblePaths[1].link = `/home/profile/${this.userData.id}/preferences`;
         this.possiblePaths[2].link = `/home/profile/${this.userData.id}/reservations`;
         this.possiblePaths[3].link = `/`;
+
+        this.breadcrumbPath[0].route = `/home/profile/${this.userData.id}/account`;
       }, 500);
       
     },
@@ -49,9 +59,7 @@ export default {
 
 <template>
  <div class="user-profile-account-container">
-    <div class="account-path">
-      <span class="account-path-text">Account</span>
-    </div>
+    <BreadCrumb :path="breadcrumbPath" />
 
     <div class="account-content">
       <div v-if="userData" class="account-overview">

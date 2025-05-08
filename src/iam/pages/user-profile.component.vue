@@ -1,5 +1,6 @@
 <script>
 import userMock from "../../mocks/iam/user-profile-account.json";
+import BreadCrumb from "../../shared/components/breadcrumb.component.vue";
 import BasicCardComponent from "../../shared/components/basic-card.component.vue";
 import AccountInfoOverview from "../components/account-info-overview.component.vue";
 import AccountDetailFormEdit from "../components/account-detail-form-edit.component.vue";
@@ -8,6 +9,7 @@ import ButtonComponent from "../../shared/components/button.component.vue";
 export default {
     name: "UserProfilePage",
     components: {
+        BreadCrumb,
         BasicCardComponent,
         AccountInfoOverview,
         AccountDetailFormEdit,
@@ -16,6 +18,10 @@ export default {
     data() {
         return {
             userData: null,
+            breadcrumbPath: [
+                { name: "Account", route: "" },
+                { name: "Personal Information", route: "" },
+            ]
         };
     },
     mounted() {
@@ -26,6 +32,9 @@ export default {
         setTimeout(() => {
           this.userData = userMock;
           console.log("User data fetched:", this.userData);
+
+          this.breadcrumbPath[0].route = `/home/profile/${this.userData.id}/account`;
+          this.breadcrumbPath[1].route = `/home/profile/${this.userData.id}`;
         }, 300);
       },
       saveField(field, value) {
@@ -42,9 +51,7 @@ export default {
 
 <template>
   <div class="user-profile-container">
-    <div class="account-path">
-      <span class="account-path-text">Account     >     Personal Information</span>
-    </div>
+    <BreadCrumb :path="breadcrumbPath" />
 
     <div class="account-content">
       <div class="account-info-personal">

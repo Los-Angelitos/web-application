@@ -1,4 +1,5 @@
 <script>
+import BreadCrumb from '../../shared/components/breadcrumb.component.vue';
 import AccountDetailFormEdit from '../components/account-detail-form-edit.component.vue';
 import AccountInfoOverview from '../components/account-info-overview.component.vue';
 import ModalComponent from '../../shared/components/modal.component.vue';
@@ -8,6 +9,7 @@ import userMock from '../../mocks/iam/user-profile-account.json';
 export default {
     name: "GuestPreferencesPage",
     components: {
+        BreadCrumb,
         AccountDetailFormEdit,
         AccountInfoOverview,
         ModalComponent,
@@ -17,6 +19,11 @@ export default {
       return {
         userData: null,
         showModal: false,
+        breadcrumbPath: [
+          { name: "Account", route: "" },
+          { name: "Personal Information", route: "" },
+          { name: "My Preferences", route: "" },
+        ]
       };
     },
     mounted() {
@@ -27,6 +34,11 @@ export default {
         setTimeout(() => {
             this.userData = userMock;
             console.log("User data fetched:", this.userData);
+
+
+            this.breadcrumbPath[0].route = `/home/profile/${this.userData.id}/account`;
+            this.breadcrumbPath[1].route = `/home/profile/${this.userData.id}`;
+            this.breadcrumbPath[2].route = `/home/profile/${this.userData.id}/preferences`;
         }, 300);
       },
       saveField(field, value) {
@@ -69,9 +81,7 @@ export default {
   </ModalComponent>
 
  <div class="user-preferences-container">
-  <div class="account-path">
-    <span class="account-path-text">Account > Personal Information > My Preferences</span>
-  </div>
+    <BreadCrumb :path="breadcrumbPath" />
 
   <div class="user-preferences-content">
     <AccountInfoOverview v-if="userData" :username="userData.name" :userType="userData.type" class="user-overview" />
