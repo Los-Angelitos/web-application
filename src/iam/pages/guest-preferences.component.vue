@@ -43,7 +43,7 @@ export default {
       },
       saveField(field, value) {
         console.log("Saving field:", field, "New value:", value);
-        this.userData[field] = value; 
+        this.userData.preferences[field] = value; 
       },
       editField(field, value) {
         console.log("Editing field:", field, "Current value:", value);
