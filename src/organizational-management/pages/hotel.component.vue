@@ -1,6 +1,7 @@
 <script>
 import SearchBar from "../../shared/components/search-bar.component.vue";
 import TopBarComponent from "../../shared/components/top-bar.component.vue";
+//import MainPageNavigation from "../components/main-page-navigation.component.vue";
 
 export default {
   name: "HotelOverviewPage",
@@ -74,7 +75,7 @@ Los servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y
 
 <template>
    <TopBarComponent/>
-   <SearchBar/>
+  <!--  <MainPageNavigation/>  -->
    <div class="hotel-container">
      <!-- Izquierda: Título, dirección e imágenes -->
      <div class="hotel-left">
