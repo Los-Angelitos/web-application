@@ -4,7 +4,6 @@ import TopBarComponent from './shared/components/top-bar.component.vue';
 
 <template>
   <div>
-    <TopBarComponent />
     <router-view/>
   </div>
 </template>
