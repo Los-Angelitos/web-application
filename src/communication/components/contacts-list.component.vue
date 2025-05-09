@@ -16,6 +16,9 @@ export default {
             setTimeout(() => {
                 this.contacts = contactsMock;
             }, 300);
+        },
+        handleContactClick(contact) {
+            this.$emit("contact-clicked", contact);
         }
     }
 }
@@ -24,7 +27,7 @@ export default {
 <template>
     <div class="contacts-list-container">
         <div class="contacts-list">
-            <div class="contact-item" v-for="contact in contacts" :key="contact.id">
+            <div class="contact-item" v-for="contact in contacts" :key="contact.id" @click="handleContactClick(contact)">
                 <img :src="contact.image" alt="Contact Avatar" class="contact-avatar"/>
                 <div class="contact-info">
                     <p>{{ contact.name }}</p>
