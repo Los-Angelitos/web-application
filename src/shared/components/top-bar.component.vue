@@ -27,6 +27,9 @@
               <i class="fas fa-hotel"></i>
               <span>my hotel</span>
             </div>
+            <div class="menu-item" @click="goToNotifications">
+              <img src="/bell-icon.svg" alt="Notifications" class="notification-icon" />
+            </div>
             <div class="user-profile" @click="toggleUserMenu">
               <div class="avatar">
                 <i class="fas fa-user"></i>
@@ -83,6 +86,9 @@
       goToSettings() {
         this.$router.push('/home/profile/1/account');
         this.showUserMenu = false;
+      },
+      goToNotifications() {
+        this.$router.push('/home/hotel/1/notifications');
       },
       logout() {
         // Implement logout logic
@@ -235,5 +241,17 @@
 .dropdown-item:hover {
   background-color: #f5f8fc;
   color: #0066cc;
+}
+
+.notification-icon {
+  width: 24px;
+  height: 24px;
+  margin-left: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.notification-icon:hover {
+  transform: scale(1.025);
 }
 </style>

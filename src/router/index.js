@@ -105,12 +105,12 @@ const routes = [
     {
         path: '/home/profile/:id',
         name: 'User profile',
-        component: UserProfilePage
+        component: UserProfileAccountPage
     },
     {
         path: '/home/profile/:id/account',
         name: 'User profile account',
-        component: UserProfileAccountPage
+        component: UserProfilePage
     },
     {
         path: '/home/profile/:id/preferences',
