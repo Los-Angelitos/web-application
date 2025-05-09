@@ -1,7 +1,7 @@
 
 <template>
   <IftaLabel>
-    <Password class="mylabel" v-model="internalValue" inputId="over_label" toggleMask />
+    <Password class="mylabel" v-model="internalValue" inputId="over_label" toggleMask inputStyle="width: 100%;"/>
     <label for="over_label" style="font-size: 0.7rem">{{ label }}</label>
   </IftaLabel>
 </template>
