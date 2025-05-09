@@ -76,7 +76,7 @@ export default {
             </div>
             <div class="form-email-item">
                <p><strong>From:</strong> {{ !userData? "" : userData.name + " (" + userData.email + ")" }}</p>
-               <p><strong>To:</strong> {{ !contactSelected? "" : contactSelected.name + " (" + contactSelected.email + ")"}}</p>
+               <p><strong>To:</strong> {{ !contactSelected? "Select a contact" : contactSelected.name + " (" + contactSelected.email + ")"}}</p>
                <div class="form-email-content">
                <strong>Subject:</strong> <input type="text" class="subject-email-input" placeholder="Write your subject here" v-model="subjectContent"/>
                </div>
@@ -185,6 +185,28 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
+}
+
+@media screen and (max-width: 480px) {
+  .form-email-item p{
+    text-align: left;
+  }
+  
+  .form-email-icon {
+    gap: 0.8rem;
+  }
+
+  .buttons-email {
+    width: auto;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media screen and (max-width: 335px) {
+  .form-email-icon {
+    display: none;
+  }
 }
 
 </style>

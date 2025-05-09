@@ -41,6 +41,7 @@ export default {
 <style scoped>
 .contacts-list-container {
     width: 100%;
+    overflow-x: auto;
 }
 
 .contacts-list {
@@ -77,6 +78,23 @@ export default {
 .contact-info {
     font-size: 14px;
     color: var(--gray-color);
+}
+
+@media screen and (max-width: 335px) {
+  .contacts-list {
+    flex-wrap: nowrap;
+    width: max-content;
+  }
+
+  .contacts-list-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+  }
+
+  .contact-item {
+    flex: 0 0 auto;
+  }
 }
 
 </style>
