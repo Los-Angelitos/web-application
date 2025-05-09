@@ -113,6 +113,8 @@ export default {
 <style scoped>
 .communication-container {
   margin: 2rem;
+  width: 960px;
+  margin: 0 auto;
 }
 
 .form-email-item {
@@ -187,7 +189,14 @@ export default {
   width: 100%;
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 960px) {
+  .communication-container {
+    width: fit-content;
+    margin: 1rem;
+  }
+}
+
+@media screen and (max-width: 490px) {
   .form-email-item p{
     text-align: left;
   }
