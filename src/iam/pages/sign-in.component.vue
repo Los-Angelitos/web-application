@@ -4,6 +4,8 @@ import InputPasswordComponent from "../../shared/components/input-password.compo
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
 import '@fortawesome/fontawesome-free/css/all.css';
+import { mapActions } from 'vuex';
+
 
 export default {
   name: "SignInPage",
@@ -26,6 +28,7 @@ export default {
     localStorage.clear();
   },
   methods: {
+    ...mapActions(['GetUserId']),
     handleLogin() {
       if (!this.username || !this.password) {
         this.toast.add({
@@ -54,7 +57,8 @@ export default {
         life: 2000
       });
 
-      this.$router.push('/'); // Ruta simulada
+      //this.GetUserId(user.id);
+      this.$router.push('/home/hotel/:id/overview'); // Ruta simulada
     },
     sendToSignUp() {
       this.$router.push('/auth/sign-up');
