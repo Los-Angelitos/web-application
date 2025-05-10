@@ -154,9 +154,12 @@ export default {
 
   async created() {
     try {
-      const displayableHotel = await this.hotelApi.getHotelsById(this.hotelId);
+      const response = await this.hotelApi.getHotelsById(this.hotelId);
+      const displayableHotel = response.data;
+
       this.hotel = Hotel.fromDisplayableHotel(displayableHotel);
       this.hotelName = this.hotel.getHotelName();
+
     } catch (error) {
       console.error("Error fetching hotel:", error);
       this.hotelName = "Hotel Not Found";
