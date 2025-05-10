@@ -15,7 +15,7 @@
             </div>
           </template>
           <template #header-content>
-            <div class="plan-price">s/. 79.90 al mes</div>
+            <div class="plan-price">$22.10 al mes</div>
           </template>
 
           <div class="plan-features">
@@ -56,7 +56,7 @@
             </div>
           </template>
           <template #header-content>
-            <div class="plan-price">s/. 149.90 al mes</div>
+            <div class="plan-price">$41.29 al mes</div>
           </template>
 
           <div class="plan-features">
@@ -106,7 +106,7 @@
             </div>
           </template>
           <template #header-content>
-            <div class="plan-price">s/. 249.90 al mes</div>
+            <div class="plan-price">$69.90 al mes</div>
           </template>
 
           <div class="plan-features">
@@ -156,79 +156,6 @@
           </div>
         </basic-card-component>
       </div>
-
-      <!-- Registration Form (appears after plan selection) -->
-      <div v-if="selectedPlan" class="registration-section">
-        <div class="registration-header">
-          <h2>Registro para Plan {{ getPlanTitle(selectedPlan) }}</h2>
-          <p class="registration-subtitle">Completa tus datos para continuar con la suscripción</p>
-        </div>
-
-        <div class="registration-form">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="name">Nombre completo</label>
-              <input type="text" id="name" v-model="formData.name" class="form-input" placeholder="Ingresa tu nombre completo">
-            </div>
-            <div class="form-group">
-              <label for="email">Correo electrónico</label>
-              <input type="email" id="email" v-model="formData.email" class="form-input" placeholder="ejemplo@correo.com">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="hotelName">Nombre del hotel</label>
-              <input type="text" id="hotelName" v-model="formData.hotelName" class="form-input" placeholder="Nombre de tu hotel">
-            </div>
-            <div class="form-group">
-              <label for="phone">Teléfono de contacto</label>
-              <input type="tel" id="phone" v-model="formData.phone" class="form-input" placeholder="+51 999 999 999">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group full-width">
-              <label for="address">Dirección del hotel</label>
-              <input type="text" id="address" v-model="formData.address" class="form-input" placeholder="Dirección completa">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="city">Ciudad</label>
-              <input type="text" id="city" v-model="formData.city" class="form-input" placeholder="Ciudad">
-            </div>
-            <div class="form-group">
-              <label for="country">País</label>
-              <input type="text" id="country" v-model="formData.country" class="form-input" placeholder="País">
-            </div>
-          </div>
-
-          <div class="form-row checkbox-row">
-            <div class="form-group full-width">
-              <div class="checkbox-container">
-                <input type="checkbox" id="terms" v-model="formData.terms">
-                <label for="terms">Acepto los términos y condiciones de servicio</label>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-buttons">
-            <button-component
-                text="Cancelar"
-                state="basic"
-                @click="cancelRegistration"
-            ></button-component>
-            <button-component
-                text="Confirmar suscripción"
-                state="primary"
-                :disabled="!formValid"
-                @click="submitRegistration"
-            ></button-component>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -272,34 +199,16 @@ export default {
   },
   methods: {
     selectPlan(planType) {
-      this.selectedPlan = planType;
-      // Scroll to the registration form
-      this.$nextTick(() => {
-        const element = document.querySelector('.registration-section');
-        if (element) {
-          window.scrollTo({
-            top: element.offsetTop - 20,
-            behavior: 'smooth'
-          });
-        }
-      });
-    },
-    getPlanTitle(planType) {
-      const planTitles = {
-        'basic': 'BÁSICO',
-        'regular': 'REGULAR',
-        'premium': 'PREMIUM'
+      const planToId = {
+        basic: 1,
+        regular: 2,
+        premium: 3,
       };
-      return planTitles[planType] || '';
-    },
-    cancelRegistration() {
-      this.selectedPlan = null;
-      this.resetForm();
-      // Scroll back to top
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
+
+      const id = planToId[planType];
+      if (id) {
+        this.$router.push(`/home/hotel/checkout/${id}`);
+      }
     },
     resetForm() {
       this.formData = {
@@ -312,30 +221,6 @@ export default {
         country: '',
         terms: false
       };
-    },
-    submitRegistration() {
-      if (this.formValid) {
-        console.log('Form submitted:', {
-          plan: this.selectedPlan,
-          ...this.formData
-        });
-
-        // Here you would typically make an API call to register the subscription
-        // this.$api.registerSubscription({
-        //   planType: this.selectedPlan,
-        //   ...this.formData
-        // }).then(response => {
-        //   this.$router.push('/subscription-confirmation');
-        // }).catch(error => {
-        //   console.error('Error registering subscription:', error);
-        // });
-
-        // For now, we'll just emit an event for parent components to handle
-        this.$emit('subscription-completed', {
-          plan: this.selectedPlan,
-          ...this.formData
-        });
-      }
     }
   }
 }
