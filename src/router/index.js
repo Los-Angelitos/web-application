@@ -10,7 +10,7 @@ import NotificationPage from "../communication/pages/notifications.component.vue
 import ReservationsPage from "../reservations/pages/reservations.component.vue"
 import RoomsPage from "../reservations/pages/rooms.component.vue"
 import RegisterSubscriptionPlanPage from "../commerce/pages/subscription-plan-register.component.vue"
-import CheckoutPage from "../reservations/pages/checkout.component.vue"
+import CheckoutPage from "../commerce/pages/checkout.component.vue"
 import HotelSetupReviewPage from "../organizational-management/pages/hotel-setup-review.component.vue"
 import HotelRegisterPage from "../organizational-management/pages/hotel-register.component.vue"
 import HotelSetupPage from "../organizational-management/pages/hotel-setup.component.vue"
@@ -83,7 +83,7 @@ const routes = [
         component: RegisterSubscriptionPlanPage
     },
     {
-        path: '/home/hotel/checkout',
+        path: '/home/hotel/checkout/:id',
         name: 'Hotel Checkout',
         component: CheckoutPage
     },
