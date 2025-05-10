@@ -1,6 +1,7 @@
 export class Hotel {
-    constructor(id, name, description, email, address, phone) {
+    constructor(id, ownerId, name, description, email, address, phone) {
         this.id = id;
+        this.ownerId = ownerId;
         this.name = name;
         this.description = description;
         this.email = email;
@@ -11,6 +12,7 @@ export class Hotel {
     static fromDisplayableHotel(displayableHotel) {
         return new Hotel(
             displayableHotel.id,
+            displayableHotel.ownerId,
             displayableHotel.name,
             displayableHotel.description,
             displayableHotel.email,
@@ -22,6 +24,7 @@ export class Hotel {
     static toDisplayableHotel(hotel) {
         return {
             id: hotel.id,
+            ownerId: hotel.ownerId,
             name: hotel.name,
             description: hotel.description,
             email: hotel.email,

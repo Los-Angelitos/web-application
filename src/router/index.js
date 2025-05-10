@@ -7,7 +7,7 @@ import OrganizationPage from "../organizational-management/pages/organization.co
 import ProvidersPage from "../inventory/pages/providers.component.vue"
 import InventoryPage from "../inventory/pages/inventory.component.vue"
 import NotificationPage from "../communication/pages/notifications.component.vue"
-import ReservationsPage from "../reservations/pages/reservations.component.vue"
+import GuestReservationsPage from "../reservations/pages/guest-reservations.component.vue"
 import RoomsPage from "../reservations/pages/rooms.component.vue"
 import RegisterSubscriptionPlanPage from "../commerce/pages/subscription-plan-register.component.vue"
 import CheckoutPage from "../reservations/pages/checkout.component.vue"
@@ -70,7 +70,7 @@ const routes = [
     {
         path: '/home/hotel/:id/reservations',
         name: 'Hotel Reservations',
-        component: ReservationsPage
+        component: GuestReservationsPage
     },
     {
         path: '/home/hotel/:id/rooms',
