@@ -15,7 +15,7 @@
             </div>
           </template>
           <template #header-content>
-            <div class="plan-price">$22.10 al mes</div>
+            <div class="plan-price">$29.90 al mes</div>
           </template>
 
           <div class="plan-features">
@@ -56,7 +56,7 @@
             </div>
           </template>
           <template #header-content>
-            <div class="plan-price">$41.29 al mes</div>
+            <div class="plan-price">$58.99 al mes</div>
           </template>
 
           <div class="plan-features">
@@ -106,7 +106,7 @@
             </div>
           </template>
           <template #header-content>
-            <div class="plan-price">$69.90 al mes</div>
+            <div class="plan-price">$110.69 al mes</div>
           </template>
 
           <div class="plan-features">
