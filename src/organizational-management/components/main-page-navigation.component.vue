@@ -1,5 +1,5 @@
 <template>
-    <div class="navigation-container">
+    <div class="navigation-container sticky">
       <!-- Desktop Navigation -->
       <nav v-if="!isMobile" class="desktop-navigation">
         <ul class="navigation-list">
@@ -141,7 +141,7 @@
   
   <style scoped>
   .navigation-container {
-    padding-top: 20px;
+    margin-top: 20px;
     width: 100%;
   }
   
@@ -149,13 +149,20 @@
     width: 100%;
   }
   
+  div.sticky {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: white;
+  } 
+
   .navigation-list {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
     overflow-x: auto;
-    padding-bottom: 8px;
+    padding-bottom: 8px;  
   }
   
   .navigation-item {
