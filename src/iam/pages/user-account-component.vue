@@ -1,167 +1,328 @@
 <script>
-import { Breadcrumb } from "primevue";
-import userMock from "../../mocks/iam/user-profile-account.json";
 import BreadCrumb from "../../shared/components/breadcrumb.component.vue";
+import userIcon from "../../assets/iam/user-icon.svg";
+import preferencesIcon from "../../assets/iam/preferences-icon.svg";
+import reservationsIcon from "../../assets/iam/schedule-icon.svg";
+import logoutIcon from "../../assets/iam/logout-icon.svg";
+import userMock from "../../mocks/iam/user-profile-account.json";
 
 export default {
-  name: "UserProfileAccountPage",
+  name: 'ProfileView',
   components: {
     BreadCrumb
   },
   data() {
     return {
-      userData: null,
-      possiblePaths: [
-        { name: "Personal Information", link: "" },
-        { name: "My preferences as a Guest", link: "" },
-        { name: "My Reservations", link: "" },
-        { name: "Logout", link: ""}
-      ],
       breadcrumbPath: [
-        { name: "Account", route: "" }
-      ]
-    };
+        { name: 'Account', route: '' }
+      ],
+      activeTab: 'personal',
+      user: null,
+      defaultAvatar: 'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
+      menuItems: [
+        { 
+          id: 'personal', 
+          label: 'Personal Information',
+          icon: userIcon
+        },
+        { 
+          id: 'preferences', 
+          label: 'My preferences as a Guest',
+          icon: preferencesIcon
+        },
+        { 
+          id: 'reservations', 
+          label: 'My Reservations',
+          icon: reservationsIcon
+        },
+        { 
+          id: 'logout', 
+          label: 'Logout',
+          icon: logoutIcon
+        }
+      ],
+      chevronIcon: '<svg xmlns="http://www.w3.org/2000/svg" class="chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>'
+    }
   },
   mounted() {
-    this.recoverUserData();
+    this.fetchUserData();
   },
   methods: {
-    recoverUserData() {
-      // Simulate an API call to fetch user data
-      setTimeout(() => {
-        this.userData = userMock;
-        console.log("User data loaded:", this.userData);
-
-        this.possiblePaths[0].link = `/home/profile/${this.userData.id}/account`;
-        this.possiblePaths[1].link = `/home/profile/${this.userData.id}/preferences`;
-        this.possiblePaths[2].link = `/home/profile/${this.userData.id}/reservations`;
-        this.possiblePaths[3].link = `/`;
-
-        this.breadcrumbPath[0].route = `/home/profile/${this.userData.id}`;
-      }, 500);
-      
-    },
-    discoverTypeOfUser() {
-      switch(this.userData.type) {
-        case "guest":
-          return "Guest";
-        case "admin":
-          return "Administrator";
-        case "owner":
-          return "Chief Owner";
+    navigateTo(routeName) {
+      console.log('Navigating to:', routeName);
+      switch(routeName) {
+        case 'personal':
+          this.$router.push('/home/profile/' + this.user.id + '/account');
+          break;
+        case 'preferences':
+          this.$router.push('/home/profile/' + this.user.id + '/preferences');
+          break;
+        case 'reservations':
+          this.$router.push('/home/profile/' + this.user.id + '/reservations');
+          break;
+        case 'logout':
+          this.$router.push('/home/logout');
+          break;
         default:
-          return "Unknown Type";
+          console.error('Unknown route:', routeName);
+      }
+    },
+    fetchUserData() {
+      setTimeout(() => {
+        this.user = {
+          ...userMock
+        };
+        this.breadcrumbPath[0].route = "/home/profile/" + this.user.id;
+      }, 1000);
+
+    },
+    obtainRole(type) {
+      switch (type) {
+        case 'admin':
+          return 'Administrator';
+        case 'guest':
+          return 'Guest';
+        case 'employee':
+          return 'Employee';
+        default:
+          return 'Unknown';
       }
     }
   }
 }
 </script>
 
+<!-- ProfileView.vue -->
 <template>
- <div class="user-profile-account-container">
-    <BreadCrumb :path="breadcrumbPath" />
+  <BreadCrumb :path="breadcrumbPath" class="breadcrumb" />
 
-    <div class="account-content">
-      <div v-if="userData" class="account-overview">
-        <div class="account-info">
-          <h2>{{ userData.name }}</h2>
-          <p>{{ discoverTypeOfUser() }}</p>
-        </div>
-
-        <img :src="userData.image" alt="User Image" class="user-image" />
+  <div class="profile-container" v-if="user">
+    <!-- Header -->
+    <div class="profile-header">
+      <h1>Account</h1>
+    </div>
+    
+    <!-- Profile Info -->
+    <div class="profile-info">
+      <div class="profile-image-container">
+        <img 
+          :src="user.image || defaultAvatar"
+          :alt="user.name" 
+          alt="Profile picture" 
+          class="profile-image"
+        />
+        <div class="status-indicator"></div>
       </div>
-
-
-      <div class="account-possible-paths">
-        <ul>
-          <li v-for="(path, index) in possiblePaths" :key="index">
-            <router-link :to="path.link" class="account-to-link">{{ path.name }}</router-link>
-          </li>
-        </ul>
+      
+      <div class="profile-details">
+        <h2>{{ user.name }}</h2>
+        <p>{{ obtainRole(user.type) }}</p>
       </div>
     </div>
- </div>
+    
+    <!-- Navigation Menu -->
+    <nav class="profile-menu">
+      <button 
+        v-for="item in menuItems" 
+        :key="item.id"
+        class="menu-item"
+        :class="{ 'active': activeTab === item.id, 'logout': item.id === 'logout' }"
+        @click="activeTab = item.id, navigateTo(item.id)"
+      >
+        <div class="menu-item-content">
+          <img 
+            v-if="item.icon" 
+            :src="item.icon" 
+            alt="" 
+            class="menu-icon"
+          />
+          <span class="menu-label">{{ item.label }}</span>
+        </div>
+        <span v-if="item.id !== 'logout'" class="chevron-icon" v-html="chevronIcon"></span>
+      </button>
+    </nav>
+    
+    <!-- Footer -->
+    <div class="profile-footer">
+      <p>SweetManager</p>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-.user-profile-account-container {
+
+.breadcrumb {
   margin: 0 2rem;
 }
-
-.account-path {
-  margin: 1rem 0;
-  font-size: .8rem;
+.profile-container {
+  max-width: 500px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin: 2rem auto;
 }
 
-.account-overview {
+.profile-header {
+  background: var(--primary-color);
+  padding: 24px;
+  color: white;
+}
+
+.profile-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-image-container {
+  position: relative;
+}
+
+.profile-image {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 16px;
+  height: 16px;
+  background-color: #10b981; /* Verde para online */
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.profile-details {
+  margin-left: 16px;
+}
+
+.profile-details h2 {
+  margin: 0 0 4px 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.profile-details p {
+  margin: 0;
+  color: #6b7280;
+}
+
+/* Menú de navegación */
+.profile-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px 24px;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.menu-item:hover {
+  background-color: #f9fafb;
+}
+
+.menu-item.active {
+  background-color: #f0f7ff;
+}
+
+.menu-item-content {
   display: flex;
   align-items: center;
 }
 
-.account-info h2 {
-  font-size: 2rem;
-  font-weight: 400;
+.menu-icon {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
 }
 
-.account-info p {
-  font-size: 1.2rem;
-  color: var(--gray-light-color);
+.menu-icon svg {
+  width: 20px;
+  height: 20px;
 }
 
-.user-image {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin-left: 1rem;
+.icon-personal {
+  color: #4f46e5; /* Índigo */
 }
 
-.account-possible-paths ul {
-  list-style: none;
-  padding: 0;
-  margin-top: 2rem;
+.icon-preferences {
+  color: #ec4899; /* Rosa */
 }
 
-.account-possible-paths li {
-  position: relative;
-  padding-left: 4rem;
-  margin-bottom: 0.8rem;
-  font-size: 1rem;
+.icon-reservations {
+  color: #10b981; /* Verde */
 }
 
-.account-to-link {
-  text-decoration: none;
-  color: #000;
-  font-weight: 400;
-  transition: color 0.5s ease;
-  font-size: 1.1rem;
+.icon-settings {
+  color: #6b7280; /* Gris */
 }
 
-.account-to-link:hover {
-  opacity: .8;
+.icon-logout {
+  color: #ef4444; /* Rojo */
 }
 
-.account-possible-paths li::before {
-  content: ">";
-  position: absolute;
-  left: 0;
+.menu-label {
+  font-size: 16px;
+  color: #1f2937;
 }
 
-@media screen and (max-width: 380px) {
- .account-overview {
-  flex-direction: column;
-  align-items: flex-start;
-  margin: 2rem 0;
- }
+.menu-item.logout .menu-label {
+  color: #ef4444;
+  font-weight: 500;
+}
 
- .user-image {
+.chevron-icon {
+  display: flex;
+  align-items: center;
+}
+
+.chevron {
+  width: 20px;
+  height: 20px;
+  color: #9ca3af;
+}
+
+/* Footer */
+.profile-footer {
+  padding: 24px;
+  background-color: #f9fafb;
+  text-align: center;
+}
+
+.profile-footer p {
   margin: 0;
-  order: 1;
- }
-
- .account-info {
-  order: 2;
- }
+  font-size: 14px;
+  color: #6b7280;
 }
 
-
+@media screen and (max-width: 560px) {
+  .profile-container {
+    margin: 2rem;
+  }
+}
 </style>
