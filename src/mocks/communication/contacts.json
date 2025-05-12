@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "image": "https://i.ibb.co/BHLMbj9x/mono2.png",
+        "name": "Mauricio Rojas",
+        "email": "mauwiwi@mono.com",
+        "type": "admin"
+    },
+    {
+        "id": 2,
+        "image": "https://i.ibb.co/BHLMbj9x/mono2.png",
+        "name": "Arian Rodriguez",
+        "email": "ari@gmail.com",
+        "type": "admin"
+    }
+]
