@@ -33,7 +33,6 @@
 <script>
 import { DashboardApiService } from "../services/dashboard-api.service.js";
 import { Dashboard } from "../model/dashboard.entity.js";
-import { HotelsApiService } from "../../shared/services/hotels-api.service.js";
 import LineChart from "../components/line-chart.vue";
 import {Hotel} from "../../shared/model/hotel.entity.js";
 
@@ -45,7 +44,7 @@ export default {
       hotelName: '',
       hotelId: 3,
       dashboardApi: new DashboardApiService(),
-      hotelApi: new HotelsApiService(),
+      // hotelApi: new HotelsApiService(),
       dashboard: [],
       monthlyDashboard: [],
       activeTab: 'weekly', // "weekly" o "monthly"
@@ -152,7 +151,7 @@ export default {
     }
   },
 
-  async created() {
+  /*async created() {
     try {
       const response = await this.hotelApi.getHotelsById(this.hotelId);
       const displayableHotel = response.data;
@@ -174,7 +173,7 @@ export default {
       console.error("Error fetching dashboard data:", error);
       this.dashboard = [];
     }
-  }
+  }*/
 };
 </script>
 
