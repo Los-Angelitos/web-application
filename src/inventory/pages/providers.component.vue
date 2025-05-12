@@ -6,13 +6,15 @@ import { Provider } from "../model/provider.entity.js";
 import {HotelsApiService} from "../../shared/services/hotels-api.service.js";
 import {Hotel} from "../../shared/model/hotel.entity.js";
 import ProviderDetailsComponent from "../components/provider-details.component.vue";
+import ProviderDeleteConfirmComponent from "../components/provider-delete.component.vue";
 
 export default {
   name: "ProvidersPage",
   components: {
     BasicCardComponent,
     ButtonComponent,
-    ProviderDetailsComponent
+    ProviderDetailsComponent,
+    ProviderDeleteConfirmComponent
   },
   data() {
     return {
@@ -24,6 +26,8 @@ export default {
       selectedProvider: null,
       selectedAvatar: '',
       selectedProviderId: null,
+      showDeleteModal: false,
+      providerToDeleteId: null
     };
   },
   async created() {
@@ -47,16 +51,21 @@ export default {
     }
   },
   methods: {
-    async deleteProvider(index) {
-      const provider = this.providers[index];
-      if (!provider?.id) return;
+    openDeleteModal(providerId) {
+      this.providerToDeleteId = providerId;
+      this.showDeleteModal = true;
+    },
 
+    async confirmDelete(providerId) {
       try {
-        await this.providerApi.deleteProvider(provider.id);
-        this.providers.splice(index, 1);
+        await this.providerApi.deleteProvider(providerId);
+        this.providers = this.providers.filter(p => p.id !== providerId);
       } catch (error) {
-        console.error(`Error al eliminar al proveedor ${provider.name}:`, error);
+        console.error("Error al eliminar proveedor:", error);
         alert("No se pudo eliminar el proveedor.");
+      } finally {
+        this.showDeleteModal = false;
+        this.providerToDeleteId = null;
       }
     },
 
@@ -96,7 +105,7 @@ export default {
             <ButtonComponent
                 text="Delete"
                 state="basic"
-                :onClick="() => deleteProvider(index)"
+                :onClick="() => openDeleteModal(provider.id)"
             />
             <ButtonComponent
                 text="Details"
@@ -116,6 +125,12 @@ export default {
       @close="selectedProviderId = null"
   />
 
+  <ProviderDeleteConfirmComponent
+      v-if="showDeleteModal"
+      :providerId="providerToDeleteId"
+      @confirm="confirmDelete"
+      @close="() => { showDeleteModal = false; providerToDeleteId = null; }"
+  />
 </template>
 
 <style scoped>
