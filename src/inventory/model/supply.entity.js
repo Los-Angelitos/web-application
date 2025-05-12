@@ -1,5 +1,6 @@
 export class Supply {
-    constructor(providerId, hotelId, name, price, stock, state) {
+    constructor(id, providerId, hotelId, name, price, stock, state) {
+        this.id = id;
         this.providerId = providerId;
         this.hotelId = hotelId;
         this.name = name;
@@ -10,6 +11,7 @@ export class Supply {
 
     static fromDisplayableSupply(displayableSupply) {
         return new Supply(
+            displayableSupply.id,
             displayableSupply.providerId,
             displayableSupply.hotelId,
             displayableSupply.name,
@@ -21,6 +23,7 @@ export class Supply {
 
     static toDisplayableSupply(displayableSupply) {
         return {
+            id: displayableSupply.id,
             providerId: displayableSupply.providerId,
             hotelId: displayableSupply.hotelId,
             name: displayableSupply.name,
