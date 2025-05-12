@@ -1,10 +1,12 @@
 <template>
-  <!-- Botón hamburguesa solo visible en móviles -->
-  <div class="hamburger-menu" @click="toggleMobileMenu">
-    <img src="/menu-icon.svg" alt="Menu" width="100%" height="100%"/>
-  </div>
-
+  
+  
   <div class="topbar-container">
+    <!-- Botón hamburguesa solo visible en móviles -->
+    <div class="hamburger-menu" @click="toggleMobileMenu">
+      <img src="/menu-icon.svg" alt="Menu" width="100%" height="100%"/>
+    </div>
+    
     <div class="topbar">
       <div class="logo-container">
         <router-link to="/">
@@ -206,6 +208,10 @@ export default {
 <style scoped>
 .topbar-container {
   margin-bottom: 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #ffffff;
 }
 .topbar {
   display: flex;
