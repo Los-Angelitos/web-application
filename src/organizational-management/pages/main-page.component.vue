@@ -27,9 +27,6 @@ export default {
   <SearchBar />
   <MainPageNavigation />
   <HotelGallery />
-
-  
-
 </template>
 
 <style scoped>
