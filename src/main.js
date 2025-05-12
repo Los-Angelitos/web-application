@@ -13,6 +13,8 @@ import Password from 'primevue/password';
 import {Checkbox} from "primevue";
 import RadioButton from 'primevue/radiobutton';
 import RadioButtonGroup from 'primevue/radiobuttongroup';
+import ToastService from 'primevue/toastservice';
+import Toast from "primevue/toast";
 
 
 
@@ -37,6 +39,8 @@ app.use(PrimeVue, {
 app.component('InputText', InputText);
 app.component('FloatLabel', FloatLabel);
 app.component('Password', Password);
+app.use(ToastService);
+app.component("Toast", Toast);
 app.component('Checkbox', Checkbox);
 app.component('RadioButton', RadioButton);
 
