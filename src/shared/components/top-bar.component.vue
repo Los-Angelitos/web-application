@@ -9,7 +9,6 @@
       <div class="logo-container">
         <router-link to="/">
           <img src="/sweetmanager-large-logo.png" alt="Sweet Manager Logo" class="logo" />
-          <img src="/sweetmanager-short-logo.png" alt="SweetManager Short Logo" class="logo-short" />
         </router-link>
       </div>
 
