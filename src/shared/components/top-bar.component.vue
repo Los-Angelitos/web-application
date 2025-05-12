@@ -1,15 +1,14 @@
 <template>
   <div class="topbar-container">
     <!-- Botón hamburguesa solo visible en móviles -->
-    <div class="hamburger-menu" @click="toggleMobileMenu">
+<!--    <div class="hamburger-menu" @click="toggleMobileMenu">
       <img src="/menu-icon.svg" alt="Menu" width="100%" height="100%" />
-    </div>
+    </div>-->
 
     <div class="topbar">
       <div class="logo-container">
         <router-link to="/">
           <img src="/sweetmanager-large-logo.png" alt="Sweet Manager Logo" class="logo" />
-          <img src="/sweetmanager-short-logo.png" alt="SweetManager Short Logo" class="logo-short" />
         </router-link>
       </div>
 
@@ -204,3 +203,125 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 2rem;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid #f0f0f0;
+  height: 70px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo-container a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logo {
+  height: 32px;
+  margin-right: 10px;
+}
+
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0066cc;
+}
+
+.menu-container {
+  display: flex;
+  align-items: center;
+}
+
+.language-selector {
+  margin-right: 2rem;
+}
+
+.lang-btn {
+  background: none;
+  border: none;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  color: #666;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.lang-btn.active {
+  font-weight: 700;
+  color: #0066cc;
+  border-bottom: 2px solid #0066cc;
+}
+
+.menu-items {
+  display: flex;
+  align-items: center;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  margin-right: 1.5rem;
+  cursor: pointer;
+  color: #555;
+  transition: color 0.2s;
+}
+
+.menu-item:hover {
+  color: #0066cc;
+}
+
+.menu-item i {
+  margin-right: 8px;
+  font-size: 1rem;
+}
+
+.user-profile {
+  position: relative;
+  cursor: pointer;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #f2f7fd;
+  border-radius: 50%;
+  color: #0066cc;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 180px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  padding: 0.5rem 0;
+}
+
+.dropdown-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f8fc;
+  color: #0066cc;
+}
+</style>
