@@ -10,10 +10,11 @@ import NotificationPage from "../communication/pages/notifications.component.vue
 import ReservationsPage from "../reservations/pages/reservations.component.vue"
 import RoomsPage from "../reservations/pages/rooms.component.vue"
 import RegisterSubscriptionPlanPage from "../commerce/pages/subscription-plan-register.component.vue"
-import CheckoutPage from "../reservations/pages/checkout.component.vue"
+import CheckoutPage from "../commerce/pages/checkout.component.vue"
 import HotelSetupReviewPage from "../organizational-management/pages/hotel-setup-review.component.vue"
 import HotelRegisterPage from "../organizational-management/pages/hotel-register.component.vue"
 import HotelSetupPage from "../organizational-management/pages/hotel-setup.component.vue"
+import HotelDevicesIoTPage from "../organizational-management/pages/hotel-devices-iot.component.vue"
 import UserProfilePage from "../iam/pages/user-profile.component.vue"
 import UserProfileAccountPage from "../iam/pages/user-account-component.vue"
 import GuestPreferencesPage from "../iam/pages/guest-preferences.component.vue"
@@ -83,7 +84,7 @@ const routes = [
         component: RegisterSubscriptionPlanPage
     },
     {
-        path: '/home/hotel/checkout',
+        path: '/home/hotel/checkout/:id',
         name: 'Hotel Checkout',
         component: CheckoutPage
     },
@@ -103,14 +104,19 @@ const routes = [
         component: HotelSetupReviewPage
     },
     {
+        path: '/home/hotel/:id/set-up/devices',
+        name: 'Hotel Set up devices',
+        component: HotelDevicesIoTPage
+    },
+    {
         path: '/home/profile/:id',
         name: 'User profile',
-        component: UserProfilePage
+        component: UserProfileAccountPage
     },
     {
         path: '/home/profile/:id/account',
         name: 'User profile account',
-        component: UserProfileAccountPage
+        component: UserProfilePage
     },
     {
         path: '/home/profile/:id/preferences',

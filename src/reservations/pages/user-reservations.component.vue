@@ -1,5 +1,7 @@
 <template>
   <div class="reservations-page">
+    <BreadCrumb :path="breadcrumbPath" />
+
     <div class="breadcrumb">
       <span>Cuenta</span>
       <span class="breadcrumb-separator">&gt;</span>
@@ -13,10 +15,10 @@
 
     <div class="reservations-container">
       <BasicCardComponent
-          v-for="(hotel, index) in hotels"
-          :key="index"
-          :title="hotel.name"
-          class="reservation-card"
+        v-for="(hotel, index) in hotels"
+        :key="index"
+        :title="hotel.name"
+        class="reservation-card"
       >
         <template #image>
           <div class="hotel-logo-container">
@@ -34,9 +36,9 @@
             {{ hotel.isActive ? 'ACTIVO' : 'NO ACTIVO' }}
           </div>
           <button
-              v-if="hotel.isActive"
-              class="cancel-button"
-              @click="cancelReservation(index)"
+            v-if="hotel.isActive"
+            class="cancel-button"
+            @click="cancelReservation(index)"
           >
             Cancelar
           </button>
@@ -51,15 +53,23 @@
 </template>
 
 <script>
+import BreadCrumb from "../../shared/components/breadcrumb.component.vue";
 import BasicCardComponent from "../../shared/components/basic-card.component.vue";
+import userMock from "../../mocks/iam/user-profile-account.json";
 
 export default {
-  name: "ReservationsPage",
+  name: "MyReservationsPage",
   components: {
+    BreadCrumb,
     BasicCardComponent
   },
   data() {
     return {
+      userData: null,
+      breadcrumbPath: [
+        { name: "Cuenta", route: "" },
+        { name: "Mis reservas", route: "" }
+      ],
       hotels: [
         {
           name: "Hoteles Decameron Perú",
@@ -82,7 +92,17 @@ export default {
       ]
     };
   },
+  mounted() {
+    this.fetchUserData();
+  },
   methods: {
+    fetchUserData() {
+      setTimeout(() => {
+        this.userData = userMock;
+        this.breadcrumbPath[0].route = `/home/profile/${this.userData.id}`;
+        this.breadcrumbPath[1].route = `/home/profile/${this.userData.id}/reservations`;
+      }, 300);
+    },
     cancelReservation(index) {
       if (confirm(`¿Estás seguro de cancelar tu reserva en ${this.hotels[index].name}?`)) {
         this.hotels[index].isActive = false;
@@ -92,6 +112,7 @@ export default {
   }
 };
 </script>
+
 
 <style scoped>
 .reservations-page {
