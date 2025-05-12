@@ -7,7 +7,7 @@
       </div>
       <div class="new-device-section">
         <p class="new-device-text">¿Nuevo dispositivo?</p>
-        <button class="solicitar-btn">Solicitar</button>
+        <button class="solicitar-btn" @click="requestDevice">Solicitar</button>
       </div>
     </div>
 
@@ -30,28 +30,69 @@
       </div>
     </div>
   </div>
+
+    <ModalComponent v-model="showModal" title="" :showCloseButton="true" :closeOnOverlayClick="true" :width="'500px'" :height="'auto'" :backgroundColor="'#ffffff'">
+        <template #image>
+            <img src="../../assets/iot/plug-in-icon.svg" alt="Modal Image" />
+        </template>
+        <template #header>
+            <h1>New device</h1>
+        </template>
+        <template #body>
+            <form class="form">
+                <div class="form-group">
+                    <InputTextComponent v-model="mac" label="MAC" />
+                </div>
+                <div class="form-group">
+                    <InputTextComponent v-model="ip" label="IP Address" />
+                </div>
+                <div class="form-group">
+                    <select v-model="type" class="form-control">
+                        <option value="Termostato">Termostat</option>
+                        <option value="Otro">Other</option>
+                    </select>
+                </div>
+
+            </form>
+        </template>
+        <template #footer>
+            <ButtonComponent class="btn primary" state="primary" @click="saveDevice">Guardar</ButtonComponent>
+            <ButtonComponent class="btn secondary" state="basic" @click="showModal = false">Cancelar</ButtonComponent>
+        </template>
+    </ModalComponent>
+  
 </template>
 
 <script>
 import HotelDeviceIoTCard from "../components/hotel-device-iot-card.component.vue";
+import ModalComponent from "../../shared/components/modal.component.vue";
+import InputTextComponent from "../../shared/components/input-text.component.vue";
+import ButtonComponent from "../../shared/components/button.component.vue";
 
 export default {
   name: 'HotelDevicesIoTPage',
   components: {
-    HotelDeviceIoTCard
+    HotelDeviceIoTCard,
+    ModalComponent,
+    InputTextComponent,
+    ButtonComponent
   },
   data() {
     return {
       loading: true,
       error: null,
       devices: [],
-      hotelName: 'Royal Decameron Punta Sal'
+      hotelName: 'Royal Decameron Punta Sal',
+        showModal: false,
     };
   },
   mounted() {
     this.fetchDevices();
   },
   methods: {
+    requestDevice() {
+      this.showModal = true;
+    },
     fetchDevices() {
       this.loading = true;
       this.error = null;
@@ -100,12 +141,59 @@ export default {
           console.error('Error fetching devices:', err);
         }
       }, 800); 
+    },
+    saveDevice() {
+      console.log('Dispositivo guardado:', {
+        mac: this.mac,
+        ip: this.ip,
+        type: this.type
+      });
+      this.showModal = false;
     }
   }
 };
 </script>
 
 <style scoped>
+::v-deep(.modal-image) {
+    background-color: #fff;
+    height: 150px;
+}
+
+::v-deep(.modal-header) {
+    padding-top: 0;
+    text-align: center;
+}
+
+
+/* Estilos del form */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+.form-control {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
 /* Estilos generales */
 .hotel-devices-container {
   max-width: 1200px;
