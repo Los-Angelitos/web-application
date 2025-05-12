@@ -168,7 +168,8 @@ export default {
       this.showUserMenu = false;
       this.closeMobileMenu();
     },
-    toggleUserMenu() {
+    toggleUserMenu(e) {
+      e.stopPropagation(); 
       this.showUserMenu = !this.showUserMenu;
     },
     toggleMobileMenu() {
@@ -330,7 +331,7 @@ export default {
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  z-index: 100;
+  z-index: 1000;
   padding: 0.5rem 0;
 }
 
