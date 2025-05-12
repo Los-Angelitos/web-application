@@ -74,7 +74,6 @@ Los servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y
 
 
 <template>
-   <TopBarComponent/>
   <!--  <MainPageNavigation/>  -->
    <div class="hotel-container">
      <!-- Izquierda: Título, dirección e imágenes -->
