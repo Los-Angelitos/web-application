@@ -114,6 +114,11 @@ export default {
 <style scoped>
 ::v-deep(.modal-image) {
   background-color: transparent;
+  height: 150px;
+}
+
+::v-deep(.modal-header) {
+  padding-top: 0;
 }
 
 .user-preferences-container {
@@ -141,7 +146,6 @@ export default {
 .form-edit {
   width: 100%;
   max-width: 550px;
-  margin-top: 2rem;
 }
 
 

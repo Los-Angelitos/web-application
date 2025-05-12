@@ -97,11 +97,8 @@ export default {
   <BreadCrumb :path="breadcrumbPath" class="breadcrumb" />
 
   <div class="profile-container" v-if="user">
-    <!-- Header -->
-    <div class="profile-header">
-      <h1>Account</h1>
-    </div>
-    
+    <div class="profile-header"></div>
+
     <!-- Profile Info -->
     <div class="profile-info">
       <div class="profile-image-container">
@@ -198,8 +195,8 @@ export default {
 
 .status-indicator {
   position: absolute;
-  bottom: 0;
-  right: 0;
+  bottom: 10%;
+  right: 5%;
   width: 16px;
   height: 16px;
   background-color: #10b981; /* Verde para online */
@@ -283,7 +280,7 @@ export default {
 }
 
 .icon-logout {
-  color: #ef4444; /* Rojo */
+  color: #C13515; /* Rojo */
 }
 
 .menu-label {
@@ -292,7 +289,7 @@ export default {
 }
 
 .menu-item.logout .menu-label {
-  color: #ef4444;
+  color: #C13515;
   font-weight: 500;
 }
 

@@ -109,7 +109,7 @@ export default {
       
       setTimeout(() => {
         this.saving = false;
-        this.showNotification('Información adicional guardada correctamente');
+        this.showNotification('Additional information updated successfully');
       }, 1000);
     },
     
@@ -122,7 +122,7 @@ export default {
       if (!file) return;
       
       if (!file.type.match('image.*')) {
-        alert('Por favor selecciona una imagen válida');
+        alert('Please select a valid image file');
         return;
       }
       
@@ -131,7 +131,7 @@ export default {
         this.userData.avatar = e.target.result;
         
         setTimeout(() => {
-          this.showNotification('Foto de perfil actualizada correctamente');
+          this.showNotification('Avatar updated successfully');
         }, 1000);
       };
       reader.readAsDataURL(file);
@@ -146,7 +146,7 @@ export default {
     },
     
     goToReservations() {
-      this.$router.push('/home/reservations/history');
+      this.$router.push(`/home/profile/${this.userData.id}/reservations`);
     },
     
     contactSupport() {
@@ -240,14 +240,14 @@ export default {
                       type="text" 
                       class="form-control" 
                       v-model="editingFieldValue"
-                      :placeholder="'Ingrese su ' + editingFieldInfo.label.toLowerCase()"
+                      :placeholder="'Enter your ' + editingFieldInfo.label.toLowerCase()"
                     >
                     <input 
                       v-else 
                       type="password" 
                       class="form-control" 
                       v-model="editingFieldValue"
-                      placeholder="Ingrese su nueva contraseña"
+                      placeholder="Enter your new password"
                     >
                   </div>
                 </div>
