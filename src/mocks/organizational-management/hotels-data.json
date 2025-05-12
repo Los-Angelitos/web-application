@@ -1,0 +1,113 @@
+[
+    {
+      "id": 1,
+      "name": "Royal Decameron Punta Sal",
+      "brand": "Hoteles Decameron Perú",
+      "location": "Punta Sal, Tumbes - Perú",
+      "address": "Av. Panamericana N, Punta Sal 24560",
+      "price": "320",
+      "contactEmail": "booking@decameron.com",
+      "contactPhone": "(072) 596730",
+      "imageUrl": "https://www.kayak.com.pe/rimg/himg/6c/15/18/expedia_group-469855-2c034dc6-430600.jpg?width=1366&height=768&crop=true",
+      "logoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgN85mzk2eBcCa7LlmR14mEhFXOnOT1LChQQ&s",
+      "images": [
+        "https://www.decameron.com/images/destinos/peru/punta-sal/punta-sal-001.jpg",
+        "https://www.es.kayak.com/rimg/himg/6c/15/18/expedia_group-469855-2c034dc6-430600.jpg?width=1366&height=768&crop=true", 
+        "https://www.decameron.com/images/destinos/peru/punta-sal/punta-sal-006.jpg"        
+      ],
+      "description": "Este vibrante hotel todo incluido se ubica entre palmeras en la playa Punta Sal, a 6 km del centro del pueblo y a 89 km del Aeropuerto Tumbes.\n\nLas habitaciones sencillas cuentan con terraza o balcón, pantalla plana y acceso a Internet (con cargo); algunas tienen área de visitas.\n\nLos servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y alquiler de equipo para la playa, además de las comidas y las bebidas que se sirven en 3 restaurantes y 5 bares.\nOtros servicios consisten en un club nocturno animado, jardines y una playa extensa con cabañas. También hay una piscina al aire libre, un hidromasaje y un gimnasio.\n\n🛜 Wifi pago\n🍳 Desayuno incluido\n🚗 Estacionamiento gratuito\n🏊 Piscina al aire libre"
+    },
+    {
+      "id": 2,
+      "name": "Hotel Hilton",
+      "location": "Miraflores, Lima - Perú",
+      "price": "391",
+      "imageUrl": "https://www.hilton.com/im/en/LIMMFHH/4769649/limmfhh.jpg?impolicy=crop&cw=2258&ch=1264&gravity=NorthWest&xposition=0&yposition=117&rw=768&rh=430",
+      "logoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxr6dkPb5iQCu7x7pbVqEaPm6fLNrEcC6-HA&s",
+        "images": [
+            "https://www.hilton.com/im/en/LIMMFHH/4769649/limmfhh.jpg?impolicy=crop&cw=2258&ch=1264&gravity=NorthWest&xposition=0&yposition=117&rw=768&rh=430",
+            "https://www.hilton.com/im/en/LIMMFHH/4769649/limmfhh.jpg?impolicy=crop&cw=2258&ch=1264&gravity=NorthWest&xposition=0&yposition=117&rw=768&rh=430",
+            "https://www.hilton.com/im/en/LIMMFHH/4769649/limmfhh.jpg?impolicy=crop&cw=2258&ch=1264&gravity=NorthWest&xposition=0&yposition=117&rw=768&rh=430"
+        ]
+    },
+    {
+      "id": 3,
+      "name": "San Isidro Inn",
+      "location": "San Isidro, Lima - Perú",
+      "price": "87.16",
+      "imageUrl": "https://s3.us-east-1.amazonaws.com/ca-webprod/Hoteles/banner-landing-casa-andina-premium-golf-los-incas.webp",
+      "logoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEqbuUWyvxBlpueleigbttySMCq_g4d1YdJA&s"
+    },
+    {
+      "id": 4,
+      "name": "Hoteles Jose Antonio",
+      "location": "Miraflores, Lima - Perú",
+      "price": "268",
+      "imageUrl": "https://jose-antonio-executive.limaperuhotels.net/data/Images/700x500w/16147/1614781/1614781912/image-lima-jose-antonio-executive-hotel-1.JPEG",
+      "logoUrl": "https://media.licdn.com/dms/image/v2/C4E0BAQGK-UpIN5Akkg/company-logo_200_200/company-logo_200_200/0/1630578641178/hoteles_jose_antonio_logo?e=2147483647&v=beta&t=pU6PvTvUCtUW3DlPBBiY_qCHQ85BmTVcj8iv9WvrqHs"
+    },
+    {
+      "id": 5,
+      "name": "Lima 18 Boutique",
+      "location": "Miraflores, Lima - Perú",
+      "price": "360",
+      "imageUrl": "https://cf.bstatic.com/xdata/images/hotel/max1024x768/429597553.jpg?k=9d0a516db9263c5c2e5279790b3cda0ae0c04a75622e6759a6c7c98ba7f4b7e7&o=",
+      "logoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgN85mzk2eBcCa7LlmR14mEhFXOnOT1LChQQ&s"
+    },
+    {
+      "id": 6,
+      "name": "Hotel Hilton",
+      "location": "Miraflores, Lima - Perú",
+      "price": "391",
+      "imageUrl": "https://www.hilton.com/im/en/LIMMFHH/4769649/limmfhh.jpg?impolicy=crop&cw=2258&ch=1264&gravity=NorthWest&xposition=0&yposition=117&rw=768&rh=430",
+      "logoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxr6dkPb5iQCu7x7pbVqEaPm6fLNrEcC6-HA&s"
+    },
+    {
+      "id": 7,
+      "name": "San Isidro Inn",
+      "location": "San Isidro, Lima - Perú",
+      "price": "87.16",
+      "imageUrl": "https://s3.us-east-1.amazonaws.com/ca-webprod/Hoteles/banner-landing-casa-andina-premium-golf-los-incas.webp",
+      "logoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEqbuUWyvxBlpueleigbttySMCq_g4d1YdJA&s"
+    },
+    {
+      "id": 8,
+      "name": "Hoteles Jose Antonio",
+      "location": "Miraflores, Lima - Perú",
+      "price": "268",
+      "imageUrl": "https://jose-antonio-executive.limaperuhotels.net/data/Images/700x500w/16147/1614781/1614781912/image-lima-jose-antonio-executive-hotel-1.JPEG",
+      "logoUrl": "https://media.licdn.com/dms/image/v2/C4E0BAQGK-UpIN5Akkg/company-logo_200_200/company-logo_200_200/0/1630578641178/hoteles_jose_antonio_logo?e=2147483647&v=beta&t=pU6PvTvUCtUW3DlPBBiY_qCHQ85BmTVcj8iv9WvrqHs"
+    },
+    {
+      "id": 9,
+      "name": "Royal Decameron Punta Sal",
+      "location": "Punta Sal, Tumbes - Perú",
+      "price": "320",
+      "imageUrl": "https://www.kayak.com.pe/rimg/himg/6c/15/18/expedia_group-469855-2c034dc6-430600.jpg?width=1366&height=768&crop=true",
+      "logoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgN85mzk2eBcCa7LlmR14mEhFXOnOT1LChQQ&s"
+    },
+    {
+      "id": 10,
+      "name": "Hotel Hilton",
+      "location": "Miraflores, Lima - Perú",
+      "price": "391",
+      "imageUrl": "https://www.hilton.com/im/en/LIMMFHH/4769649/limmfhh.jpg?impolicy=crop&cw=2258&ch=1264&gravity=NorthWest&xposition=0&yposition=117&rw=768&rh=430",
+      "logoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxr6dkPb5iQCu7x7pbVqEaPm6fLNrEcC6-HA&s"
+    },
+    {
+      "id": 11,
+      "name": "San Isidro Inn",
+      "location": "San Isidro, Lima - Perú",
+      "price": "87.16",
+      "imageUrl": "https://s3.us-east-1.amazonaws.com/ca-webprod/Hoteles/banner-landing-casa-andina-premium-golf-los-incas.webp",
+      "logoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEqbuUWyvxBlpueleigbttySMCq_g4d1YdJA&s"
+    },
+    {
+      "id": 12,
+      "name": "Hoteles Jose Antonio",
+      "location": "Miraflores, Lima - Perú",
+      "price": "268",
+      "imageUrl": "https://jose-antonio-executive.limaperuhotels.net/data/Images/700x500w/16147/1614781/1614781912/image-lima-jose-antonio-executive-hotel-1.JPEG",
+      "logoUrl": "https://media.licdn.com/dms/image/v2/C4E0BAQGK-UpIN5Akkg/company-logo_200_200/company-logo_200_200/0/1630578641178/hoteles_jose_antonio_logo?e=2147483647&v=beta&t=pU6PvTvUCtUW3DlPBBiY_qCHQ85BmTVcj8iv9WvrqHs"
+    }
+  ]

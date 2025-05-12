@@ -3,13 +3,15 @@ import TopBarComponent from "../../shared/components/top-bar.component.vue";
 import SearchBar from "../../shared/components/search-bar.component.vue";
 import ButtonComponent from "../../shared/components/button.component.vue";
 import ModalComponent from "../../shared/components/modal.component.vue";
+import MainPageNavigation from "../components/main-page-navigation.component.vue";
+import HotelGallery from "../components/hotel-gallery.component.vue";
 
 export default {
     name: "MainPage",
-  components: {ButtonComponent, SearchBar, TopBarComponent, ModalComponent},
+  components: {ButtonComponent, SearchBar, TopBarComponent, ModalComponent, MainPageNavigation, HotelGallery},
   data() {
     return {
-      showModal: true,
+      showModal: true
     };
   },
   methods: {
@@ -23,21 +25,10 @@ export default {
 
 <template>
   <SearchBar />
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
+  <MainPageNavigation />
+  <HotelGallery />
 
-  <ModalComponent v-model="showModal" title="Hello World" :showCloseButton="true" :closeOnOverlayClick="true" :width="'500px'" :height="'auto'" :backgroundColor="'#ffffff'">
-    <template #header>
-      <h1>Header</h1>
-    </template>
-    <template #body>
-      <p>This is the body of the modal.</p>
-    </template>
-    <template #footer>
-      <button class="btn primary" @click="saveUser">Guardar</button>
-    </template>
-
-  </ModalComponent>
-
+  
 
 </template>
 
