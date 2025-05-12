@@ -24,33 +24,6 @@ export default {
 <template>
   <SearchBar />
   <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-    <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-
-    <div class="buttons" style="display: flex; flex-direction: column;">
-        <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-  <ButtonComponent text="Hola" state="primary" @click="handleButton"/>
-
-    </div>
 
   <ModalComponent v-model="showModal" title="Hello World" :showCloseButton="true" :closeOnOverlayClick="true" :width="'500px'" :height="'auto'" :backgroundColor="'#ffffff'">
     <template #header>
