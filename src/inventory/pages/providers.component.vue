@@ -5,12 +5,14 @@ import { ProviderApiService } from "../services/provider-api.service.js";
 import { Provider } from "../model/provider.entity.js";
 import {HotelsApiService} from "../../shared/services/hotels-api.service.js";
 import {Hotel} from "../../shared/model/hotel.entity.js";
+import ProviderDetailsComponent from "../components/provider-details.component.vue";
 
 export default {
   name: "ProvidersPage",
   components: {
     BasicCardComponent,
-    ButtonComponent
+    ButtonComponent,
+    ProviderDetailsComponent
   },
   data() {
     return {
@@ -18,7 +20,10 @@ export default {
       hotel: null,
       hotelApi: new HotelsApiService(),
       providers: [],
-      providerApi: new ProviderApiService()
+      providerApi: new ProviderApiService(),
+      selectedProvider: null,
+      selectedAvatar: '',
+      selectedProviderId: null,
     };
   },
   async created() {
@@ -55,8 +60,9 @@ export default {
       }
     },
 
-    viewDetails(provider) {
-      alert(`Detalles de ${provider.name}`);
+    viewDetails(provider, index) {
+      this.selectedProviderId = provider.id;
+      this.selectedAvatar = `https://i.pravatar.cc/150?img=${index + 1}`;
     }
   }
 };
@@ -95,13 +101,21 @@ export default {
             <ButtonComponent
                 text="Details"
                 state="primary"
-                :onClick="() => viewDetails(provider)"
+                :onClick="() => viewDetails(provider, index)"
             />
           </div>
         </template>
       </BasicCardComponent>
     </div>
   </div>
+
+  <ProviderDetailsComponent
+      v-if="selectedProviderId !== null"
+      :providerId="selectedProviderId"
+      :image="selectedAvatar"
+      @close="selectedProviderId = null"
+  />
+
 </template>
 
 <style scoped>

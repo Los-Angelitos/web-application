@@ -10,6 +10,10 @@ export class ProviderApiService {
         return http.get('/providers');
     }
 
+    getProviderById(id) {
+        return http.get(`/providers/${id}`);
+    }
+
     deleteProvider(providerId) {
         return http.delete(`/providers/${providerId}`);
     }

@@ -1,6 +1,45 @@
+<script>
+import { ProviderApiService } from "../services/provider-api.service.js";
+import { Provider } from "../model/provider.entity.js";
+
+export default {
+  name: "ProviderDetailsComponent",
+  props: {
+    providerId: {
+      type: Number,
+      required: true
+    },
+    image: {
+      type: String,
+      default: ''
+    }
+  },
+  emits: ["close"],
+  data() {
+    return {
+      provider: null,
+      providerApi: new ProviderApiService()
+    };
+  },
+  async created() {
+    try {
+      const res = await this.providerApi.getProviderById(this.providerId);
+      this.provider = Provider.fromDisplayableProvider(res.data);
+    } catch (error) {
+      console.error("Error fetching provider:", error);
+    }
+  },
+  methods: {
+    close() {
+      this.$emit("close");
+    }
+  }
+};
+</script>
+
 <template>
   <div class="modal-overlay" @click.self="close">
-    <div class="modal-card">
+    <div class="modal-card" v-if="provider">
       <img
           :src="image"
           class="avatar"
@@ -11,24 +50,9 @@
       <p class="email">{{ provider.email }}</p>
       <button class="close-btn" @click="close">Close</button>
     </div>
+    <div v-else class="modal-card">Cargando...</div>
   </div>
 </template>
-
-<script>
-export default {
-  name: "ProviderDetailsComponent",
-  props: {
-    provider: Object,
-    image: String
-  },
-  emits: ['close'],
-  methods: {
-    close() {
-      this.$emit("close");
-    }
-  }
-};
-</script>
 
 <style scoped>
 .modal-overlay {
