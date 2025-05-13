@@ -4,7 +4,7 @@
       <nav v-if="!isMobile" class="desktop-navigation">
         <ul class="navigation-list">
           <li 
-            v-for="item in navigationItems" 
+            v-for="item in internalItems"
             :key="item.id"
             :class="['navigation-item', { 'active': item.isActive, 'inactive': !item.isActive }]"
             @click="setActiveItem(item.id)"
@@ -31,7 +31,7 @@
         <transition name="slide-fade">
           <ul v-if="isMobileMenuOpen" class="mobile-dropdown">
             <li 
-              v-for="item in navigationItems" 
+              v-for="item in internalItems"
               :key="item.id"
               :class="['mobile-item', { 'active': item.isActive }]"
               @click="selectMobileItem(item.id)"
@@ -84,6 +84,7 @@
       return {
         isMobile: false,
         isMobileMenuOpen: false,
+        internalItems: [...this.navigationItems],
         screenWidth: window.innerWidth
       };
     },
@@ -106,14 +107,21 @@
     
     methods: {
       setActiveItem(id) {
-        this.navigationItems = this.navigationItems.map(item => ({
-          ...item,
-          isActive: item.id === id
-        }));
-        
-        this.$emit('navigation-changed', id);
+        const item = this.internalItems .find(i => i.id === id);
+        if (item) {
+          this.internalItems  = this.internalItems .map(i => ({
+            ...i,
+            isActive: i.id === id
+          }));
+
+          if (item.route) {
+            this.$router.push(item.route);
+          }
+
+          this.$emit('navigation-changed', id);
+        }
       },
-      
+
       handleResize() {
         this.checkScreenSize();
       },
