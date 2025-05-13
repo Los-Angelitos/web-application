@@ -7,13 +7,14 @@ import { HotelsApiService } from "../../shared/services/hotels-api.service.js";
 import { Hotel } from "../../shared/model/hotel.entity.js";
 import ButtonComponent from "../../shared/components/button.component.vue";
 import SupplyDeleteConfirmComponent from "../components/supply-delete.component.vue";
-
+import SupplyAddComponent from "../components/supply-add.component.vue";
 
 export default {
   name: "InventoryPage",
   components: {
     ButtonComponent,
-    SupplyDeleteConfirmComponent
+    SupplyDeleteConfirmComponent,
+    SupplyAddComponent
   },
   data() {
     return {
@@ -26,6 +27,7 @@ export default {
       hotelApi: new HotelsApiService(),
       selectedSupplies: [],
       showDeleteModal: false,
+      showCreateModal: false
     };
   },
   async created() {
@@ -84,6 +86,26 @@ export default {
       } finally {
         this.showDeleteModal = false;
       }
+    },
+    async handleCreated({ name, price, stock }) {
+      const supply = new Supply(
+          0,
+          this.providers[0]?.id ?? 1,
+          this.hotelId,
+          name,
+          price,
+          stock,
+          "ACTIVE"
+      );
+
+      try {
+        await this.supplierApi.createSupply(supply);
+        this.supplies.push(supply);
+        this.showCreateModal = false;
+      } catch (error) {
+        console.error("Error al crear supply:", error);
+        alert("No se pudo crear el supply.");
+      }
     }
   },
   computed: {
@@ -107,7 +129,7 @@ export default {
       <ButtonComponent
           text="Add"
           state="primary"
-          :onClick="() => console.log('Add new supply')"
+          :onClick="() => showCreateModal = true"
       />
     </div>
     <table class="inventory-table">
@@ -156,6 +178,13 @@ export default {
         v-if="showDeleteModal"
         @confirm="confirmDelete"
         @close="showDeleteModal = false"
+    />
+    <SupplyAddComponent
+        v-if="showCreateModal"
+        :hotelId="hotelId"
+        :providerId="providers[0]?.id ?? 1"
+    @close="showCreateModal = false"
+    @created="handleCreated"
     />
   </div>
 </template>
