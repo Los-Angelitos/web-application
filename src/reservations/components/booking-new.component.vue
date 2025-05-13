@@ -44,7 +44,7 @@
 
 <script>
 export default {
-  name: "NewBookingFormComponent",
+  name: "NewBookingComponent",
   emits: ["close"],
   data() {
     return {

@@ -1,16 +1,26 @@
 <script>
 import NewBookingFormComponent from "../components/booking-new.component.vue";
+import BookingConfirmCheckInComponent from "../components/booking-confirm-check-in.component.vue";
 
 export default {
   name: "ReservationsPage",
   components: {
-    NewBookingFormComponent
+    NewBookingFormComponent,
+    BookingConfirmCheckInComponent
   },
   data() {
     return {
       hotelName: "Royal Decameron Punta Sal",
-      showNewBookingModal: false
+      showNewBookingModal: false,
+      showBookingConfirmModal: false,
+      selectedGuest: null
     };
+  },
+  methods: {
+    openConfirmModal(guest) {
+      this.selectedGuest = guest;
+      this.showBookingConfirmModal = true;
+    }
   }
 };
 </script>
@@ -33,7 +43,18 @@ export default {
         <p class="guest-email">arian@mono.com</p>
         <p class="guest-phone">+51 999 888 487</p>
         <p class="reservation-dates">14/05/25 - 24/05/25</p>
-        <button class="btn-checkin">Check-in</button>
+        <button
+            class="btn-checkin"
+            @click="openConfirmModal({
+              name: 'Arian Rodriguez',
+              email: 'arian@mono.com',
+              phone: '+51 999 888 487',
+              from: '14/05/25',
+              to: '24/05/25',
+              image: 'https://i.pravatar.cc/150?img=1'
+            })">
+          Check-in
+        </button>
       </div>
     </div>
   </div>
@@ -41,6 +62,12 @@ export default {
       v-if="showNewBookingModal"
       @close="showNewBookingModal = false"
   />
+  <BookingConfirmCheckInComponent
+      v-if="showBookingConfirmModal"
+      :guest="selectedGuest"
+      @close="showBookingConfirmModal = false"
+  />
+
 </template>
 
 <style scoped>
