@@ -53,29 +53,18 @@ import BeachIcon from "../../assets/organizational-management/beach-icon.svg";
 import RuralIcon from "../../assets/organizational-management/rural-icon.svg";
 import SuiteIcon from "../../assets/organizational-management/bed-icon.svg";
 
-const NavigationModel = {
-  createNavigationItem(id, label, icon, isActive = false) {
-    return {
-      id,
-      label,
-      icon,
-      isActive
-    };
-  }
-};
-
 export default {
   name: 'MainPageNavigation',
   props: {
     navigationItems: {
       type: Array,
       default: () => [
-        NavigationModel.createNavigationItem('featured', 'Featured', TrophyIcon, true),
-        NavigationModel.createNavigationItem('lake', 'Near the lake', LakeIcon),
-        NavigationModel.createNavigationItem('pool', 'With a pool', PoolIcon),
-        NavigationModel.createNavigationItem('beach', 'Near the beach', BeachIcon),
-        NavigationModel.createNavigationItem('rural', 'Rural hotel', RuralIcon),
-        NavigationModel.createNavigationItem('suite', 'Master bedroom', SuiteIcon)
+        {id: "featured", label: "Featured", path: "", icon: TrophyIcon, isActive: true},
+        {id: "lake", label: "Near the lake", path: "", icon: LakeIcon, isActive: false},
+        {id: "pool", label: "With a pool", path: "", icon: PoolIcon, isActive: false},
+        {id: "beach", label: "Near the beach", path: "", icon: BeachIcon, isActive: false},
+        {id: "rural", label: "Rural hotel", path: "", icon: RuralIcon, isActive: false},
+        {id: "suite", label: "Master bedroom", path: "", icon: SuiteIcon, isActive: false}
       ]
     }
   },
@@ -110,7 +99,8 @@ export default {
         ...item,
         isActive: item.id === id
       }));
-      this.$emit('navigation-changed', id);
+      
+      this.$router.push({ path: this.navigationItemsData.find(item => item.id === id).path });
     },
 
     handleResize() {

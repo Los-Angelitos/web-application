@@ -10,17 +10,6 @@ import InventoryIcon from "../../assets/organizational-management/inventory-icon
 import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
-const NavigationModel = {
-  createNavigationItem(id, label, icon, route, isActive = false) {
-    return {
-      id,
-      label,
-      icon,
-      route,
-      isActive
-    };
-  }
-};
 
 export default {
   name: "HotelOverviewPage",
@@ -30,13 +19,13 @@ export default {
     return {
       hotelId: null,
       navigationItems: [
-        NavigationModel.createNavigationItem('overview', 'Overview', OverviewIcon, '/', true),
-        NavigationModel.createNavigationItem('analytics', 'Analytics',  AnalyticsIcon, '/home/hotel/:id/analytics'),
-        NavigationModel.createNavigationItem('providers', 'Providers', ProvidersIcon, '/home/hotel/:id/providers' ),
-        NavigationModel.createNavigationItem('inventory', 'Inventory', InventoryIcon, '/home/hotel/:id/inventory'),
-        NavigationModel.createNavigationItem('rooms', 'Rooms', RoomsIcon, '/home/hotel/:id/rooms'),
-        NavigationModel.createNavigationItem('organization', 'Organization', OrganizationIcon, '/home/hotel/:id/organization'),
-        NavigationModel.createNavigationItem('devices', 'Devices', DevicesIcon, '/home/hotel/:id/set-up/devices'),
+        {id: "overview", label: "Overview", path: "/home/hotel/1/overview", icon: OverviewIcon, isActive: true},
+        {id: "analytics", label: "Analytics", path: "/home/hotel/1/analytics", icon: AnalyticsIcon, isActive: false},
+        {id: "providers", label: "Providers", path: "/home/hotel/1/providers", icon: ProvidersIcon, isActive: false},
+        {id: "inventory", label: "Inventory", path: "/home/hotel/1/inventory", icon: InventoryIcon, isActive: false},
+        {id: "rooms", label: "Rooms", path: "/home/hotel/1/rooms", icon: RoomsIcon, isActive: false},
+        {id: "organization", label: "Organization", path: "/home/hotel/1/organization", icon: OrganizationIcon, isActive: false},
+        {id: "devices", label: "Devices", path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: false}
       ],
       hotel: {
         name: "",
@@ -64,13 +53,6 @@ export default {
   },
 
   methods: {
-    handleNavigationChange(selectedId) {
-      this.navigationItems = this.navigationItems.map(item => ({
-        ...item,
-        isActive: item.id === selectedId
-      }));
-      // Opcional: lógica adicional al cambiar de sección
-    },
     loadHotelMockData() {
       // Aquí iría el fetch al backend con el this.hotelId
       // Por ahora lo simulamos con datos de prueba
@@ -80,7 +62,7 @@ export default {
         description: `Este vibrante hotel todo incluido se ubica entre palmeras en la playa Punta Sal, a 6 km del centro del pueblo y a 89 km del Aeropuerto Tumbes.
 Las habitaciones sencillas cuentan con terraza o balcón, pantalla plana y acceso a internet (con cargo); algunos tienen área de visitas.
 Los servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y alquiler de equipo para la playa, además de las comidas y bebidas en 3 restaurantes y 5 bares. Otros servicios: club nocturno animado, jardines, playa extensa con cabañas, piscina al aire libre, hidromasaje y gimnasio.
-• 🛜 Wifi pago
+• 🙌 Wifi pago
 • 🍳 Desayuno incluido
 • 🚗 Estacionamiento gratuito
 • 👙 Piscina al aire libre`,
@@ -111,7 +93,6 @@ Los servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y
 <template>
   <MainPageNavigation
       :navigationItems="navigationItems"
-      @navigation-changed="handleNavigationChange"
   />
   <div class="hotel-container">
      <!-- Izquierda: Título, dirección e imágenes -->
@@ -128,17 +109,17 @@ Los servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y
 
      <!-- Derecha: Descripción, servicios, contacto -->
      <div class="hotel-right">
-       <h2 class="section-title">¡Descubre cómo ven tu hotel los demás!</h2>
+       <h2 class="section-title">Find out how others see your hotel!</h2>
 
        <div class="section">
          <div class="section-header">
            <div>Descripción</div>
-           <span class="edit-icon" @click="enableEdit('description')">✎ Edita</span>
+           <span class="edit-icon" @click="enableEdit('description')">✎ Edit</span>
          </div>
 
          <div v-if="editing.description">
            <textarea ref="description" v-model="editable.description" class="edit-area"></textarea>
-           <button class="save-button" @click="saveEdit('description')">Guardar cambios</button>
+           <button class="save-button" @click="saveEdit('description')">Save changes</button>
          </div>
          <p v-else class="description" style="white-space: pre-line">
            {{ hotel.description }}
@@ -149,8 +130,8 @@ Los servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y
        <hr style="margin-bottom:0.5rem"/>
        <div class="section">
          <div class="section-header">
-           <div>Correo electrónico</div>
-           <span class="edit-icon" @click="enableEdit('email')">✎ Edita</span>
+           <div>Email Address</div>
+           <span class="edit-icon" @click="enableEdit('email')">✎ Edit</span>
          </div>
 
          <div v-if="editing.email">
@@ -159,7 +140,7 @@ Los servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y
                v-model="editable.email"
                class="edit-input"
            />
-           <button class="save-button" @click="saveEdit('email')">Guardar cambios</button>
+           <button class="save-button" @click="saveEdit('email')">Save changes</button>
          </div>
          <p v-else class="contact">{{ hotel.email }}</p>
 
@@ -168,8 +149,8 @@ Los servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y
        <hr style="margin-bottom:0.5rem"/>
        <div class="section">
          <div class="section-header">
-           <div>Número de contacto</div>
-           <span class="edit-icon" @click="enableEdit('phone')">✎ Edita</span>
+           <div>Phone</div>
+           <span class="edit-icon" @click="enableEdit('phone')">✎ Edit</span>
          </div>
 
          <div v-if="editing.phone">
@@ -178,7 +159,7 @@ Los servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y
                v-model="editable.phone"
                class="edit-input"
            />
-           <button class="save-button" @click="saveEdit('phone')">Guardar cambios</button>
+           <button class="save-button" @click="saveEdit('phone')">Save changes</button>
          </div>
          <p v-else class="contact">{{ hotel.phone }}</p>
 
