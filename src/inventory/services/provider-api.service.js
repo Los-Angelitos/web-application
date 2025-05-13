@@ -3,18 +3,18 @@ import {Provider} from "../model/provider.entity.js";
 
 export class ProviderApiService {
     createProvider(provider) {
-        return http.post('/providers', Provider.toDisplayableProvider(provider));
+        return http.post('/v1/providers', Provider.toDisplayableProvider(provider));
     }
 
     getProviders() {
-        return http.get('/providers');
+        return http.get('/v1/providers');
     }
 
     getProviderById(id) {
-        return http.get(`/providers/${id}`);
+        return http.get(`/v1/providers/${id}`);
     }
 
     deleteProvider(providerId) {
-        return http.delete(`/providers/${providerId}`);
+        return http.delete(`/v1/providers/${providerId}`);
     }
 }

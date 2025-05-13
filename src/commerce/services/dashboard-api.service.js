@@ -7,10 +7,10 @@ export class DashboardApiService {
      * @returns {Promise<AxiosResponse>} - A promise containing the server's response.
      */
     getWeeklyData(hotelId) {
-        return http.get(`/payment-owner/weekly-incomes/${hotelId}`);
+        return http.get(`/v1/payment-owner/weekly-incomes/${hotelId}`);
     }
 
     getMonthlyData(hotelId) {
-        return http.get(`/payment-owner/monthly-incomes/${hotelId}`);
+        return http.get(`/v1/payment-owner/monthly-incomes/${hotelId}`);
     }
 }
