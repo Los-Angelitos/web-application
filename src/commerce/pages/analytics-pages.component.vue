@@ -184,7 +184,6 @@ export default {
 
 <style scoped>
 .analytics-page {
-  background-color: #f5f7fa;
   min-height: 100vh;
   padding: 0 2rem;
 }

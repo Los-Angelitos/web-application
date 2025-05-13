@@ -204,6 +204,8 @@ export default {
 .section-title {
   font-size: 1.2rem;
   margin-bottom: 1.5rem;
+  color: var(--gray-light-color);
+  font-weight: 400;
 }
 
 .inventory-table {

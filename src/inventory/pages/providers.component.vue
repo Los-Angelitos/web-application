@@ -33,6 +33,7 @@ export default {
   async created() {
     try {
       const res = await this.providerApi.getProviders();
+      console.log(res);
       this.providers = res.data.map((p) => Provider.fromDisplayableProvider(p));
     } catch (error) {
       console.error("Error al obtener los proveedores:", error);
@@ -136,7 +137,6 @@ export default {
 <style scoped>
 .providers-page {
   padding: 2rem;
-  font-family: 'Segoe UI', sans-serif;
 }
 
 .hotel-title {
@@ -148,6 +148,8 @@ export default {
 .section-title {
   font-size: 1.2rem;
   margin-bottom: 1.5rem;
+  color: var(--gray-light-color);
+  font-weight: 400;
 }
 
 .button-container {
@@ -157,8 +159,10 @@ export default {
 }
 
 .provider-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 5 por fila */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
   gap: 2rem;
 }
 
@@ -194,5 +198,6 @@ export default {
   gap: 0.5rem;
   margin-top: 1rem;
 }
+
 
 </style>
