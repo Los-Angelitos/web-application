@@ -16,17 +16,7 @@ import InventoryIcon from "../../assets/organizational-management/inventory-icon
 import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
-const NavigationModel = {
-  createNavigationItem(id, label, icon, route, isActive = false) {
-    return {
-      id,
-      label,
-      icon,
-      route,
-      isActive
-    };
-  }
-};
+
 export default {
   name: "InventoryPage",
   components: {
@@ -47,13 +37,13 @@ export default {
       selectedSupplies: [],
       showDeleteModal: false,
       navigationItems: [
-        NavigationModel.createNavigationItem('overview', 'Overview', OverviewIcon, '/home/hotel/:id/overview'),
-        NavigationModel.createNavigationItem('analytics', 'Analytics',  AnalyticsIcon, '/home/hotel/:id/analytics'),
-        NavigationModel.createNavigationItem('providers', 'Providers', ProvidersIcon, '/home/hotel/:id/providers' ),
-        NavigationModel.createNavigationItem('inventory', 'Inventory', InventoryIcon, '/home/hotel/:id/inventory', true),
-        NavigationModel.createNavigationItem('rooms', 'Rooms', RoomsIcon, '/home/hotel/:id/rooms'),
-        NavigationModel.createNavigationItem('organization', 'Organization', OrganizationIcon, '/home/hotel/:id/organization'),
-        NavigationModel.createNavigationItem('devices', 'Devices', DevicesIcon, '/home/hotel/:id/set-up/devices'),
+        {id: "overview", label: "Overview", path: "/home/hotel/1/overview", icon: OverviewIcon, isActive: false},
+        {id: "analytics", label: "Analytics", path: "/home/hotel/1/analytics", icon: AnalyticsIcon, isActive: false},
+        {id: "providers", label: "Providers", path: "/home/hotel/1/providers", icon: ProvidersIcon, isActive: false},
+        {id: "inventory", label: "Inventory", path: "/home/hotel/1/inventory", icon: InventoryIcon, isActive: true},
+        {id: "rooms", label: "Rooms", path: "/home/hotel/1/rooms", icon: RoomsIcon, isActive: false},
+        {id: "organization", label: "Organization", path: "/home/hotel/1/organization", icon: OrganizationIcon, isActive: false},
+        {id: "devices", label: "Devices", path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: false}
       ],
       showCreateModal: false
     };
@@ -82,13 +72,6 @@ export default {
 
   },
   methods: {
-    handleNavigationChange(selectedId) {
-      this.navigationItems = this.navigationItems.map(item => ({
-        ...item,
-        isActive: item.id === selectedId
-      }));
-      // Opcional: lógica adicional al cambiar de sección
-    },
     getProviderName(providerId) {
       const provider = this.providers.find(p => p.id === providerId);
       return provider ? provider.name : "Unknown";
@@ -154,7 +137,6 @@ export default {
 <template>
   <MainPageNavigation
       :navigationItems="navigationItems"
-      @navigation-changed="handleNavigationChange"
   />
   <div class="inventory-page">
     <h1 class="hotel-title">{{ hotel?.name ?? 'Hotel Name Not Found' }}</h1>

@@ -1,7 +1,6 @@
 <template>
   <MainPageNavigation
   :navigationItems="navigationItems"
-  @navigation-changed="handleNavigationChange"
   />
   <div class="hotel-devices-container">
     <div class="hotel-header">
@@ -81,17 +80,6 @@ import OrganizationIcon from "../../assets/organizational-management/organizatio
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
 import MainPageNavigation from "../components/main-page-navigation.component.vue";
 
-const NavigationModel = {
-  createNavigationItem(id, label, icon, route, isActive = false) {
-    return {
-      id,
-      label,
-      icon,
-      route,
-      isActive
-    };
-  }
-};
 
 export default {
   name: 'HotelDevicesIoTPage',
@@ -106,13 +94,13 @@ export default {
     return {
       loading: true,
       navigationItems: [
-        NavigationModel.createNavigationItem('overview', 'Overview', OverviewIcon, '/home/hotel/:id/overview'),
-        NavigationModel.createNavigationItem('analytics', 'Analytics',  AnalyticsIcon, '/home/hotel/:id/analytics'),
-        NavigationModel.createNavigationItem('providers', 'Providers', ProvidersIcon, '/home/hotel/:id/providers' ),
-        NavigationModel.createNavigationItem('inventory', 'Inventory', InventoryIcon, '/home/hotel/:id/inventory'),
-        NavigationModel.createNavigationItem('rooms', 'Rooms', RoomsIcon, '/home/hotel/:id/rooms'),
-        NavigationModel.createNavigationItem('organization', 'Organization', OrganizationIcon, '/home/hotel/:id/organization'),
-        NavigationModel.createNavigationItem('devices', 'Devices', DevicesIcon, '/home/hotel/:id/set-up/devices', true),
+        {id: "overview", label: "Overview", path: "/home/hotel/1/overview", icon: OverviewIcon, isActive: false},
+        {id: "analytics", label: "Analytics", path: "/home/hotel/1/analytics", icon: AnalyticsIcon, isActive: false},
+        {id: "providers", label: "Providers", path: "/home/hotel/1/providers", icon: ProvidersIcon, isActive: false},
+        {id: "inventory", label: "Inventory", path: "/home/hotel/1/inventory", icon: InventoryIcon, isActive: false},
+        {id: "rooms", label: "Rooms", path: "/home/hotel/1/rooms", icon: RoomsIcon, isActive: false},
+        {id: "organization", label: "Organization", path: "/home/hotel/1/organization", icon: OrganizationIcon, isActive: false},
+        {id: "devices", label: "Devices", path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: true}
       ],
       error: null,
       devices: [],
@@ -124,13 +112,6 @@ export default {
     this.fetchDevices();
   },
   methods: {
-    handleNavigationChange(selectedId) {
-      this.navigationItems = this.navigationItems.map(item => ({
-        ...item,
-        isActive: item.id === selectedId
-      }));
-      // Opcional: lógica adicional al cambiar de sección
-    },
     requestDevice() {
       this.showModal = true;
     },
