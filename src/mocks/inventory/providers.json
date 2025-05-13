@@ -1,0 +1,33 @@
+{
+    "data":
+    [
+    {
+        "id": 1,
+        "name": "Jonh Doe",
+        "email": "jonh@mail.com",
+        "phone": "999233212",
+        "state": "Active"
+    },
+    {
+        "id": 2,
+        "name": "Jane Doe",
+        "email": "jane@mail.com",
+        "phone": "999233213",
+        "state": "Inactive"
+    },
+    {
+        "id": 3,
+        "name": "Jonh Smith",
+        "email": "smith@mail.com",
+        "phone": "999233214",
+        "state": "Active"
+    },
+    {
+        "id": 4,
+        "name": "Jane Smith",
+        "email": "janesmith@mail.com",
+        "phone": "999233215",
+        "state": "Inactive"
+    }
+]
+}

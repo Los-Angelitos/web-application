@@ -23,8 +23,11 @@ export default {
   },
   async created() {
     try {
-      const res = await this.providerApi.getProviderById(this.providerId);
-      this.provider = Provider.fromDisplayableProvider(res.data);
+      //const res = await this.providerApi.getProviderById(this.providerId);
+      const res = await this.providerApi.getProviders();
+      const data = res.data.filter((p) => p.id === this.providerId);
+      
+      this.provider = Provider.fromDisplayableProvider(data[0]);
     } catch (error) {
       console.error("Error fetching provider:", error);
     }
@@ -50,7 +53,7 @@ export default {
       <p class="email">{{ provider.email }}</p>
       <button class="close-btn" @click="close">Close</button>
     </div>
-    <div v-else class="modal-card">Cargando...</div>
+    <div v-else class="modal-card">Loading...</div>
   </div>
 </template>
 

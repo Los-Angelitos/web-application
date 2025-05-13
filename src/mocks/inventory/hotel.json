@@ -1,0 +1,10 @@
+{
+    "data": {
+        "id": 1,
+        "name": "Hotel California",
+        "desscription": "A lovely place to stay",
+        "email": "hotelcalifornia@mail.com",
+        "phone": "+1 555 123 4567",
+        "address": "123 Sunset Blvd, Los Angeles, CA"
+    }
+}

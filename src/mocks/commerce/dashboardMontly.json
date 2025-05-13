@@ -1,0 +1,34 @@
+{
+    "data": [
+        {
+            "weekNumbers": 4,
+            "totalIncome": 12.4,
+            "totalExpense": 23.1,
+            "totalProfit": 53.0
+        },
+        {
+            "weekNumbers": 5,
+            "totalIncome": 22.4,
+            "totalExpense": 33.1,
+            "totalProfit": 43.0
+        },
+        {
+            "weekNumbers": 6,
+            "totalIncome": 32.4,
+            "totalExpense": 43.1,
+            "totalProfit": 33.0
+        },
+        {
+            "weekNumbers": 7,
+            "totalIncome": 42.4,
+            "totalExpense": 53.1,
+            "totalProfit": 23.0
+        },
+        {
+            "weekNumbers": 8,
+            "totalIncome": 52.4,
+            "totalExpense": 63.1,
+            "totalProfit": 13.0
+        }
+    ]
+}

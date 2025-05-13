@@ -46,7 +46,7 @@ export default {
         life: 2000
       });
 
-      this.$router.push('/auth/sign-up');
+      this.$router.push('/home');
     },
     sendToSignUp() {
       this.$router.push('/auth/sign-up');
@@ -61,34 +61,34 @@ export default {
   <div class="login-container">
 
     <div class="login-section">
-      <div class="login-logo-image">
-        <img src="/sweetmanager-circle-logo.png" alt="logo" />
-      </div>
       <div class="login-box">
+        <div class="login-logo-image">
+          <img src="/sweetmanager-circle-logo.png" alt="logo" />
+        </div>
 
-        <h2 class="title">¡Solo algo más!</h2>
-        <p class="ask">En SweetManager nos preocupamos por</p>
-        <p class="ask">brindar la mejor experiencia posible.</p>
+        <h2 class="title">Last one thing...</h2>
+        <p class="ask">At SweetManager we care about</p>
+        <p class="ask"> providing the best possible experience.</p>
 
 
-        <p class="ask" style="margin-top:1.2rem; font-size:1.2rem">¿Para quien será esta cuenta?</p>
+        <p class="ask" style="margin-top:1.2rem; font-size:1.2rem">Who will be this account for?</p>
         <DescriptionRadioButtonComponent
             v-model="roleSelected"
             :options="[
-    { value: 'guest', label: 'Huésped', description: 'Utilizaré mi cuenta para buscar, reservar una estancia dentro de un hotel.' },
-    { value: 'admin', label: 'Administrador', description: 'Me encargaré de gestionar y manejar cada estancia dentro de un hotel para brindar la mayor comodidad posible.' },
-    { value: 'manager', label: 'Gerente', description: 'Estaré al pendiente de todas las comodidades dentro de mi hotel y administraré lo necesario para mis clientes.' }
+    { value: 'guest', label: 'Guest', description: 'I will use my account to search and book a hotel stay.' },
+    { value: 'admin', label: 'Admin', description: 'I will be responsible for managing and handling each stay within a hotel to provide the greatest possible comfort.' },
+    { value: 'manager', label: 'Owner', description: 'I will be on top of all the amenities within my hotel and will manage what is necessary for my guests.' }
   ]"
             groupName="accountRole"
         />
 
 
-        <button @click="handleLogin" class="login-button">Regístrate</button>
+        <button @click="handleLogin" class="login-button">Sign Up</button>
 
         <hr class="line-container"></hr>
 
-        <div style="margin-top:1rem; font-size:0.8rem;">¿Ya tienes una cuenta?</div>
-        <button class="crear-cuenta" style="font-size:0.8rem; color: var(--primary-color); background: none; border: none; cursor: pointer; margin-top:-1rem" @click="sendToSignUp">Iniciar Sesión</button>
+        <div style="margin-top:1rem; font-size:0.8rem;">Already have an account?</div>
+        <button class="crear-cuenta" style="font-size:0.8rem; color: var(--primary-color); background: none; border: none; cursor: pointer; margin-top:-1rem" @click="sendToSignUp">Log In</button>
       </div>
     </div>
   </div>
@@ -120,15 +120,16 @@ export default {
 
 .login-logo-image {
   position: absolute; /* Coloca el logo en una posición absoluta */
-  margin-top:1.5rem;
   z-index: 1000; /* Asegura que esté en la capa superior */
+  top: -10%; /* Ajusta la posición vertical */
+  left: 36%; /* Ajusta la posición horizontal */
 }
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
   width: 100vw;
+  height: 100vh;
   position: relative;
 }
 
@@ -137,6 +138,7 @@ export default {
   display: flex;
   justify-content: center;
   width: 100%;
+
 }
 
 
@@ -147,10 +149,11 @@ export default {
 }
 
 .login-box {
+  position: relative;
+  margin: 0 1rem;
   padding: 30px;
   width: 28rem;
   height: 35rem;
-  margin-top: 5rem;
   border-radius: 20px;
   background-color: white;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
