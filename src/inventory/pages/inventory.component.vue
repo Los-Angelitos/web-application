@@ -6,12 +6,14 @@ import { Provider } from "../model/provider.entity.js";
 import { HotelsApiService } from "../../shared/services/hotels-api.service.js";
 import { Hotel } from "../../shared/model/hotel.entity.js";
 import ButtonComponent from "../../shared/components/button.component.vue";
+import SupplyDeleteConfirmComponent from "../components/supply-delete.component.vue";
 
 
 export default {
   name: "InventoryPage",
   components: {
-    ButtonComponent
+    ButtonComponent,
+    SupplyDeleteConfirmComponent
   },
   data() {
     return {
@@ -22,7 +24,8 @@ export default {
       providerApi: new ProviderApiService(),
       hotel: null,
       hotelApi: new HotelsApiService(),
-      selectedSupplies: []
+      selectedSupplies: [],
+      showDeleteModal: false,
     };
   },
   async created() {
@@ -59,6 +62,28 @@ export default {
       } else {
         this.selectedSupplies = [];
       }
+    },
+    async confirmDelete() {
+      try {
+        const updates = this.selectedSupplies.map(async (id) => {
+          const supply = this.supplies.find(s => s.id === id);
+          if (supply) {
+            supply.state = "INACTIVE";
+            await this.supplierApi.updateSupply(supply.id, supply);
+          }
+        });
+
+        await Promise.all(updates);
+
+        this.supplies = this.supplies.filter(s => !this.selectedSupplies.includes(s.id));
+        this.selectedSupplies = [];
+
+      } catch (error) {
+        console.error("Error al actualizar supplies:", error);
+        alert("No se pudo eliminar uno o más supplies.");
+      } finally {
+        this.showDeleteModal = false;
+      }
     }
   },
   computed: {
@@ -77,7 +102,7 @@ export default {
       <ButtonComponent
           text="Delete"
           state="basic"
-          :onClick="() => console.log('Delete selected:', selectedSupplies)"
+          :onClick="() => showDeleteModal = true"
       />
       <ButtonComponent
           text="Add"
@@ -127,6 +152,11 @@ export default {
       </tr>
       </tbody>
     </table>
+    <SupplyDeleteConfirmComponent
+        v-if="showDeleteModal"
+        @confirm="confirmDelete"
+        @close="showDeleteModal = false"
+    />
   </div>
 </template>
 
