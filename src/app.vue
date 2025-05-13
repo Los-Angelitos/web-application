@@ -1,11 +1,19 @@
 <script setup>
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 import TopBarComponent from './shared/components/top-bar.component.vue';
+
+const route = useRoute();
+
+const hideTopBar = computed(() =>
+  ['/auth/sign-in', '/auth/sign-up', '/auth/sign-up/role'].includes(route.path)
+);
 </script>
 
 <template>
   <div>
-    <TopBarComponent />
-    <router-view/>
+    <TopBarComponent v-if="!hideTopBar" />
+    <router-view />
   </div>
 </template>
 

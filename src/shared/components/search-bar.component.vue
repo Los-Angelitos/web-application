@@ -558,7 +558,7 @@ export default {
   border-top: none;
   border-radius: 0 0 15px 15px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  z-index: 100;
+  z-index: 3000;
   max-height: 400px;
   overflow-y: auto;
 }
@@ -634,7 +634,7 @@ export default {
   background-color: #ffffff;
   border-radius: 15px;
   box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
-  z-index: 110;
+  z-index: 3000;
   overflow: hidden;
 }
 
@@ -645,7 +645,7 @@ export default {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.3);
-  z-index: 100;
+  z-index: 2000;
 }
 
 .filters-header {

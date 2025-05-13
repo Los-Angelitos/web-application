@@ -1,16 +1,10 @@
 <template>
+  <BreadCrumb :path="breadcrumbPath" class="breadcrumb"/>
   <div class="reservations-page">
-    <BreadCrumb :path="breadcrumbPath" />
-
-    <div class="breadcrumb">
-      <span>Cuenta</span>
-      <span class="breadcrumb-separator">&gt;</span>
-      <span>Mis reservas</span>
-    </div>
-
-    <h1 class="page-title">Reservas</h1>
+    
+    <h1 class="page-title">Reservations</h1>
     <p class="page-subtitle">
-      Verifica todas tus reservas, el estado de las mismas, ¡y mantente listo para la aventura!
+      Check all your reservations, the status of your reservations, and be ready for adventure!
     </p>
 
     <div class="reservations-container">
@@ -33,21 +27,21 @@
         </template>
         <div class="hotel-status">
           <div :class="['status-badge', hotel.isActive ? 'active' : 'inactive']">
-            {{ hotel.isActive ? 'ACTIVO' : 'NO ACTIVO' }}
+            {{ hotel.isActive ? 'ACTIVE' : 'NO ACTIVE' }}
           </div>
           <button
             v-if="hotel.isActive"
             class="cancel-button"
             @click="cancelReservation(index)"
           >
-            Cancelar
+            Cancel
           </button>
         </div>
       </BasicCardComponent>
     </div>
 
     <div class="actions">
-      <button class="back-button">Atrás</button>
+      <button class="back-button" @click="backToPreviousPage">Back</button>
     </div>
   </div>
 </template>
@@ -67,8 +61,8 @@ export default {
     return {
       userData: null,
       breadcrumbPath: [
-        { name: "Cuenta", route: "" },
-        { name: "Mis reservas", route: "" }
+        { name: "Account", route: "" },
+        { name: "My Reservations", route: "" }
       ],
       hotels: [
         {
@@ -108,6 +102,9 @@ export default {
         this.hotels[index].isActive = false;
         console.log(`Reserva cancelada para ${this.hotels[index].name}`);
       }
+    },
+    backToPreviousPage() {
+      this.$router.push(`/home/profile/${this.userData.id}`);
     }
   }
 };
@@ -123,9 +120,7 @@ export default {
 }
 
 .breadcrumb {
-  color: #666;
-  margin-bottom: 20px;
-  font-size: 14px;
+  margin: 0 2rem;
 }
 
 .breadcrumb-separator {
