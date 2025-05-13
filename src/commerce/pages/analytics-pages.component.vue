@@ -1,4 +1,8 @@
 <template>
+  <MainPageNavigation
+      :navigationItems="navigationItems"
+      @navigation-changed="handleNavigationChange"
+  />
   <div class="analytics-page">
     <div class="content-container">
       <div class="page-header">
@@ -36,10 +40,28 @@ import { Dashboard } from "../model/dashboard.entity.js";
 import { HotelsApiService } from "../../shared/services/hotels-api.service.js";
 import LineChart from "../components/line-chart.vue";
 import {Hotel} from "../../shared/model/hotel.entity.js";
-
+import MainPageNavigation from "../../organizational-management/components/main-page-navigation.component.vue";
+import OverviewIcon from "../../assets/organizational-management/overview-icon.svg";
+import AnalyticsIcon from "../../assets/organizational-management/analytics-icon.svg";
+import ProvidersIcon from "../../assets/organizational-management/providers-icon.svg";
+import InventoryIcon from "../../assets/organizational-management/inventory-icon.svg";
+import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
+import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
+import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
+const NavigationModel = {
+  createNavigationItem(id, label, icon, route, isActive = false) {
+    return {
+      id,
+      label,
+      icon,
+      route,
+      isActive
+    };
+  }
+};
 export default {
   name: "AnalyticsPage",
-  components: { LineChart },
+  components: {MainPageNavigation, LineChart },
   data() {
     return {
       hotelName: '',
@@ -48,6 +70,15 @@ export default {
       hotelApi: new HotelsApiService(),
       dashboard: [],
       monthlyDashboard: [],
+      navigationItems: [
+        NavigationModel.createNavigationItem('overview', 'Overview', OverviewIcon, '/home/hotel/:id/overview'),
+        NavigationModel.createNavigationItem('analytics', 'Analytics',  AnalyticsIcon, '/home/hotel/:id/analytics', true),
+        NavigationModel.createNavigationItem('providers', 'Providers', ProvidersIcon, '/home/hotel/1/providers' ),
+        NavigationModel.createNavigationItem('inventory', 'Inventory', InventoryIcon, '/home/hotel/1/inventory'),
+        NavigationModel.createNavigationItem('rooms', 'Rooms', RoomsIcon, '/home/hotel/:id/rooms'),
+        NavigationModel.createNavigationItem('organization', 'Organization', OrganizationIcon, '/home/hotel/:id/organization'),
+        NavigationModel.createNavigationItem('devices', 'Devices', DevicesIcon, '/home/hotel/:id/set-up/devices'),
+      ],
       activeTab: 'weekly', // "weekly" o "monthly"
       tabs: [
         { id: 'weekly', label: 'Weekly Profit' },
@@ -112,6 +143,13 @@ export default {
       });
 
       return months;
+    },
+    handleNavigationChange(selectedId) {
+      this.navigationItems = this.navigationItems.map(item => ({
+        ...item,
+        isActive: item.id === selectedId
+      }));
+      // Opcional: lógica adicional al cambiar de sección
     },
 
     activeDashboard() {
