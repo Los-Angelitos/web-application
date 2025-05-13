@@ -40,16 +40,6 @@ export default {
         return;
       }
 
-      if (this.password.length < 6) {
-        this.toast.add({
-          severity: 'warn',
-          summary: 'Contraseña inválida',
-          detail: 'Debe tener al menos 6 caracteres.',
-          life: 3000
-        });
-        return;
-      }
-
       this.toast.add({
         severity: 'success',
         summary: 'Ingreso exitoso',
@@ -73,23 +63,25 @@ export default {
   <div class="login-container">
 
     <div class="login-section">
-      <div class="login-logo-image">
-        <img src="/sweetmanager-circle-logo.png" alt="logo" />
-      </div>
+     
       <div class="login-box">
 
-      <h2 class="title">¡Bienvenido!</h2>
-      <text class="ask">Ingresa tus credenciales para acceder a</text>
-      <text class="ask"> tu cuenta</text>
+         <div class="login-logo-image">
+          <img src="/sweetmanager-circle-logo.png" alt="logo" />
+        </div>
+
+      <h2 class="title">Welcome!</h2>
+      <text class="ask">Enter your credentials to access</text>
+      <text class="ask"> your account</text>
 
 
-      <InputTextComponent v-model="username" label="Usuario" class="no-movement"  @input="errorMessage = ''"/>
-        <InputPasswordComponent v-model="password" label="Contraseña" class="no-movement"  @input="errorMessage = ''"/>
-          <a  class="github-link">¿Olvidaste tu contraseña?</a>
-      <button @click="handleLogin" class="login-button">Ingresar</button>
+      <InputTextComponent v-model="username" label="User" class="no-movement"  @input="errorMessage = ''"/>
+        <InputPasswordComponent v-model="password" label="Password" class="no-movement" />
+          <a  class="github-link">Forgot your password?</a>
+      <button @click="handleLogin" class="login-button">Log in</button>
 
         <div class="line-container">
-          <span>o continua con</span>
+          <span>or continue with</span>
 
         </div>
         <div class="web-logos">
@@ -97,8 +89,8 @@ export default {
         <i class="fab fa-facebook"></i> <!-- Ícono de Facebook -->
           <i class="fab fa-linkedin"></i>
         </div>
-        <div style="margin-top:2rem; font-size:0.8rem;">¿Aun no tienes una cuenta?</div>
-        <button class="crear-cuenta" style="font-size:0.8rem; color: var(--primary-color); background: none; border: none; cursor: pointer; margin-top:-1rem" @click="sendToSignUp">Crear cuenta</button>
+        <div style="margin-top:2rem; font-size:0.8rem;">Do not have an account?</div>
+        <button class="crear-cuenta" style="font-size:0.8rem; color: var(--primary-color); background: none; border: none; cursor: pointer; margin-top:-1rem" @click="sendToSignUp">Sign up</button>
       </div>
     </div>
     <div class="logo-section">
@@ -142,11 +134,6 @@ export default {
   background-color: #ccc;
   margin: 0 10px;
 }
-.login-logo-image {
-  position: absolute; /* Coloca el logo en una posición absoluta */
-  margin-top:1.5rem;
-  z-index: 1000; /* Asegura que esté en la capa superior */
-}
 .login-container {
   display: flex;
   height: 100vh;
@@ -164,7 +151,7 @@ export default {
   width: 50vw;
   display: flex;
   justify-content: center;
-  margin-top:2rem;
+  align-items: center;
 }
 
 .company-logo {
@@ -185,12 +172,13 @@ export default {
   padding: 30px;
   width:25rem;
   height: 35rem;
-  margin-top:5rem;
   border: 0.5px solid #ccc;
   border-radius: 20px;
   background-color: white;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
   text-align: center;
+  position: relative;
+  margin: 0 1rem;
 }
 
 .input-group label {
@@ -265,8 +253,11 @@ button:hover {
   max-width: 100%;
 }
 .login-logo-image {
-  margin-bottom: 30px;
-  margin-left: 1rem;
+  position: absolute;
+  top: -2%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
 }
 
 .login-logo-image img {
@@ -315,7 +306,7 @@ button:hover {
 
 @media (max-width: 768px) {
 
-  .logo-section img {
+  .logo-section {
     display:none;
   }
   .login-section {

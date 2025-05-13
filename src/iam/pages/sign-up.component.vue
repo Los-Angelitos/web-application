@@ -86,13 +86,13 @@ export default {
   <div class="login-container">
 
     <div class="login-section">
-      <div class="login-logo-image">
-        <img src="/sweetmanager-circle-logo.png" alt="logo" />
-      </div>
+      
       <div class="login-box">
-
-        <h2 class="title">¡Bienvenido!</h2>
-        <text class="ask">Ingresa tus credenciales para acceder</text>
+        <div class="login-logo-image">
+          <img src="/sweetmanager-circle-logo.png" alt="logo" />
+        </div>
+        <h2 class="title">Welcome!</h2>
+        <text class="ask">Enter your details to create an account</text>
 
 
         <InputTextComponent v-model="data.name" label="Nombre Completo" class="no-movement"/>
@@ -100,11 +100,11 @@ export default {
         <InputTextComponent v-model="data.phone" label="Teléfono" class="no-movement"/>
         <InputPasswordComponent v-model="data.password" label="Contraseña" class="no-movement" />
         <InputPasswordComponent style="width:100%" v-model="data.confirmPassword" label="Confirmar Contraseña" class="no-movement" />
-        <text style="font-size: 0.65rem; width:100%"><CheckboxComponent v-model="data.read"/>  Acepto los <text style="color: var(--primary-color)">Términos y Condiciones</text> y <text style="color: var(--primary-color)">Politica de Privacidad</text></text>
-        <button @click="handleLogin" class="login-button">Ingresar</button>
+        <text style="font-size: 0.65rem; width:100%"><CheckboxComponent v-model="data.read"/>  I've accept the <text style="color: var(--primary-color)">Terms and Conditions</text> y <text style="color: var(--primary-color)">Privacy Policy</text></text>
+        <button @click="handleLogin" class="login-button">Register</button>
 
         <div class="line-container">
-          <span>o continua con</span>
+          <span>or continue with</span>
 
         </div>
         <div class="web-logos">
@@ -113,7 +113,7 @@ export default {
           <i class="fab fa-linkedin"></i>
         </div>
         <div style="margin-top:0.8rem; font-size:0.8rem;">¿Ya tienes una cuenta?</div>
-        <button class="crear-cuenta" style="font-size:0.8rem; color: var(--primary-color); background: none; border: none; cursor: pointer; margin-top:-1rem" @click="sendToSignUp">Iniciar Sesión</button>
+        <button class="crear-cuenta" style="font-size:0.8rem; color: var(--primary-color); background: none; border: none; cursor: pointer; margin-top:-1rem" @click="sendToSignUp">Log In</button>
         <div v-if="errorMessage" class="error-message">
           {{ errorMessage }}
         </div>
@@ -161,9 +161,10 @@ export default {
   margin: 0 10px;
 }
 .login-logo-image {
-  position: absolute; /* Coloca el logo en una posición absoluta */
-  margin-top:0.5rem;
-  z-index: 1000; /* Asegura que esté en la capa superior */
+  position: absolute; 
+  z-index: 1000; 
+  top: -10%;
+  left: 35%;
 }
 .login-container {
   display: flex;
@@ -182,7 +183,7 @@ export default {
   width: 50vw;
   display: flex;
   justify-content: center;
-  margin-top:2rem;
+  align-items: center;
 }
 
 .company-logo {
@@ -202,12 +203,13 @@ export default {
   padding: 30px;
   width:25rem;
   height: 37rem;
-  margin-top:4rem;
   border: 0.5px solid #ccc;
   border-radius: 20px;
   background-color: white;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
   text-align: center;
+  position: relative;
+  margin: 0 1rem;
 }
 
 .input-group label {
@@ -271,10 +273,6 @@ button:hover {
   margin-top: 0.5rem
 }
 
-.login-logo-image {
-  margin-bottom: 30px;
-  margin-left: 1rem;
-}
 
 .login-logo-image img {
   max-width: 250px;
@@ -330,7 +328,7 @@ button:hover {
 
 @media (max-width: 768px) {
 
-  .logo-section img {
+  .logo-section {
     display:none;
   }
   .login-section {
