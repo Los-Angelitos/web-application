@@ -1,15 +1,43 @@
 <script>
 import SearchBar from "../../shared/components/search-bar.component.vue";
 import TopBarComponent from "../../shared/components/top-bar.component.vue";
-//import MainPageNavigation from "../components/main-page-navigation.component.vue";
+import MainPageNavigation from "../components/main-page-navigation.component.vue";
+
+import OverviewIcon from "../../assets/organizational-management/overview-icon.svg";
+import AnalyticsIcon from "../../assets/organizational-management/analytics-icon.svg";
+import ProvidersIcon from "../../assets/organizational-management/providers-icon.svg";
+import InventoryIcon from "../../assets/organizational-management/inventory-icon.svg";
+import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
+import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
+import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
+const NavigationModel = {
+  createNavigationItem(id, label, icon, route, isActive = false) {
+    return {
+      id,
+      label,
+      icon,
+      route,
+      isActive
+    };
+  }
+};
 
 export default {
   name: "HotelOverviewPage",
-  components: { SearchBar, TopBarComponent },
+  components: { SearchBar, TopBarComponent, MainPageNavigation },
 
   data() {
     return {
       hotelId: null,
+      navigationItems: [
+        NavigationModel.createNavigationItem('overview', 'Overview', OverviewIcon, '/', true),
+        NavigationModel.createNavigationItem('analytics', 'Analytics',  AnalyticsIcon, '/home/hotel/:id/analytics'),
+        NavigationModel.createNavigationItem('providers', 'Providers', ProvidersIcon, '/home/hotel/:id/providers' ),
+        NavigationModel.createNavigationItem('inventory', 'Inventory', InventoryIcon, '/home/hotel/:id/inventory'),
+        NavigationModel.createNavigationItem('rooms', 'Rooms', RoomsIcon, '/home/hotel/:id/rooms'),
+        NavigationModel.createNavigationItem('organization', 'Organization', OrganizationIcon, '/home/hotel/:id/organization'),
+        NavigationModel.createNavigationItem('devices', 'Devices', DevicesIcon, '/home/hotel/:id/set-up/devices'),
+      ],
       hotel: {
         name: "",
         address: "",
@@ -36,6 +64,13 @@ export default {
   },
 
   methods: {
+    handleNavigationChange(selectedId) {
+      this.navigationItems = this.navigationItems.map(item => ({
+        ...item,
+        isActive: item.id === selectedId
+      }));
+      // Opcional: lógica adicional al cambiar de sección
+    },
     loadHotelMockData() {
       // Aquí iría el fetch al backend con el this.hotelId
       // Por ahora lo simulamos con datos de prueba
@@ -74,8 +109,11 @@ Los servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y
 
 
 <template>
-  <!--  <MainPageNavigation/>  -->
-   <div class="hotel-container">
+  <MainPageNavigation
+      :navigationItems="navigationItems"
+      @navigation-changed="handleNavigationChange"
+  />
+  <div class="hotel-container">
      <!-- Izquierda: Título, dirección e imágenes -->
      <div class="hotel-left">
        <h2 class="hotel-title">{{hotel.name}}</h2>

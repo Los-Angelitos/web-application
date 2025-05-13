@@ -4,13 +4,13 @@
     <nav v-if="!isMobile" class="desktop-navigation">
       <ul class="navigation-list">
         <li 
-          v-for="item in this.navigationItemsData" 
+          v-for="item in navigationItemsData" 
           :key="item.id"
           :class="['navigation-item', { 'active': item.isActive, 'inactive': !item.isActive }]"
           @click="setActiveItem(item.id)"
         >
           <div class="nav-group">
-            <span class="navigation-icon"><img :src=item.icon width="35" height="35" /> </span>
+            <span class="navigation-icon"><img :src="item.icon" width="35" height="35" /> </span>
             <span class="navigation-label">{{ item.label }}</span>
           </div>
         </li>
@@ -26,17 +26,17 @@
         </button>
         <span class="current-selection">{{ currentSelection.label }}</span>
       </div>
-      
+
       <!-- Mobile Menu Dropdown -->
       <transition name="slide-fade">
         <ul v-if="isMobileMenuOpen" class="mobile-dropdown">
           <li 
-            v-for="item in this.navigationItemsData" 
+            v-for="item in navigationItemsData" 
             :key="item.id"
             :class="['mobile-item', { 'active': item.isActive }]"
             @click="selectMobileItem(item.id)"
           >
-            <span class="navigation-icon"><img :src=item.icon width="45" height="25"/></span>
+            <span class="navigation-icon"><img :src="item.icon" width="45" height="25"/></span>
             <span class="navigation-label">{{ item.label }}</span>
           </li>
         </ul>
@@ -44,7 +44,7 @@
     </nav>
   </div>
 </template>
-  
+
 <script>
 import TrophyIcon from "../../assets/organizational-management/trophy-icon.svg";
 import LakeIcon from "../../assets/organizational-management/lake-icon.svg";
@@ -79,61 +79,57 @@ export default {
       ]
     }
   },
-  
+
   data() {
     return {
       isMobile: false,
       isMobileMenuOpen: false,
-      screenWidth: window.innerWidth,
-      navigationItemsData: null
+      navigationItemsData: this.navigationItems, // Initialize with prop data
+      screenWidth: window.innerWidth
     };
   },
-  
+
   computed: {
     currentSelection() {
       return this.navigationItems.find(item => item.isActive) || this.navigationItems[0];
     }
   },
-  
+
   mounted() {
     this.checkScreenSize();
-    
     window.addEventListener('resize', this.handleResize);
-
-    this.navigationItemsData = this.navigationItems;
   },
-  
+
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize);
   },
-  
+
   methods: {
     setActiveItem(id) {
       this.navigationItemsData = this.navigationItems.map(item => ({
         ...item,
         isActive: item.id === id
       }));
-      
       this.$emit('navigation-changed', id);
     },
-    
+
     handleResize() {
       this.checkScreenSize();
     },
-    
+
     checkScreenSize() {
       this.screenWidth = window.innerWidth;
       this.isMobile = this.screenWidth < 768;
-      
+
       if (!this.isMobile) {
         this.isMobileMenuOpen = false;
       }
     },
-    
+
     toggleMobileMenu() {
       this.isMobileMenuOpen = !this.isMobileMenuOpen;
     },
-    
+
     selectMobileItem(id) {
       this.setActiveItem(id);
       this.isMobileMenuOpen = false;
@@ -186,6 +182,7 @@ div.sticky {
 .navigation-item.inactive img {
   opacity: 0.32;
 }
+
 .navigation-item.inactive:hover img {
   opacity: 0.60;
 }
@@ -194,7 +191,6 @@ div.sticky {
   color: #000;
   font-weight: 600;
   border-bottom: 2px solid #000;
-  
 }
 
 .navigation-icon {
