@@ -16,13 +16,15 @@ import RadioButtonGroup from 'primevue/radiobuttongroup';
 import ToastService from 'primevue/toastservice';
 import Toast from "primevue/toast";
 
-
+// i18n
+import i18n from "./i18n.js"
 
 const vuetify = createVuetify();
 const app = createApp(App);
 
 app.use(router);
 app.use(vuetify);
+app.use(i18n);
 
 app.use(PrimeVue, {
     unstyled: false,
