@@ -13,7 +13,8 @@
   },
   "guest-preferences": {
     "modal-component": {
-      "header": "Room Card"
+      "header": "Room Card",
+      "body": "I request the cancellation of my previous room card, requiring a new one."
     }
   },
   "sign-in": {
