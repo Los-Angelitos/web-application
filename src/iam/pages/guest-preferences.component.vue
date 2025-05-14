@@ -5,9 +5,15 @@ import AccountInfoOverview from '../components/account-info-overview.component.v
 import ModalComponent from '../../shared/components/modal.component.vue';
 import ButtonComponent from '../../shared/components/button.component.vue';
 import userMock from '../../mocks/iam/user-profile-account.json';
+import i18n from "../../i18n.js";
 
 export default {
     name: "GuestPreferencesPage",
+  computed: {
+    i18n() {
+      return i18n
+    }
+  },
     components: {
         BreadCrumb,
         AccountDetailFormEdit,
@@ -69,10 +75,10 @@ export default {
       <img src="../../assets/iam/card_id_room.svg" alt="Card ID" class="icon-card-id" />
     </template>
     <template #header>
-      <h1>Room Card</h1>
+      <h1>{{ i18n.global.t('guest-preferences.modal-component.header')}}</h1>
     </template>
     <template #body>
-      <p>I request the cancellation of my previous room card, requiring a new one.</p>
+      <p>{{ i18n.global.t('guest-preferences.modal-component.body') }}</p>
     </template>
     <template #footer>
       <ButtonComponent :state="'basic'" :text="'Cancel'" :onClick="() => handleModal('close')" :width="'50%'"/>
