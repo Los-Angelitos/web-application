@@ -143,13 +143,13 @@ export default {
       email: '',
       closeOnOverlayClick: true,
       navigationItems: [
-        {id: "overview", label: this.$t('navigation.overview'), path: "/home/hotel/1/overview", icon: OverviewIcon, isActive: false},
-        {id: "analytics", label: this.$t('navigation.analytics'), path: "/home/hotel/1/analytics", icon: AnalyticsIcon, isActive: false},
-        {id: "providers", label: this.$t('navigation.providers'), path: "/home/hotel/1/providers", icon: ProvidersIcon, isActive: false},
-        {id: "inventory", label: this.$t('navigation.inventory'), path: "/home/hotel/1/inventory", icon: InventoryIcon, isActive: false},
-        {id: "rooms", label: this.$t('navigation.rooms'), path: "/home/hotel/1/rooms", icon: RoomsIcon, isActive: false},
-        {id: "organization", label: this.$t('navigation.organization'), path: "/home/hotel/1/organization", icon: OrganizationIcon, isActive: true},
-        {id: "devices", label: this.$t('navigation.devices'), path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: false}
+        {id: "overview", label: "Overview", path: "/home/hotel/1/overview", icon: OverviewIcon, isActive: false},
+        {id: "analytics", label: "Analytics", path: "/home/hotel/1/analytics", icon: AnalyticsIcon, isActive: false},
+        {id: "providers", label: "Providers", path: "/home/hotel/1/providers", icon: ProvidersIcon, isActive: false},
+        {id: "inventory", label: "Inventory", path: "/home/hotel/1/inventory", icon: InventoryIcon, isActive: false},
+        {id: "rooms", label: "Rooms", path: "/home/hotel/1/rooms", icon: RoomsIcon, isActive: false},
+        {id: "organization", label: "Organization", path: "/home/hotel/1/organization", icon: OrganizationIcon, isActive: true},
+        {id: "devices", label: "Devices", path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: false}
       ],
     };
   },
