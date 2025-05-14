@@ -41,7 +41,20 @@
 
   },
   "providers": {
-
+    "title": "Proveedores",
+    "delete": "Eliminar",
+    "details": "Detalles",
+    "detailsButton": {
+      "close": "Cerrar",
+      "details": "Detalles",
+      "loading": "Cargando..."
+    },
+    "deleteButton": {
+      "confirm": "¿Está seguro?",
+      "message": "El proveedor será eliminado de tu lista de contactos.",
+      "cancel": "Cancelar",
+      "delete": "Eliminar"
+    }
   },
   "hotel": {
 

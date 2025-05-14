@@ -47,7 +47,20 @@
 
   },
   "providers": {
-
+    "title": "Providers",
+    "delete": "Delete",
+    "details": "Details",
+    "detailsButton": {
+      "close": "Close",
+      "details": "Details",
+      "loading": "Loading..."
+    },
+    "deleteButton": {
+      "confirm": "Are you sure?",
+      "message": "The provider will be removed from your contact list.",
+      "cancel": "Close",
+      "delete": "Delete"
+    }
   },
   "hotel": {
 

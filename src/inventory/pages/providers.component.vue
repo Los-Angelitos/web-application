@@ -15,6 +15,7 @@ import InventoryIcon from "../../assets/organizational-management/inventory-icon
 import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
+import i18n from "../../i18n.js";
 
 export default {
   name: "ProvidersPage",
@@ -65,6 +66,9 @@ export default {
     }
   },
   computed: {
+    i18n() {
+      return i18n
+    },
     hotelName() {
       return this.hotel?.name ?? "Hotel Name Not Found";
     }
@@ -102,7 +106,7 @@ export default {
   />
   <div class="providers-page">
     <h1 class="hotel-title">{{ hotelName }}</h1>
-    <h2 class="section-title">Providers</h2>
+    <h2 class="section-title">{{ i18n.global.t('providers.title')}}</h2>
 
     <div class="provider-grid">
       <BasicCardComponent
@@ -125,12 +129,12 @@ export default {
         <template #default>
           <div class="button-row">
             <ButtonComponent
-                text="Delete"
+                :text="i18n.global.t('providers.delete')"
                 state="basic"
                 :onClick="() => openDeleteModal(provider.id)"
             />
             <ButtonComponent
-                text="Details"
+                :text="i18n.global.t('providers.details')"
                 state="primary"
                 :onClick="() => viewDetails(provider, index)"
             />

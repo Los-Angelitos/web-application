@@ -2,25 +2,32 @@
   <div class="modal-overlay" @click.self="close">
     <div class="modal-card">
       <div class="modal-icon">❌</div>
-      <h3 class="modal-title">Are you sure?</h3>
+      <h3 class="modal-title">{{ i18n.global.t('providers.deleteButton.confirm')}}</h3>
       <p class="modal-text">
-        The provider will be removed from your contact list.
+        {{ i18n.global.t('providers.deleteButton.message')}}
       </p>
       <div class="modal-actions">
-        <button class="btn cancel" @click="close">Close</button>
-        <button class="btn delete" @click="confirmDelete">Delete</button>
+        <button class="btn cancel" @click="close">{{ i18n.global.t('providers.deleteButton.cancel')}}</button>
+        <button class="btn delete" @click="confirmDelete">{{ i18n.global.t('providers.deleteButton.delete')}}</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import i18n from "../../i18n.js";
+
 export default {
   name: "ProviderDeleteComponent",
   props: {
     providerId: {
       type: Number,
       required: true
+    }
+  },
+  computed: {
+    i18n() {
+      return i18n
     }
   },
   emits: ["confirm", "close"],
