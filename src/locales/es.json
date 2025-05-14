@@ -82,7 +82,48 @@
     }
   },
   "guest-reservations": {
-
+    "hotelName": "Royal Decameron Punta Sal",
+    "hotelAddress": "Av. Panamericana N, Punta Sal 24560",
+    "hotelLogoAlt": "Logo Decameron",
+    "hotelChain": "Hoteles Decameron Perú",
+    "hotelPhone": "(072) 596730",
+    "price": "s/ 320",
+    "perNight": "por 1 noche",
+    "includePreferences": "Incluir mis preferencias de huésped",
+    "from": "Desde",
+    "to": "Hasta",
+    "sampleDate": "14/05/25",
+    "sampleDateEnd": "24/05/25",
+    "roomType": "Tipo de habitación",
+    "roomTypes": {
+      "simple": "Habitación simple",
+      "matrimonial": "Habitación matrimonial",
+      "doble": "Habitación doble",
+      "balcon": "Habitación con balcón"
+    },
+    "description": "Este vibrante hotel todo incluido se ubica enteramente en la playa Punta Sal, a 6 km del centro del pueblo y a 89 km del Aeropuerto Tumbes.\n\nLas habitaciones sencillas cuentan con terraza o balcón, pantalla plana y acceso a internet (con cargo); algunas tienen área de visitas.\n\nLos servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y alquiler de equipo para la playa, además de las comidas y las bebidas que se sirven en 3 restaurantes y 5 bares. Otros servicios consisten en un club nocturno animado, jardines y una playa extensa con cabañas. También hay una piscina al aire libre, un hidromasaje y un gimnasio.",
+    "amenities": [
+      {"icon": "🔵", "color": "blue", "text": "Wifi pago"},
+      {"icon": "🔵", "color": "blue", "text": "Desayuno incluido"},
+      {"icon": "🔴", "color": "red", "text": "Estacionamiento gratuito"},
+      {"icon": "➔", "color": "arrow", "text": "Piscina al aire libre"}
+    ],
+    "imageAlts": {
+      "aerial": "Vista aérea",
+      "room": "Habitación",
+      "beach": "Playa"
+    },
+    "buttons": {
+      "back": "Atrás",
+      "reserve": "Reservar"
+    },
+    "validation": {
+      "roomRequired": "Seleccione un tipo de habitación"
+    },
+    "success": {
+      "withPreferences": "Reserva creada con sus preferencias",
+      "withoutPreferences": "Reserva creada exitosamente"
+    }
   },
   "reservations": {
 
