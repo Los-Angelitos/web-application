@@ -156,18 +156,117 @@
     }
   },
   "organization": {
-
+    "title": "Structural Organization",
+    "header": {
+      "addButton": "Add"
+    },
+    "chart": {
+      "ownerAlt": "Owner photo",
+      "ownerTitle": "Owner",
+      "adminAlt": "Administrator photo",
+      "adminTitle": "Administrator"
+    },
+    "modal": {
+      "title": "Invite administrator",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "Enter email",
+      "submitButton": "Add",
+      "validation": {
+        "emailRequired": "Please enter a valid email"
+      },
+      "successMessage": "Invitation sent to {email}"
+    }
   },
   "guest-reservations": {
-
+    "hotelName": "Royal Decameron Punta Sal",
+    "hotelAddress": "Av. Panamericana N, Punta Sal 24560",
+    "hotelLogoAlt": "Decameron Logo",
+    "hotelChain": "Hoteles Decameron Perú",
+    "hotelPhone": "(072) 596730",
+    "price": "s/ 320",
+    "perNight": "for 1 night",
+    "includePreferences": "Include my guest preferences",
+    "from": "From",
+    "to": "To",
+    "sampleDate": "14/05/25",
+    "sampleDateEnd": "24/05/25",
+    "roomType": "Room type",
+    "roomTypes": {
+      "simple": "Single room",
+      "matrimonial": "Matrimonial room",
+      "doble": "Double room",
+      "balcon": "Room with balcony"
+    },
+    "description": "This vibrant all-inclusive hotel is located right on Punta Sal beach, 6 km from the town center and 89 km from Tumbes Airport.\n\nThe simple rooms feature a terrace or balcony, flat screen TV and internet access (for a fee); some have a visitor area.\n\nFree services include water sports, nightly entertainment and beach equipment rental, plus meals and drinks served in 3 restaurants and 5 bars. Other services include a lively nightclub, gardens and an extensive beach with cabins. There is also an outdoor pool, hot tub and gym.",
+    "amenities": [
+      {"icon": "🔵", "color": "blue", "text": "Paid Wifi"},
+      {"icon": "🔵", "color": "blue", "text": "Breakfast included"},
+      {"icon": "🔴", "color": "red", "text": "Free parking"},
+      {"icon": "➔", "color": "arrow", "text": "Outdoor pool"}
+    ],
+    "imageAlts": {
+      "aerial": "Aerial view",
+      "room": "Room",
+      "beach": "Beach"
+    },
+    "buttons": {
+      "back": "Back",
+      "reserve": "Reserve"
+    },
+    "validation": {
+      "roomRequired": "Please select a room type"
+    },
+    "success": {
+      "withPreferences": "Reservation created with your preferences",
+      "withoutPreferences": "Reservation created successfully"
+    }
   },
   "reservations": {
 
   },
   "rooms": {
 
+    "title": "Rooms",
+    "roomLabel": "Room",
+    "from": "From",
+    "to": "To",
+    "available": "AVAILABLE",
+    "notAvailable": "NOT AVAILABLE",
+
+    "headerComponent": {
+      "title": "Rooms",
+      "deleteButton": "Delete",
+      "addButton": "Add"
+    },
+
+    "roomCardComponent": {
+      "guestFallback": "-",
+      "dateFallback": "--/--/--"
+    },
+
+    "roomModalComponent": {
+      "header": "New Room",
+      "body": "Add a new room to the hotel inventory",
+      "roomNameLabel": "Room name",
+      "roomTypeLabel": "Room type",
+      "roomNamePlaceholder": "Room 009",
+      "roomTypePlaceholder": "Double room",
+      "cancelButton": "Cancel",
+      "addButton": "Add",
+      "validation": {
+        "numberRequired": "Room number is required",
+        "alreadyExists": "Room {number} already exists"
+      }
+    }
   },
   "user-reservations": {
-
+    "title": "Reservations",
+    "subtitle": "Check all your reservations, the status of your reservations, and be ready for adventure!",
+    "backButton": "Back",
+    "activeStatus": "ACTIVE",
+    "inactiveStatus": "NO ACTIVE",
+    "cancelButton": "Cancel",
+    "cancelConfirmation": "Are you sure you want to cancel your reservation at {hotelName}?",
+    "cancelSuccess": "Reservation canceled for {hotelName}"
   }
 }

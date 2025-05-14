@@ -3,8 +3,8 @@
     <!-- Main content -->
     <div class="main-content">
       <!-- Hotel Title -->
-      <h1 class="hotel-title">Royal Decameron Punta Sal</h1>
-      <p class="hotel-address">Av. Panamericana N, Punta Sal 24560</p>
+      <h1 class="hotel-title">{{ $t('guest-reservations.hotelName') }}</h1>
+      <p class="hotel-address">{{ $t('guest-reservations.hotelAddress') }}</p>
 
       <div class="content-container">
         <!-- Left Column -->
@@ -12,41 +12,41 @@
           <!-- Hotel Card -->
           <div class="hotel-card">
             <div class="hotel-info-card">
-              <img src="../../assets/images/hotel-image-4.png" alt="Decameron Logo" class="hotel-logo" />
+              <img src="../../assets/images/hotel-image-4.png" :alt="$t('guest-reservations.hotelLogoAlt')" class="hotel-logo" />
               <div class="hotel-details">
-                <h2>Hoteles Decameron Perú</h2>
-                <p class="phone"><span class="phone-icon">📞</span> (072) 596730</p>
+                <h2>{{ $t('guest-reservations.hotelChain') }}</h2>
+                <p class="phone"><span class="phone-icon">📞</span> {{ $t('guest-reservations.hotelPhone') }}</p>
               </div>
             </div>
           </div>
 
           <!-- Price -->
           <div class="price-container">
-            <h2 class="price">s/ 320</h2>
-            <span class="per-night">por 1 noche</span>
+            <h2 class="price">{{ $t('guest-reservations.price') }}</h2>
+            <span class="per-night">{{ $t('guest-reservations.perNight') }}</span>
           </div>
 
           <!-- Preferences Checkbox -->
           <div class="preferences">
             <label class="checkbox-wrapper">
               <input type="checkbox" v-model="includePreferences" class="checkbox-input" />
-              <span class="checkbox-label">Incluir mis preferencias de huésped</span>
+              <span class="checkbox-label">{{ $t('guest-reservations.includePreferences') }}</span>
             </label>
           </div>
 
           <!-- Dates -->
           <div class="date-selection">
             <div class="date-card">
-              <label>Desde</label>
+              <label>{{ $t('guest-reservations.from') }}</label>
               <div class="date-input">
-                <input type="text" value="14/05/25" readonly />
+                <input type="text" :value="$t('guest-reservations.sampleDate')" readonly />
                 <span class="calendar-icon">📅</span>
               </div>
             </div>
             <div class="date-card">
-              <label>Hasta</label>
+              <label>{{ $t('guest-reservations.to') }}</label>
               <div class="date-input">
-                <input type="text" value="24/05/25" readonly />
+                <input type="text" :value="$t('guest-reservations.sampleDateEnd')" readonly />
                 <span class="calendar-icon">📅</span>
               </div>
             </div>
@@ -54,26 +54,18 @@
 
           <!-- Room Selection -->
           <div class="room-selection">
-            <p class="room-title">Tipo de habitación</p>
+            <p class="room-title">{{ $t('guest-reservations.roomType') }}</p>
             <div class="room-options">
               <div class="room-options-row">
-                <label class="room-option">
-                  <input type="radio" name="roomType" value="simple" v-model="selectedRoom" />
-                  <span class="room-label">Habitación simple</span>
-                </label>
-                <label class="room-option">
-                  <input type="radio" name="roomType" value="matrimonial" v-model="selectedRoom" />
-                  <span class="room-label">Habitación matrimonial</span>
+                <label class="room-option" v-for="room in roomTypes.slice(0, 2)" :key="room.value">
+                  <input type="radio" name="roomType" :value="room.value" v-model="selectedRoom" />
+                  <span class="room-label">{{ $t(`guest-reservations.roomTypes.${room.value}`) }}</span>
                 </label>
               </div>
               <div class="room-options-row">
-                <label class="room-option">
-                  <input type="radio" name="roomType" value="doble" v-model="selectedRoom" />
-                  <span class="room-label">Habitación doble</span>
-                </label>
-                <label class="room-option">
-                  <input type="radio" name="roomType" value="balcon" v-model="selectedRoom" />
-                  <span class="room-label">Habitación con balcón</span>
+                <label class="room-option" v-for="room in roomTypes.slice(2)" :key="room.value">
+                  <input type="radio" name="roomType" :value="room.value" v-model="selectedRoom" />
+                  <span class="room-label">{{ $t(`guest-reservations.roomTypes.${room.value}`) }}</span>
                 </label>
               </div>
             </div>
@@ -84,25 +76,22 @@
         <div class="description-column">
           <div class="description-container">
             <div class="text-description">
-              <p>Este vibrante hotel todo incluido se ubica enteramente en la playa Punta Sal, a 6 km del centro del pueblo y a 89 km del Aeropuerto Tumbes.</p>
-              <p>Las habitaciones sencillas cuentan con terraza o balcón, pantalla plana y acceso a internet (con cargo); algunas tienen área de visitas.</p>
-              <p>Los servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y alquiler de equipo para la playa, además de las comidas y las bebidas que se sirven en 3 restaurantes y 5 bares. Otros servicios consisten en un club nocturno animado, jardines y una playa extensa con cabañas. También hay una piscina al aire libre, un hidromasaje y un gimnasio.</p>
+              <p v-for="(paragraph, index) in $t('guest-reservations.description').split('\n')" :key="index">{{ paragraph }}</p>
 
               <div class="amenities">
-                <div class="amenity"><span class="amenity-icon blue">🔵</span> Wifi pago</div>
-                <div class="amenity"><span class="amenity-icon blue">🔵</span> Desayuno incluido</div>
-                <div class="amenity"><span class="amenity-icon red">🔴</span> Estacionamiento gratuito</div>
-                <div class="amenity"><span class="amenity-icon arrow">➔</span> Piscina al aire libre</div>
+                <div class="amenity" v-for="(amenity, index) in $t('guest-reservations.amenities')" :key="index">
+                  <span class="amenity-icon" :class="amenity.color">{{ amenity.icon }}</span> {{ amenity.text }}
+                </div>
               </div>
             </div>
 
             <div class="hotel-images">
               <div class="image-row">
-                <img src="../../assets/images/hotel-image-1.png" alt="Vista aérea" class="hotel-main-img" />
-                <img src="../../assets/images/hotel-image-2.png" alt="Habitación" class="hotel-small-img" />
+                <img src="../../assets/images/hotel-image-1.png" :alt="$t('guest-reservations.imageAlts.aerial')" class="hotel-main-img" />
+                <img src="../../assets/images/hotel-image-2.png" :alt="$t('guest-reservations.imageAlts.room')" class="hotel-small-img" />
               </div>
               <div class="image-row-bottom">
-                <img src="../../assets/images/hotel-image-3.png" alt="Playa" class="hotel-bottom-img" />
+                <img src="../../assets/images/hotel-image-3.png" :alt="$t('guest-reservations.imageAlts.beach')" class="hotel-bottom-img" />
               </div>
             </div>
           </div>
@@ -113,12 +102,12 @@
       <div class="button-container">
         <div class="buttons-row">
           <ButtonComponent
-              text="Atrás"
+              :text="$t('guest-reservations.buttons.back')"
               state="basic"
               class="btn-back"
           />
           <ButtonComponent
-              text="Reservar"
+              :text="$t('guest-reservations.buttons.reserve')"
               state="primary"
               class="btn-reserve"
               @click="handleReservation"
@@ -133,7 +122,7 @@
 import ButtonComponent from "../../shared/components/button.component.vue";
 
 export default {
-  name: "HotelBookingPage",
+  name: "GuestReservationsPage",
   components: {
     ButtonComponent
   },
@@ -142,22 +131,29 @@ export default {
       includePreferences: false,
       selectedRoom: null,
       roomTypes: [
-        { label: "Habitación simple", value: "simple" },
-        { label: "Habitación matrimonial", value: "matrimonial" },
-        { label: "Habitación doble", value: "doble" },
-        { label: "Habitación con balcón", value: "balcon" },
+        { value: "simple" },
+        { value: "matrimonial" },
+        { value: "doble" },
+        { value: "balcon" },
       ],
     };
   },
   methods: {
     handleReservation() {
-      console.log("Preferencias del huésped:", this.includePreferences);
-      console.log("Tipo de habitación:", this.selectedRoom);
+      if (!this.selectedRoom) {
+        alert(this.$t('guest-reservations.validation.roomRequired'));
+        return;
+      }
+
+      const message = this.includePreferences
+          ? this.$t('guest-reservations.success.withPreferences')
+          : this.$t('guest-reservations.success.withoutPreferences');
+
+      alert(message);
     },
   },
 };
 </script>
-
 <style scoped>
 .booking-page {
   font-family: Arial, sans-serif;

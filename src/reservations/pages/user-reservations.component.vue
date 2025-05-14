@@ -1,18 +1,18 @@
 <template>
   <BreadCrumb :path="breadcrumbPath" class="breadcrumb"/>
   <div class="reservations-page">
-    
-    <h1 class="page-title">Reservations</h1>
+
+    <h1 class="page-title">{{ $t('user-reservations.title') }}</h1>
     <p class="page-subtitle">
-      Check all your reservations, the status of your reservations, and be ready for adventure!
+      {{ $t('user-reservations.subtitle') }}
     </p>
 
     <div class="reservations-container">
       <BasicCardComponent
-        v-for="(hotel, index) in hotels"
-        :key="index"
-        :title="hotel.name"
-        class="reservation-card"
+          v-for="(hotel, index) in hotels"
+          :key="index"
+          :title="hotel.name"
+          class="reservation-card"
       >
         <template #image>
           <div class="hotel-logo-container">
@@ -27,21 +27,21 @@
         </template>
         <div class="hotel-status">
           <div :class="['status-badge', hotel.isActive ? 'active' : 'inactive']">
-            {{ hotel.isActive ? 'ACTIVE' : 'NO ACTIVE' }}
+            {{ hotel.isActive ? $t('user-reservations.activeStatus') : $t('user-reservations.inactiveStatus') }}
           </div>
           <button
-            v-if="hotel.isActive"
-            class="cancel-button"
-            @click="cancelReservation(index)"
+              v-if="hotel.isActive"
+              class="cancel-button"
+              @click="cancelReservation(index)"
           >
-            Cancel
+            {{ $t('user-reservations.cancelButton') }}
           </button>
         </div>
       </BasicCardComponent>
     </div>
 
     <div class="actions">
-      <button class="back-button" @click="backToPreviousPage">Back</button>
+      <button class="back-button" @click="backToPreviousPage">{{ $t('user-reservations.backButton') }}</button>
     </div>
   </div>
 </template>
@@ -98,9 +98,10 @@ export default {
       }, 300);
     },
     cancelReservation(index) {
-      if (confirm(`¿Estás seguro de cancelar tu reserva en ${this.hotels[index].name}?`)) {
+      const confirmMessage = this.$t('user-reservations.cancelConfirmation', { hotelName: this.hotels[index].name });
+      if (confirm(confirmMessage)) {
         this.hotels[index].isActive = false;
-        console.log(`Reserva cancelada para ${this.hotels[index].name}`);
+        console.log(this.$t('user-reservations.cancelSuccess', { hotelName: this.hotels[index].name }));
       }
     },
     backToPreviousPage() {
@@ -109,7 +110,6 @@ export default {
   }
 };
 </script>
-
 
 <style scoped>
 .reservations-page {
