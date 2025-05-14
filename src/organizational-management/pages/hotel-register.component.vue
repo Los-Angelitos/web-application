@@ -2,40 +2,40 @@
   <div class="hotel-registration-container">
     <div class="registration-content">
       <div class="registration-form-section">
-        <h1 class="registration-title">Registra tu nuevo hotel y accede a ¡miles de beneficios!</h1>
-        <p class="registration-subtitle">Completa el siguiente formulario</p>
+        <h1 class="registration-title">{{i18n.global.t('hotel-register.title')}}</h1>
+        <p class="registration-subtitle">{{i18n.global.t('hotel-register.subtitle')}}</p>
 
         <div class="registration-form">
           <div class="form-group">
             <InputTextComponent
                 v-model="hotelName"
-                label="Nombre del hotel"
+                :label="i18n.global.t('hotel-register.registration-form.hotel-name')"
             />
           </div>
 
           <div class="form-group">
             <InputTextComponent
                 v-model="hotelAddress"
-                label="Dirección del hotel"
+                :label="i18n.global.t('hotel-register.registration-form.hotel-address')"
             />
           </div>
 
           <div class="form-group">
             <InputTextComponent
                 v-model="email"
-                label="Correo electrónico"
+                :label="i18n.global.t('hotel-register.registration-form.hotel-email')"
             />
           </div>
 
           <div class="form-group">
             <InputTextComponent
                 v-model="phone"
-                label="Número de teléfono"
+                :label="i18n.global.t('hotel-register.registration-form.hotel-phone')"
             />
           </div>
 
           <div class="form-group">
-            <label for="description" class="description-label">Descripción</label>
+            <label for="description" class="description-label">{{i18n.global.t('hotel-register.registration-form.hotel-description')}}</label>
             <textarea
                 id="description"
                 v-model="description"
@@ -46,7 +46,7 @@
 
           <div class="form-buttons">
             <button-component
-                text="Continuar"
+                :text="i18n.global.t('hotel-register.registration-form.button')"
                 state="primary"
                 width="300"
                 @click="submitForm"
@@ -87,9 +87,15 @@
 import ButtonComponent from "../../shared/components/button.component.vue";
 import InputTextComponent from "../../shared/components/input-text.component.vue";
 import ModalComponent from "../../shared/components/modal.component.vue";
+import i18n from "../../i18n.js";
 
 export default {
   name: 'HotelRegisterPage',
+  computed: {
+    i18n() {
+      return i18n
+    }
+  },
   components: {
     ModalComponent,
     ButtonComponent,
