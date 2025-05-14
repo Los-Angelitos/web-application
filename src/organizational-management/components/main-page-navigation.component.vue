@@ -52,19 +52,21 @@ import PoolIcon from "../../assets/organizational-management/pool-icon.svg";
 import BeachIcon from "../../assets/organizational-management/beach-icon.svg";
 import RuralIcon from "../../assets/organizational-management/rural-icon.svg";
 import SuiteIcon from "../../assets/organizational-management/bed-icon.svg";
+import i18n from "../../i18n.js";
 
 export default {
   name: 'MainPageNavigation',
+
   props: {
     navigationItems: {
       type: Array,
       default: () => [
-        {id: "featured", label: "Featured", path: "", icon: TrophyIcon, isActive: true},
-        {id: "lake", label: "Near the lake", path: "", icon: LakeIcon, isActive: false},
-        {id: "pool", label: "With a pool", path: "", icon: PoolIcon, isActive: false},
-        {id: "beach", label: "Near the beach", path: "", icon: BeachIcon, isActive: false},
-        {id: "rural", label: "Rural hotel", path: "", icon: RuralIcon, isActive: false},
-        {id: "suite", label: "Master bedroom", path: "", icon: SuiteIcon, isActive: false}
+        {id: "featured", label: i18n.global.t('main-page.main-page-nav-component.featured'), path: "", icon: TrophyIcon, isActive: true},
+        {id: "lake", label: i18n.global.t('main-page.main-page-nav-component.lake'), path: "", icon: LakeIcon, isActive: false},
+        {id: "pool", label: i18n.global.t('main-page.main-page-nav-component.pool'), path: "", icon: PoolIcon, isActive: false},
+        {id: "beach", label: i18n.global.t('main-page.main-page-nav-component.beach'), path: "", icon: BeachIcon, isActive: false},
+        {id: "rural", label: i18n.global.t('main-page.main-page-nav-component.rural'), path: "", icon: RuralIcon, isActive: false},
+        {id: "suite", label: i18n.global.t('main-page.main-page-nav-component.suite'), path: "", icon: SuiteIcon, isActive: false}
       ]
     }
   },
@@ -79,6 +81,9 @@ export default {
   },
 
   computed: {
+    i18n() {
+      return i18n;
+    },
     currentSelection() {
       return this.navigationItems.find(item => item.isActive) || this.navigationItems[0];
     }

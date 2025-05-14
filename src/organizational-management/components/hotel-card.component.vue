@@ -12,14 +12,21 @@
       <p class="hotel-name">{{ hotel.name }}</p>
     </div>
     <div class="hotel-price">
-      <p>From S/ {{ hotel.price }} a night</p>
+      <p>{{i18n.global.t('hotel.hotel-card-component.from')}} {{ hotel.price }} {{i18n.global.t('hotel.hotel-card-component.per-night')}}</p>
     </div>
   </div>
 </template>
 
 <script>
+import i18n from "../../i18n.js";
+
 export default {
   name: 'HotelCard',
+  computed: {
+    i18n() {
+      return i18n;
+    }
+  },
   props: {
     hotel: {
       type: Object,
