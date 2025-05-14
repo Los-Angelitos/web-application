@@ -1,6 +1,7 @@
 <script>
 import BreadCrumb from '../../shared/components/breadcrumb.component.vue';
 import userMock from '../../mocks/iam/user-profile-account.json';
+import i18n from "../../i18n.js";
 
 export default {
   name: 'UserProfile',
@@ -49,10 +50,10 @@ export default {
   computed: {
     personalInfo() {
       return [
-        { key: 'fullName', label: 'Full name', value: this.userData.name },
-        { key: 'email', label: 'Email address', value: this.userData.email },
-        { key: 'phone', label: 'Phone number', value: this.userData.phone },
-        { key: 'password', label: 'Password', value: '••••••••' }
+        { key: 'fullName', label: 'Full name', labelES: "Nombre completo", value: this.userData.name },
+        { key: 'email', label: 'Email address', labelES: "Dirección de correo electrónico", value: this.userData.email },
+        { key: 'phone', label: 'Phone number', labelES: "Número celular", value: this.userData.phone },
+        { key: 'password', label: 'Password', labelES: "Contraseña", value: '••••••••' }
       ];
     },
     editingFieldInfo() {
@@ -171,6 +172,9 @@ export default {
         default:
           return 'Unknown Type';
       }
+    },
+    knowLanguage(item) {
+      return this.$i18n.locale === 'en' ? item.label : item.labelES;
     }
   },
   created() {
@@ -221,12 +225,12 @@ export default {
           <div class="card-body">
             <div class="info-item" v-for="(field, index) in personalInfo" :key="index">
               <div>
-                <div class="info-label">{{ field.label }}</div>
+                <div class="info-label">{{ knowLanguage(field) }}</div>
                 <div class="info-value">{{ field.value }}</div>
               </div>
               <div class="edit-card" @click="startEditing(field.key)">
                 <img src="/icon_pen.svg" alt="Edit icon" class="edit-icon" />
-                <button class="edit-button">Edit</button>
+                <button class="edit-button">{{ i18n.global.t('user-profile.edit') }}</button>
               </div>
             </div>
 
@@ -234,7 +238,7 @@ export default {
             <div class="modal" v-if="editingField">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h3>Edit {{ editingFieldInfo.label }}</h3>
+                  <h3>{{ i18n.global.t('user-profile.edit') }} {{ editingFieldInfo.label }}</h3>
                   <span class="close-button" @click="cancelEditing">&times;</span>
                 </div>
                 <div class="modal-body">
@@ -244,20 +248,20 @@ export default {
                         type="text"
                         class="form-control"
                         v-model="editingFieldValue"
-                        :placeholder="'Enter your ' + editingFieldInfo.label.toLowerCase()"
+                        :placeholder="editingFieldInfo.label"
                     >
                     <input
                         v-else
                         type="password"
                         class="form-control"
                         v-model="editingFieldValue"
-                        placeholder="Enter your new password"
+                        placeholder="{{ i18n.global.t('user-profile.enter') }} your new password"
                     >
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button class="btn btn-outline" @click="cancelEditing">Cancel</button>
-                  <button class="btn btn-primary" @click="saveEditing">Save</button>
+                  <button class="btn btn-outline" @click="cancelEditing">{{ i18n.global.t('user-profile.cancel') }}</button>
+                  <button class="btn btn-primary" @click="saveEditing">{{ i18n.global.t('user-profile.save') }}</button>
                 </div>
               </div>
             </div>
@@ -267,24 +271,24 @@ export default {
         <!-- Información adicional -->
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">Additional information</h2>
+            <h2 class="card-title">{{ i18n.global.t('user-profile.info-adittional') }}</h2>
           </div>
           <div class="card-body" v-if="!loading">
             <div class="form-group">
-              <label class="form-label">Birth date</label>
+              <label class="form-label">{{ i18n.global.t('user-profile.birth-date') }}</label>
               <input type="date" class="form-control" v-model="userData.dateOfBirth">
             </div>
             <div class="form-group">
-              <label class="form-label">Country</label>
+              <label class="form-label">{{ i18n.global.t('user-profile.country') }}</label>
               <select class="form-control" v-model="userData.country">
-                <option value="">Select country</option>
+                <option value="">{{ i18n.global.t('user-profile.select-country') }}</option>
                 <option v-for="country in countries" :key="country.code" :value="country.code">
                   {{ country.name }}
                 </option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label">Favorite language</label>
+              <label class="form-label">{{ i18n.global.t('user-profile.language') }}</label>
               <select class="form-control" v-model="userData.language">
                 <option v-for="language in languages" :key="language.code" :value="language.code">
                   {{ language.name }}
@@ -298,7 +302,7 @@ export default {
           <div class="card-body" v-else>
             <div class="loading-indicator">
               <i class="fas fa-spinner fa-spin"></i>
-              <span>Loading information...</span>
+              <span>{{ i18n.global.t('user-profile.loading') }}</span>
             </div>
           </div>
         </div>
@@ -307,27 +311,27 @@ export default {
       <!-- Sidebar -->
       <div class="profile-sidebar">
         <div class="card sidebar-card" v-if="userData.type === 'guest'">
-          <h3 class="sidebar-title">My preferences</h3>
-          <p class="sidebar-text">By having your preferences, SweetManager will understand your amenities and services for hotels to consider.</p>
-          <button class="btn btn-outline" @click="goToPreferences">Enter</button>
+          <h3 class="sidebar-title">{{ i18n.global.t('user-profile.preferences') }}</h3>
+          <p class="sidebar-text">{{ i18n.global.t('user-profile.preferences-description') }}</p>
+          <button class="btn btn-outline" @click="goToPreferences">{{ i18n.global.t('user-profile.enter') }}</button>
         </div>
 
         <div class="card sidebar-card" v-else>
-          <h3 class="sidebar-title">My hotel</h3>
-          <p class="sidebar-text">Modify and edit your hotel in the best way, SweetManager will take care of the rest!</p>
-          <button class="btn btn-outline" @click="goToHotel">Enter</button>
+          <h3 class="sidebar-title">{{ i18n.global.t('user-profile.hotel') }}</h3>
+          <p class="sidebar-text">{{ i18n.global.t('user-profile.hotel-description') }}</p>
+          <button class="btn btn-outline" @click="goToHotel">{{ i18n.global.t('user-profile.enter') }}</button>
         </div>
 
         <div class="card sidebar-card">
-          <h3 class="sidebar-title">Reservations History</h3>
-          <p class="sidebar-text">Check your previous and future reservations.</p>
-          <button class="btn btn-outline" @click="goToReservations">See history</button>
+          <h3 class="sidebar-title">{{ i18n.global.t('user-profile.reservations') }}</h3>
+          <p class="sidebar-text">{{ i18n.global.t('user-profile.reservations-description') }}</p>
+          <button class="btn btn-outline" @click="goToReservations">{{ i18n.global.t('user-profile.history') }}</button>
         </div>
 
         <div class="card sidebar-card">
-          <h3 class="sidebar-title">Support and help</h3>
-          <p class="sidebar-text">Having problems with your account or need help?</p>
-          <button class="btn btn-outline" @click="contactSupport">Contact support</button>
+          <h3 class="sidebar-title">{{ i18n.global.t('user-profile.support') }}</h3>
+          <p class="sidebar-text">{{ i18n.global.t('user-profile.support-description') }}</p>
+          <button class="btn btn-outline" @click="contactSupport">{{ i18n.global.t('user-profile.contact') }}</button>
         </div>
       </div>
     </div>
