@@ -6,7 +6,13 @@
 
   },
   "subscription-plan-register": {
-
+    "basic-card": {
+      "header-content": "$29.90 at month",
+      "plan-features": {
+        "feature-text-1": "Acceso a gestión de habitaciones con tecnología IoT",
+        "feature-text-2": "Administración colaborativo de hasta dos personas"
+      }
+    }
   },
   "notifications": {
 
