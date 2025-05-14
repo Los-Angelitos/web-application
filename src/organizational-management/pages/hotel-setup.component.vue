@@ -2,12 +2,12 @@
   <div class="hotel-details-container">
     <div class="details-content">
       <div class="details-form-section">
-        <h1 class="details-title">Detalles del hotel</h1>
-        <p class="details-subtitle">Completa el siguiente formulario</p>
+        <h1 class="details-title">{{i18n.global.t('hotel-setup.title')}}</h1>
+        <p class="details-subtitle">{{i18n.global.t('hotel-setup.subtitle')}}</p>
 
         <div class="details-form">
           <div class="form-section">
-            <div class="section-title">Cantidad de habitaciones</div>
+            <div class="section-title">{{i18n.global.t('hotel-setup.form-section.title')}}</div>
 
             <div class="radio-options">
               <div class="radio-option">
@@ -17,7 +17,7 @@
                     value="10 a 50 habitaciones"
                     v-model="roomsCount"
                 />
-                <label for="rooms10to50">10 a 50 habitaciones</label>
+                <label for="rooms10to50">{{i18n.global.t('hotel-setup.form-section.rooms-10-50')}}</label>
               </div>
 
               <div class="radio-option">
@@ -27,7 +27,7 @@
                     value="51 a 250 habitaciones"
                     v-model="roomsCount"
                 />
-                <label for="rooms51to250">51 a 250 habitaciones</label>
+                <label for="rooms51to250">{{i18n.global.t('hotel-setup.form-section.rooms-51-250')}}</label>
               </div>
 
               <div class="radio-option">
@@ -37,7 +37,7 @@
                     value="más de 250 habitaciones"
                     v-model="roomsCount"
                 />
-                <label for="roomsMore250">más de 250 habitaciones</label>
+                <label for="roomsMore250">{{i18n.global.t('hotel-setup.form-section.more-than-250')}}</label>
               </div>
             </div>
           </div>
@@ -45,46 +45,46 @@
           <div class="form-section">
             <InputTextComponent
                 v-model="hotelType"
-                label="Tipo de hotel"
+                :label="i18n.global.t('hotel-setup.form-section.hotel-type')"
             />
           </div>
 
           <div class="form-section">
-            <div class="section-title">Tipo de habitaciones</div>
+            <div class="section-title">{{i18n.global.t('hotel-setup.form-section.room-type')}}</div>
 
             <div class="checkbox-options">
               <div class="checkbox-row">
                 <div class="checkbox-option">
                   <CheckboxComponent v-model="roomTypes.simple" />
-                  <label>Habitación simple</label>
+                  <label>{{i18n.global.t('hotel-setup.form-section.rooms-types.single-room')}}</label>
                 </div>
 
                 <div class="checkbox-option">
                   <CheckboxComponent v-model="roomTypes.matrimonial" />
-                  <label>Habitación matrimonial</label>
+                  <label>{{i18n.global.t('hotel-setup.form-section.rooms-types.matrimonial-room')}}</label>
                 </div>
               </div>
 
               <div class="checkbox-row">
                 <div class="checkbox-option">
                   <CheckboxComponent v-model="roomTypes.double" />
-                  <label>Habitación doble</label>
+                  <label>{{i18n.global.t('hotel-setup.form-section.rooms-types.double-room')}}</label>
                 </div>
 
                 <div class="checkbox-option">
                   <CheckboxComponent v-model="roomTypes.balcony" />
-                  <label>Habitación con balcón</label>
+                  <label>{{i18n.global.t('hotel-setup.form-section.rooms-types.suite-room')}}</label>
                 </div>
               </div>
             </div>
           </div>
 
           <div class="form-section admin-section">
-            <div class="section-title">Invitar a administrador</div>
+            <div class="section-title">{{i18n.global.t('hotel-setup.form-section.admin-invite')}}</div>
             <div class="admin-input-container">
               <InputTextComponent
                   v-model="adminEmail"
-                  label="Correo electrónico"
+                  :label="i18n.global.t('hotel-setup.form-section.admin-mail')"
                   @keyup.enter="addAdminEmail"
               />
               <div class="admin-chips">
@@ -98,12 +98,12 @@
 
           <div class="form-buttons">
             <button-component
-                text="Atrás"
+                :text="i18n.global.t('hotel-setup.form-section.back-button')"
                 state="basic"
                 @click="goBack"
             ></button-component>
             <button-component
-                text="Continuar"
+                :text="i18n.global.t('hotel-setup.form-section.next-button')"
                 state="primary"
                 @click="submitForm"
             ></button-component>
@@ -130,9 +130,15 @@
 import ButtonComponent from "../../shared/components/button.component.vue";
 import InputTextComponent from "../../shared/components/input-text.component.vue";
 import CheckboxComponent from "../../shared/components/checkbox.component.vue";
+import i18n from "../../i18n.js";
 
 export default {
   name: 'HotelSetupPage',
+  computed: {
+    i18n() {
+      return i18n
+    }
+  },
   components: {
     ButtonComponent,
     InputTextComponent,
