@@ -129,6 +129,13 @@
     }
   },
   "user-reservations": {
-
+    "title": "Reservations",
+    "subtitle": "Check all your reservations, the status of your reservations, and be ready for adventure!",
+    "backButton": "Back",
+    "activeStatus": "ACTIVE",
+    "inactiveStatus": "NO ACTIVE",
+    "cancelButton": "Cancel",
+    "cancelConfirmation": "Are you sure you want to cancel your reservation at {hotelName}?",
+    "cancelSuccess": "Reservation canceled for {hotelName}"
   }
 }
