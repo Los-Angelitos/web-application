@@ -3,10 +3,53 @@
 
   },
   "checkout": {
-
+    "title": "Pago y checkout",
+    "subtitle": "Completa el siguiente formulario.",
+    "payment-form": {
+      "card-number": "Número de tarjeta",
+      "expiry-date": "Fecha de vencimiento",
+      "cvv": "CVV",
+      "button": "PAGAR"
+    },
+    "modal": {
+      "title": "Error de validación"
+    }
   },
   "subscription-plan-register": {
-
+    "plans-header": {
+      "title": "Planes y suscripciones",
+      "subtitle": "¡Atrévete a ser innovador e impulsa tu hotel al cambio digital!"
+    },
+    "basic-card": {
+      "title": "BÁSICO",
+      "header-content": "$29.90 al mes",
+      "plan-features": {
+        "feature-text-1": "Acceso a gestión de habitaciones con tecnología IoT",
+        "feature-text-2": "Administración colaborativo de hasta dos personas"
+      },
+      "button": "Contratar"
+    },
+    "regular-card": {
+      "title": "REGULAR",
+      "header-content": "$58.99 al mes",
+      "plan-features": {
+        "feature-text-1": "Acceso a gestión de habitaciones con tecnología IoT",
+        "feature-text-2": "Administración colaborativo de hasta diez personas",
+        "feature-text-3": "Acceso a paneles interactivos de gestión empresarial"
+      },
+      "button": "Contratar"
+    },
+    "premium-card": {
+      "title": "PREMIUM",
+      "header-content": "$110.69 al mes",
+      "plan-features": {
+        "feature-text-1": "Acceso a gestión de habitaciones con tecnología IoT",
+        "feature-text-2": "Administración colaborativo ilimitado",
+        "feature-text-3": "Acceso a paneles interactivos de gestión empresarial",
+        "feature-text-4": "Soporte y mantenimiento 24/7"
+      },
+      "button": "Contratar"
+    }
   },
   "notifications": {
 
@@ -48,10 +91,38 @@
 
   },
   "hotel-register": {
-
+    "title": "Registra tu nuevo hotel y accede a ¡miles de beneficios!",
+    "subtitle": "Completa el siguiente formulario",
+    "registration-form": {
+      "hotel-name": "Nombre del hotel",
+      "hotel-address": "Dirección del hotel",
+      "hotel-phone": "Teléfono del hotel",
+      "hotel-email": "Correo electrónico del hotel",
+      "hotel-description": "Contraseña del hotel",
+      "button": "Continuar"
+    }
   },
   "hotel-setup": {
-
+    "title": "Detalles del Hotel",
+    "subtitle": "Completa el siguiente formulario",
+    "form-section": {
+      "title": "Cantidad de habitaciones",
+      "rooms-10-50": "10 a 50 habitaciones",
+      "rooms-51-250": "51 a 250 habitaciones",
+      "more-than-250": "Más de 250 habitaciones",
+      "hotel-type": "Tipo de hotel",
+      "room-type": "Tipo de habitación",
+      "rooms-types": {
+        "single-room": "Habitación simple",
+        "double-room": "Habitación doble",
+        "suite-room": "Suite",
+        "matrimonial-room": "Habitación matrimonial"
+      },
+      "admin-invite": "Invitar a administrador",
+      "admin-mail": "Correo electronico",
+      "back-button": "Atrás",
+      "next-button": "Continuar"
+    }
   },
   "hotel-setup-review": {
 
