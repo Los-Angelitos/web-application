@@ -2,32 +2,34 @@
   <div class="modal-overlay" @click.self="close">
     <div class="modal-card">
       <div class="modal-icon">📦</div>
-      <h3 class="modal-title">New Product</h3>
+      <h3 class="modal-title">{{ i18n.global.t('inventory.addButton.title')}}</h3>
 
       <div class="form-group">
-        <label>Product's name</label>
+        <label>{{ i18n.global.t('inventory.addButton.name')}}</label>
         <input v-model="name" type="text" placeholder="E.g., Shampoo" />
       </div>
 
       <div class="form-group">
-        <label>Price</label>
+        <label>{{ i18n.global.t('inventory.addButton.price')}}</label>
         <input v-model.number="price" type="number" placeholder="E.g., 19.90" />
       </div>
 
       <div class="form-group">
-        <label>Actual Quantity</label>
+        <label>{{ i18n.global.t('inventory.addButton.quantity')}}</label>
         <input v-model.number="stock" type="number" placeholder="E.g., 10" />
       </div>
 
       <div class="modal-actions">
-        <button class="btn cancel" @click="close">Cancel</button>
-        <button class="btn add" @click="create" :disabled="!canCreate">Add</button>
+        <button class="btn cancel" @click="close">{{ i18n.global.t('inventory.addButton.cancel')}}</button>
+        <button class="btn add" @click="create" :disabled="!canCreate">{{ i18n.global.t('inventory.addButton.add')}}</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import i18n from "../../i18n.js";
+
 export default {
   name: "SupplyAddComponent",
   props: {
@@ -43,6 +45,9 @@ export default {
     };
   },
   computed: {
+    i18n() {
+      return i18n
+    },
     canCreate() {
       return this.name && this.price > 0 && this.stock >= 0;
     }

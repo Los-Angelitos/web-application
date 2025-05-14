@@ -16,6 +16,7 @@ import InventoryIcon from "../../assets/organizational-management/inventory-icon
 import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
+import i18n from "../../i18n.js";
 
 export default {
   name: "InventoryPage",
@@ -127,6 +128,9 @@ export default {
     }
   },
   computed: {
+    i18n() {
+      return i18n
+    },
     allSelected() {
       return this.selectedSupplies.length === this.supplies.length;
     }
@@ -140,15 +144,15 @@ export default {
   />
   <div class="inventory-page">
     <h1 class="hotel-title">{{ hotel?.name ?? 'Hotel Name Not Found' }}</h1>
-    <h2 class="section-title">Inventory</h2>
+    <h2 class="section-title">{{ i18n.global.t('inventory.title')}}</h2>
     <div class="inventory-actions">
       <ButtonComponent
-          text="Delete"
+          :text="i18n.global.t('inventory.delete')"
           state="basic"
           :onClick="() => showDeleteModal = true"
       />
       <ButtonComponent
-          text="Add"
+          :text="i18n.global.t('inventory.add')"
           state="primary"
           :onClick="() => showCreateModal = true"
       />
@@ -163,12 +167,12 @@ export default {
               :checked="allSelected"
           />
         </th>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Price</th>
-        <th>Quantity</th>
-        <th>Stock</th>
-        <th>Provider</th>
+        <th>{{ i18n.global.t('inventory.info.id')}}</th>
+        <th>{{ i18n.global.t('inventory.info.name')}}</th>
+        <th>{{ i18n.global.t('inventory.info.price')}}</th>
+        <th>{{ i18n.global.t('inventory.info.quantity')}}</th>
+        <th>{{ i18n.global.t('inventory.info.stock')}}</th>
+        <th>{{ i18n.global.t('inventory.info.provider')}}</th>
       </tr>
       </thead>
       <tbody>

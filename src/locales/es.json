@@ -38,7 +38,31 @@
 
   },
   "inventory": {
-
+    "title": "Inventario",
+    "delete": "Eliminar",
+    "add": "Agregar",
+    "info": {
+      "id": "ID",
+      "name": "Nombre",
+      "price": "Precio",
+      "quantity": "Cantidad",
+      "stock": "Stock",
+      "provider": "Proveedor"
+    },
+    "deleteButton": {
+      "confirm": "¿Está seguro?",
+      "message": "Los productos seleccionados serán eliminados de tu inventario.",
+      "cancel": "Cancelar",
+      "delete": "Eliminar"
+    },
+    "addButton": {
+      "title": "Nuevo Producto",
+      "name": "Nombre del producto",
+      "price": "Precio",
+      "quantity": "Cantidad actual",
+      "cancel": "Cancelar",
+      "add": "Agregar"
+    }
   },
   "providers": {
     "title": "Proveedores",
