@@ -1,8 +1,8 @@
 <template>
   <div class="checkout-container">
     <div class="checkout-header">
-      <h1>Pago y checkout</h1>
-      <p class="subtitle">Completa el siguiente formulario.</p>
+      <h1>{{i18n.global.t('checkout.title')}}</h1>
+      <p class="subtitle">{{i18n.global.t('checkout.subtitle')}}</p>
     </div>
 
     <div class="checkout-content">
@@ -47,7 +47,7 @@
 
           <div class="payment-form">
             <div class="form-group">
-              <label for="cardNumber">Número de tarjeta</label>
+              <label for="cardNumber">{{i18n.global.t('checkout.payment-form.card-number')}}</label>
               <input
                   type="text"
                   id="cardNumber"
@@ -61,7 +61,7 @@
 
             <div class="form-row">
               <div class="form-group">
-                <label for="expiryDate">Fecha de vencimiento</label>
+                <label for="expiryDate">{{i18n.global.t('checkout.payment-form.expiry-date')}}</label>
                 <input
                     type="text"
                     id="expiryDate"
@@ -73,7 +73,7 @@
                 />
               </div>
               <div class="form-group">
-                <label for="cvv">CVV</label>
+                <label for="cvv">{{i18n.global.t('checkout.payment-form.cvv')}}</label>
                 <input
                     type="text"
                     id="cvv"
@@ -87,7 +87,7 @@
 
             <div class="checkout-button">
               <button-component
-                  text="PAGAR"
+                  :text="i18n.global.t('checkout.payment-form.button')"
                   state="primary"
                   :full-width="true"
                   @click="processPayment"
@@ -100,7 +100,7 @@
   </div>
   <ModalComponent
       v-model="showErrorModal"
-      title="Validation Error"
+      :title="i18n.global.t('checkout.modal.title')"
       :close-on-overlay-click="true"
       width="400px"
   >
@@ -117,9 +117,15 @@
 import ButtonComponent from "../../shared/components/button.component.vue";
 import BasicCardComponent from "../../shared/components/basic-card.component.vue";
 import ModalComponent from "../../shared/components/modal.component.vue";
+import i18n from "../../i18n.js";
 
 export default {
   name: 'CheckoutPage',
+  computed: {
+    i18n() {
+      return i18n
+    }
+  },
   components: {
     ModalComponent,
     BasicCardComponent,
@@ -153,16 +159,29 @@ export default {
   },
   methods: {
     loadSubscriptionData(id){
-      if(id == 1){
-        this.planTitle = 'Plan BÁSICO';
-        this.planPrice = 'Total a pagar: $22.10';
-      } else if(id == 2){
-        this.planTitle = 'Plan REGULAR';
-        this.planPrice = 'Total a pagar: $41.29';
-      } else if(id == 3){
-        this.planTitle = 'Plan PREMIUM';
-        this.planPrice = 'Total a pagar: $69.90';
-      }
+        if (this.$i18n.locale === 'en') {
+          if (id == 1) {
+            this.planTitle = 'BASIC PLAN';
+            this.planPrice = 'Total bill: $29.90';
+          } else if (id == 2) {
+            this.planTitle = 'REGULAR PLAN';
+            this.planPrice = 'Total bill: $58.99';
+          } else if (id == 3) {
+            this.planTitle = 'PREMIUM PLAN';
+            this.planPrice = 'Total bill: $110.69';
+          }
+        } else {
+          if (id == 1) {
+            this.planTitle = 'PLAN BÁSICO';
+            this.planPrice = 'Total a pagar: $29.90';
+          } else if (id == 2) {
+            this.planTitle = 'PLAN REGULAR';
+            this.planPrice = 'Total a pagar: $58.99';
+          } else if (id == 3) {
+            this.planTitle = 'PLAN PREMIUM';
+            this.planPrice = 'Total a pagar: $110.69';
+          }
+        }
     },
     formatCardNumber(event) {
       // Remove any non-digit characters

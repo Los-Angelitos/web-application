@@ -8,15 +8,52 @@
     }
   },
   "checkout": {
-
+    "title": "Payment and checkout",
+    "subtitle": "Complete the following form.",
+    "payment-form": {
+      "card-number": "Card number",
+      "expiry-date": "Due date",
+      "cvv": "CVV",
+      "button": "PAY"
+    },
+    "modal": {
+      "title": "Validation Error"
+    }
   },
   "subscription-plan-register": {
+    "plans-header": {
+      "title": "Plans and subscriptions",
+      "subtitle": "Dare to be innovative and drive your hotel toward digital transformation!"
+    },
     "basic-card": {
+      "title": "BASIC",
       "header-content": "$29.90 at month",
       "plan-features": {
-        "feature-text-1": "Acceso a gestión de habitaciones con tecnología IoT",
-        "feature-text-2": "Administración colaborativo de hasta dos personas"
-      }
+        "feature-text-1": "Access to room management with IoT technology",
+        "feature-text-2": "Collaborative administration for up to two people"
+      },
+      "button": "Hire"
+    },
+    "regular-card": {
+      "title": "REGULAR",
+      "header-content": "$58.99 at month",
+      "plan-features": {
+        "feature-text-1": "Access to room management with IoT technology",
+        "feature-text-2": "Collaborative administration for up to ten people",
+        "feature-text-3": "Access to interactive business management dashboards"
+      },
+      "button": "Hire"
+    },
+    "premium-card": {
+      "title": "PREMIUM",
+      "header-content": "$110.69 at month",
+      "plan-features": {
+        "feature-text-1": "Access to room management with IoT technology",
+        "feature-text-2": "Collaborative administration for up to ten people",
+        "feature-text-3": "Access to interactive business management dashboards",
+        "feature-text-4": "24/7 support and maintenance"
+      },
+      "button": "Hire"
     }
   },
   "notifications": {
@@ -137,10 +174,38 @@
 
   },
   "hotel-register": {
-
+    "title": "Register your new hotel and access thousands of benefits!",
+    "subtitle": "Complete the following form",
+    "registration-form": {
+      "hotel-name": "Hotel's name",
+      "hotel-address": "Hotel's description",
+      "hotel-phone": "Hotel's phone number",
+      "hotel-email": "Hotel's mail",
+      "hotel-description": "Hotel's description",
+      "button": "Continue"
+    }
   },
   "hotel-setup": {
-
+    "title": "Hotel details",
+    "subtitle": "Complete the following form",
+    "form-section": {
+      "title": "Number of rooms",
+      "rooms-10-50": "10 to 50 rooms",
+      "rooms-51-250": "51 to 250 rooms",
+      "more-than-250": "More than 250 rooms",
+      "hotel-type": "Hotel's type",
+      "room-type": "Room's type",
+      "rooms-types": {
+        "single-room": "Single room",
+        "double-room": "Double room",
+        "suite-room": "Suite",
+        "matrimonial-room": "Matrimonial room"
+      },
+      "admin-invite": "Invite admin",
+      "admin-mail": "Electronic mail",
+      "back-button": "Back",
+      "next-button": "Continue"
+    }
   },
   "hotel-setup-review": {
 

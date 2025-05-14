@@ -2,20 +2,20 @@
   <div class="subscription-register-container">
     <div class="plans-container">
       <div class="plans-header">
-        <h1>Planes y suscripciones</h1>
-        <p class="subtitle">¡Atrévete a ser innovador e impulsa tu hotel al cambio digital!</p>
+        <h1>{{i18n.global.t('subscription-plan-register.plans-header.title')}}</h1>
+        <p class="subtitle">{{i18n.global.t('subscription-plan-register.plans-header.subtitle')}}</p>
       </div>
 
       <div class="plans-grid">
         <!-- BÁSICO Plan -->
-        <basic-card-component title="BÁSICO" class="plan-card">
+        <basic-card-component :title="i18n.global.t('subscription-plan-register.basic-card.title')" class="plan-card">
           <template #image>
             <div class="plan-icon">
               <img src="/public/basic_subscription_icon.png" alt="Plan Básico" />
             </div>
           </template>
           <template #header-content>
-            <div class="plan-price">$29.90 al mes</div>
+            <div class="plan-price">{{i18n.global.t('subscription-plan-register.basic-card.header-content')}}</div>
           </template>
 
           <div class="plan-features">
@@ -24,7 +24,7 @@
                 <i class="pi pi-check-circle"></i>
               </div>
               <div class="feature-text">
-                Acceso a gestión de habitaciones con tecnología IoT
+                {{i18n.global.t('subscription-plan-register.basic-card.plan-features.feature-text-1') }}
               </div>
             </div>
 
@@ -33,14 +33,14 @@
                 <i class="pi pi-check-circle"></i>
               </div>
               <div class="feature-text">
-                Administración colaborativo de hasta dos personas
+                {{ i18n.global.t('subscription-plan-register.basic-card.plan-features.feature-text-2') }}
               </div>
             </div>
           </div>
           <div class="space-height-basic"></div>
           <div class="plan-button">
             <button-component
-                text="CONTRATAR"
+                :text="i18n.global.t('subscription-plan-register.basic-card.button')"
                 state="primary"
                 :full-width="true"
                 @click="selectPlan('basic')"
@@ -49,14 +49,14 @@
         </basic-card-component>
 
         <!-- REGULAR Plan -->
-        <basic-card-component title="REGULAR" class="plan-card">
+        <basic-card-component :title="i18n.global.t('subscription-plan-register.regular-card.title')" class="plan-card">
           <template #image>
             <div class="plan-icon">
               <img src="/public/regular_subscription_icon.png" alt="Plan Regular" />
             </div>
           </template>
           <template #header-content>
-            <div class="plan-price">$58.99 al mes</div>
+            <div class="plan-price">{{i18n.global.t('subscription-plan-register.regular-card.header-content')}}</div>
           </template>
 
           <div class="plan-features">
@@ -65,7 +65,7 @@
                 <i class="pi pi-check-circle"></i>
               </div>
               <div class="feature-text">
-                Acceso a gestión de habitaciones con tecnología IoT
+                {{i18n.global.t('subscription-plan-register.regular-card.plan-features.feature-text-1') }}
               </div>
             </div>
 
@@ -74,7 +74,7 @@
                 <i class="pi pi-check-circle"></i>
               </div>
               <div class="feature-text">
-                Administración colaborativo de hasta diez personas
+                {{i18n.global.t('subscription-plan-register.regular-card.plan-features.feature-text-2') }}
               </div>
             </div>
 
@@ -83,14 +83,14 @@
                 <i class="pi pi-check-circle"></i>
               </div>
               <div class="feature-text">
-                Acceso a dashboards interactivos de gestión empresarial
+                {{i18n.global.t('subscription-plan-register.regular-card.plan-features.feature-text-3') }}
               </div>
             </div>
           </div>
           <div class="space-height-regular"></div>
           <div class="plan-button">
             <button-component
-                text="CONTRATAR"
+                :text="i18n.global.t('subscription-plan-register.regular-card.button')"
                 state="basic"
                 :full-width="true"
                 @click="selectPlan('regular')"
@@ -99,14 +99,14 @@
         </basic-card-component>
 
         <!-- PREMIUM Plan -->
-        <basic-card-component title="PREMIUM" class="plan-card">
+        <basic-card-component :title="i18n.global.t('subscription-plan-register.premium-card.title')" class="plan-card">
           <template #image>
             <div class="plan-icon">
               <img src="/public/premium_subscription_icon.png" alt="Plan Premium" />
             </div>
           </template>
           <template #header-content>
-            <div class="plan-price">$110.69 al mes</div>
+            <div class="plan-price">{{i18n.global.t('subscription-plan-register.premium-card.header-content')}}</div>
           </template>
 
           <div class="plan-features">
@@ -115,7 +115,7 @@
                 <i class="pi pi-check-circle"></i>
               </div>
               <div class="feature-text">
-                Acceso a gestión de habitaciones con tecnología IoT
+                {{ i18n.global.t('subscription-plan-register.premium-card.plan-features.feature-text-1') }}
               </div>
             </div>
 
@@ -124,7 +124,7 @@
                 <i class="pi pi-check-circle"></i>
               </div>
               <div class="feature-text">
-                Administración colaborativo ilimitado
+                {{ i18n.global.t('subscription-plan-register.premium-card.plan-features.feature-text-2') }}
               </div>
             </div>
 
@@ -133,7 +133,7 @@
                 <i class="pi pi-check-circle"></i>
               </div>
               <div class="feature-text">
-                Acceso a dashboards interactivos de gestión empresarial
+                {{ i18n.global.t('subscription-plan-register.premium-card.plan-features.feature-text-3') }}
               </div>
             </div>
 
@@ -142,13 +142,13 @@
                 <i class="pi pi-check-circle"></i>
               </div>
               <div class="feature-text">
-                Soporte y mantenimiento 24/7
+                {{ i18n.global.t('subscription-plan-register.premium-card.plan-features.feature-text-4') }}
               </div>
             </div>
           </div>
           <div class="plan-button">
             <button-component
-                text="CONTRATAR"
+                :text="i18n.global.t('subscription-plan-register.premium-card.button')"
                 state="primary"
                 :full-width="true"
                 @click="selectPlan('premium')"
@@ -163,6 +163,7 @@
 <script>
 import ButtonComponent from "../../shared/components/button.component.vue";
 import BasicCardComponent from "../../shared/components/basic-card.component.vue";
+import i18n from "../../i18n.js";
 
 export default {
   name: 'SubscriptionPlanRegister',
@@ -186,6 +187,9 @@ export default {
     }
   },
   computed: {
+    i18n() {
+      return i18n
+    },
     formValid() {
       return this.formData.name &&
           this.formData.email &&
