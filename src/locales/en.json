@@ -15,12 +15,24 @@
     }
   },
   "notifications": {
+    "form-email-item": {
+      "from": "From",
+      "to": "To",
+      "subject": "Subject",
+      "placeholder": "Write your subject here",
+      "message": "Write your message here"
+    }
 
   },
   "guest-preferences": {
     "modal-component": {
       "header": "Room Card",
       "body": "I request the cancellation of my previous room card, requiring a new one."
+    },
+    "item-fields": {
+      "account-detail-item__field": "Can't you find your room card?",
+      "account-detail-item__field-value": "Request the cancellation of your room card and obtain a new one.",
+      "account-detail-item__edit": "Request"
     }
   },
   "sign-in": {
@@ -36,7 +48,27 @@
 
   },
   "user-profile": {
-
+    "info-title": "Personal Information",
+    "info-adittional": "Additional Information",
+    "birth-date": "Birth date",
+    "country": "Country",
+    "select-country": "Select your country",
+    "language": "Favorite language",
+    "loading": "Loading information...",
+    "preferences": "My preferences",
+    "preferences-description": "By having your preferences, SweetManager will understand your amenities and services for hotels to consider.",
+    "hotel": "My hotel",
+    "hotel-description": "Modify and edit your hotel in the best way, SweetManager will take care of the rest!",
+    "reservations": "Reservations History",
+    "reservations-description": "Check your previous and future reservations.",
+    "support": "Support and help",
+    "support-description": "Having problems with your account or need help?",
+    "contact": "Contact support",
+    "history": "See history",
+    "enter": "Enter",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "save": "Save"
   },
   "inventory": {
 
