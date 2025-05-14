@@ -1,0 +1,76 @@
+﻿{
+  "analytics": {
+
+  },
+  "checkout": {
+
+  },
+  "subscription-plan-register": {
+
+  },
+  "notifications": {
+
+  },
+  "guest-preferences": {
+    "modal-component": {
+      "header": "Room Card"
+    }
+  },
+  "sign-in": {
+
+  },
+  "sign-up": {
+
+  },
+  "sign-up-role": {
+
+  },
+  "user-account": {
+
+  },
+  "user-profile": {
+
+  },
+  "inventory": {
+
+  },
+  "providers": {
+
+  },
+  "hotel": {
+
+  },
+  "hotel-details": {
+
+  },
+  "hotel-devices-iot": {
+
+  },
+  "hotel-register": {
+
+  },
+  "hotel-setup": {
+
+  },
+  "hotel-setup-review": {
+
+  },
+  "main-page": {
+
+  },
+  "organization": {
+
+  },
+  "guest-reservations": {
+
+  },
+  "reservations": {
+
+  },
+  "rooms": {
+
+  },
+  "user-reservations": {
+
+  }
+}
