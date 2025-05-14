@@ -59,7 +59,7 @@
       <!-- Columna izquierda: Descripción del hotel -->
       <div class="left-column">
         <div class="hotel-description">
-          <h2>About this place</h2>
+          <h2>{{ i18n.global.t('hotel-details.hotel-details-card-component.about') }}</h2>
           <p style="white-space: pre-line;">{{ hotel.description }}</p>
         </div>
         
@@ -69,9 +69,9 @@
       <div class="right-column">
         <div class="reservation-container">
           <div class="price-info">
-            <h3>From <span class="price">S/ {{ hotel.price }}</span> a night</h3>
+            <h3>{{ i18n.global.t('hotel-details.hotel-details-card-component.from') }} <span class="price">S/ {{ hotel.price }}</span> {{ i18n.global.t('hotel-details.hotel-details-card-component.per-night') }}</h3>
           </div>
-          <button class="book-button">Quote your next booking</button>
+          <button class="book-button">{{ i18n.global.t('hotel-details.hotel-details-card-component.quote') }}</button>
         </div>
       </div>
     </div>
@@ -81,9 +81,15 @@
 
 <script>
 import hotelsMocked from "../../mocks/organizational-management/hotels-data.json"
+import i18n from "../../i18n.js";
 
 export default {
   name: 'HotelDetailPage',
+  computed: {
+    i18n() {
+      return i18n;
+    }
+  },
   data() {
     return {
       hotel: null,
