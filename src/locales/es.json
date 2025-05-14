@@ -60,7 +60,26 @@
 
   },
   "organization": {
-
+    "title": "Organización Estructural",
+    "header": {
+      "addButton": "Agregar"
+    },
+    "chart": {
+      "ownerAlt": "Foto del propietario",
+      "ownerTitle": "Propietario",
+      "adminAlt": "Foto del administrador",
+      "adminTitle": "Administrador"
+    },
+    "modal": {
+      "title": "Invitar administrador",
+      "emailLabel": "Correo electrónico",
+      "emailPlaceholder": "Ingrese correo",
+      "submitButton": "Agregar",
+      "validation": {
+        "emailRequired": "Ingrese un correo válido"
+      },
+      "successMessage": "Invitación enviada a {email}"
+    }
   },
   "guest-reservations": {
 

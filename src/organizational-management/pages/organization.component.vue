@@ -3,12 +3,12 @@
       :navigationItems="navigationItems"
   />
   <div class="organization-container">
-    <!-- Encabezado -->
+    <!-- Header Section -->
     <div class="org-header">
       <h1>Royal Decameron Punta Sal</h1>
-      <span class="subtitle">Structural Organization</span>
+      <span class="subtitle">{{ $t('organization.title') }}</span>
       <button-component
-          text="Agregar"
+          :text="$t('organization.header.addButton')"
           state="primary"
           class="add-button"
           :width="70"
@@ -17,24 +17,24 @@
       />
     </div>
 
-    <!-- Organigrama -->
+    <!-- Org Chart -->
     <div class="org-chart">
-      <!-- Nivel 1 -->
+      <!-- Level 1 -->
       <div class="level level-1">
         <div class="node">
           <div class="avatar-container">
             <div class="avatar">
-              <img src="../../assets/images/owner.png" alt="Foto de Carlo" />
+              <img src="../../assets/images/owner.png" :alt="$t('organization.chart.ownerAlt')" />
             </div>
           </div>
           <div class="node-info">
             <div class="name">Carlo Rebagliati</div>
-            <div class="title">Owner</div>
+            <div class="title">{{ $t('organization.chart.ownerTitle') }}</div>
           </div>
         </div>
       </div>
 
-      <!-- Líneas de conexión -->
+      <!-- Connection lines -->
       <div class="connections">
         <div class="vertical-line"></div>
         <div class="horizontal-line"></div>
@@ -42,41 +42,41 @@
         <div class="right-vertical-line"></div>
       </div>
 
-      <!-- Nivel 2 -->
+      <!-- Level 2 -->
       <div class="level level-2">
         <div class="node-container">
           <div class="node">
             <div class="avatar-container">
               <div class="avatar">
-                <img src="../../assets/images/admin.png" alt="Foto de Mauricio Rojas" />
+                <img src="../../assets/images/admin.png" :alt="$t('organization.chart.adminAlt')" />
               </div>
             </div>
             <div class="node-info">
               <div class="name">Mauricio Rojas</div>
-              <div class="title">Administrador</div>
+              <div class="title">{{ $t('organization.chart.adminTitle') }}</div>
             </div>
           </div>
 
           <div class="node">
             <div class="avatar-container">
               <div class="avatar">
-                <img src="../../assets/images/admin.png" alt="Foto de Arian Rodriguez" />
+                <img src="../../assets/images/admin.png" :alt="$t('organization.chart.adminAlt')" />
               </div>
             </div>
             <div class="node-info">
               <div class="name">Arian Rodriguez</div>
-              <div class="title">Administrador</div>
+              <div class="title">{{ $t('organization.chart.adminTitle') }}</div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Modal para Invitar Administrador -->
+    <!-- Invite Admin Modal -->
     <div v-if="showModal" class="modal-overlay" @click="closeOnOverlayClick && closeModal()">
       <div class="modal-container" @click.stop>
         <div class="modal-content">
-          <!-- Icono -->
+          <!-- Icon -->
           <div class="modal-icon">
             <div class="icon-circle">
               <svg xmlns="http://www.w3.org/2000/svg" class="user-plus-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -88,35 +88,32 @@
             </div>
           </div>
 
-          <!-- Título -->
+          <!-- Title -->
           <div class="modal-header">
-            <h3>Invitar administrador</h3>
+            <h3>{{ $t('organization.modal.title') }}</h3>
           </div>
 
-          <!-- Campo de correo -->
+          <!-- Email field -->
           <div class="modal-body">
             <div class="input-group">
-              <label for="email">Correo electrónico</label>
+              <label for="email">{{ $t('organization.modal.emailLabel') }}</label>
               <input
                   type="email"
                   id="email"
                   v-model="email"
-                  placeholder="Ingrese correo"
+                  :placeholder="$t('organization.modal.emailPlaceholder')"
                   class="form-input"
               />
             </div>
           </div>
 
-
-          <!-- ...otros elementos... -->
           <form @submit.prevent="saveUser" class="modal-footer">
             <button-component
-                text="Agregar"
+                :text="$t('organization.modal.submitButton')"
                 state="primary"
                 :width="100"
             />
           </form>
-
         </div>
       </div>
     </div>
@@ -146,23 +143,23 @@ export default {
       email: '',
       closeOnOverlayClick: true,
       navigationItems: [
-        {id: "overview", label: "Overview", path: "/home/hotel/1/overview", icon: OverviewIcon, isActive: false},
-        {id: "analytics", label: "Analytics", path: "/home/hotel/1/analytics", icon: AnalyticsIcon, isActive: false},
-        {id: "providers", label: "Providers", path: "/home/hotel/1/providers", icon: ProvidersIcon, isActive: false},
-        {id: "inventory", label: "Inventory", path: "/home/hotel/1/inventory", icon: InventoryIcon, isActive: false},
-        {id: "rooms", label: "Rooms", path: "/home/hotel/1/rooms", icon: RoomsIcon, isActive: false},
-        {id: "organization", label: "Organization", path: "/home/hotel/1/organization", icon: OrganizationIcon, isActive: true},
-        {id: "devices", label: "Devices", path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: false}
+        {id: "overview", label: this.$t('navigation.overview'), path: "/home/hotel/1/overview", icon: OverviewIcon, isActive: false},
+        {id: "analytics", label: this.$t('navigation.analytics'), path: "/home/hotel/1/analytics", icon: AnalyticsIcon, isActive: false},
+        {id: "providers", label: this.$t('navigation.providers'), path: "/home/hotel/1/providers", icon: ProvidersIcon, isActive: false},
+        {id: "inventory", label: this.$t('navigation.inventory'), path: "/home/hotel/1/inventory", icon: InventoryIcon, isActive: false},
+        {id: "rooms", label: this.$t('navigation.rooms'), path: "/home/hotel/1/rooms", icon: RoomsIcon, isActive: false},
+        {id: "organization", label: this.$t('navigation.organization'), path: "/home/hotel/1/organization", icon: OrganizationIcon, isActive: true},
+        {id: "devices", label: this.$t('navigation.devices'), path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: false}
       ],
     };
   },
   methods: {
     saveUser() {
       if (this.email.trim() === '') {
-        alert("Ingrese Correo Valido");
+        alert(this.$t('organization.modal.validation.emailRequired'));
         return;
-      }else {
-        alert(`Invitación enviada a ${this.email}`);
+      } else {
+        alert(this.$t('organization.modal.successMessage', { email: this.email }));
       }
       this.email = '';
       this.showModal = false;
