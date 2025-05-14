@@ -1,6 +1,7 @@
 <script>
 import { ProviderApiService } from "../services/provider-api.service.js";
 import { Provider } from "../model/provider.entity.js";
+import i18n from "../../i18n.js";
 
 export default {
   name: "ProviderDetailsComponent",
@@ -32,6 +33,11 @@ export default {
       console.error("Error fetching provider:", error);
     }
   },
+  computed: {
+    i18n() {
+      return i18n
+    }
+  },
   methods: {
     close() {
       this.$emit("close");
@@ -51,9 +57,9 @@ export default {
       <h2>{{ provider.name }}</h2>
       <p class="phone">{{ provider.phone }}</p>
       <p class="email">{{ provider.email }}</p>
-      <button class="close-btn" @click="close">Close</button>
+      <button class="close-btn" @click="close">{{ i18n.global.t('providers.detailsButton.close')}}</button>
     </div>
-    <div v-else class="modal-card">Loading...</div>
+    <div v-else class="modal-card">{{ i18n.global.t('providers.detailsButton.loading')}}</div>
   </div>
 </template>
 

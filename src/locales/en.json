@@ -1,6 +1,11 @@
 ﻿{
   "analytics": {
-
+    "overview": "Overview reporting",
+    "loading": "Loading income data...",
+    "line-chart": {
+      "weekly": "Weekly Profit",
+      "monthly": "Monthly Profit"
+    }
   },
   "checkout": {
 
@@ -71,10 +76,47 @@
     "save": "Save"
   },
   "inventory": {
-
+    "title": "Inventory",
+    "delete": "Delete",
+    "add": "Add",
+    "info": {
+      "id": "ID",
+      "name": "Name",
+      "price": "Price",
+      "quantity": "Quantity",
+      "stock": "Stock",
+      "provider": "Provider"
+    },
+    "deleteButton": {
+      "confirm": "Are you sure?",
+      "message": "The selected items will be removed from inventory.",
+      "cancel": "Close",
+      "delete": "Delete"
+    },
+    "addButton": {
+      "title": "New Product",
+      "name": "Product's name",
+      "price": "Price",
+      "quantity": "Current Quantity",
+      "cancel": "Cancel",
+      "add": "Add"
+    }
   },
   "providers": {
-
+    "title": "Providers",
+    "delete": "Delete",
+    "details": "Details",
+    "detailsButton": {
+      "close": "Close",
+      "details": "Details",
+      "loading": "Loading..."
+    },
+    "deleteButton": {
+      "confirm": "Are you sure?",
+      "message": "The provider will be removed from your contact list.",
+      "cancel": "Close",
+      "delete": "Delete"
+    }
   },
   "hotel": {
     "hotel-card-component": {

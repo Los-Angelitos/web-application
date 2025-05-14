@@ -1,6 +1,11 @@
 ﻿{
   "analytics": {
-
+    "overview": "Reporte general",
+    "loading": "Cargando datos recuperados...",
+    "line-chart": {
+      "weekly": "Ganancias Semanales",
+      "monthly": "Ganancias Mensuales"
+    }
   },
   "checkout": {
 
@@ -64,10 +69,47 @@
     "save": "Guardar"
   },
   "inventory": {
-
+    "title": "Inventario",
+    "delete": "Eliminar",
+    "add": "Agregar",
+    "info": {
+      "id": "ID",
+      "name": "Nombre",
+      "price": "Precio",
+      "quantity": "Cantidad",
+      "stock": "Stock",
+      "provider": "Proveedor"
+    },
+    "deleteButton": {
+      "confirm": "¿Está seguro?",
+      "message": "Los productos seleccionados serán eliminados de tu inventario.",
+      "cancel": "Cancelar",
+      "delete": "Eliminar"
+    },
+    "addButton": {
+      "title": "Nuevo Producto",
+      "name": "Nombre del producto",
+      "price": "Precio",
+      "quantity": "Cantidad actual",
+      "cancel": "Cancelar",
+      "add": "Agregar"
+    }
   },
   "providers": {
-
+    "title": "Proveedores",
+    "delete": "Eliminar",
+    "details": "Detalles",
+    "detailsButton": {
+      "close": "Cerrar",
+      "details": "Detalles",
+      "loading": "Cargando..."
+    },
+    "deleteButton": {
+      "confirm": "¿Está seguro?",
+      "message": "El proveedor será eliminado de tu lista de contactos.",
+      "cancel": "Cancelar",
+      "delete": "Eliminar"
+    }
   },
   "hotel": {
     "hotel-card-component": {
