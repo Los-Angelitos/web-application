@@ -45,10 +45,19 @@
 
   },
   "hotel": {
-
+    "hotel-card-component": {
+      "from": "From S/ ",
+      "per-night": "per night"
+    }
   },
   "hotel-details": {
-
+    "hotel-details-card-component": {
+      "about": "About this place",
+      "from": "From",
+      "currency": " S/",
+      "per-night": "per night",
+      "quote": "Quote your next booking"
+    }
   },
   "hotel-devices-iot": {
 
@@ -63,7 +72,14 @@
 
   },
   "main-page": {
-
+    "main-page-nav-component": {
+      "featured": "Featured",
+      "lake": "Near the lake",
+      "pool": "With a pool",
+      "beach": "Near the beach",
+      "rural": "Rural hotel",
+      "suite": "Suite"
+    }
   },
   "organization": {
 

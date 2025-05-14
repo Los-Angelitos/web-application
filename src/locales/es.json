@@ -39,9 +39,19 @@
 
   },
   "hotel": {
-
+    "hotel-card-component": {
+      "from": "Desde S/ ",
+      "per-night": "por noche"
+    }
   },
   "hotel-details": {
+    "hotel-details-card-component": {
+      "about": "Acerca de este lugar",
+      "from": "Desde",
+      "currency": " S/",
+      "per-night": "por noche",
+      "quote": "Cotiza tu próxima reserva"
+    }
 
   },
   "hotel-devices-iot": {
@@ -57,7 +67,14 @@
 
   },
   "main-page": {
-
+    "main-page-nav-component": {
+      "featured": "Destacados",
+      "lake": "Cerca del lago",
+      "pool": "Con piscina",
+      "beach": "Cerca de la playa",
+      "rural": "Hotel rural",
+      "suite": "Suite"
+    }
   },
   "organization": {
 
