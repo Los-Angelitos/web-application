@@ -76,6 +76,38 @@
   },
   "rooms": {
 
+    "title": "Rooms",
+    "roomLabel": "Room",
+    "from": "From",
+    "to": "To",
+    "available": "AVAILABLE",
+    "notAvailable": "NOT AVAILABLE",
+
+    "headerComponent": {
+      "title": "Rooms",
+      "deleteButton": "Delete",
+      "addButton": "Add"
+    },
+
+    "roomCardComponent": {
+      "guestFallback": "-",
+      "dateFallback": "--/--/--"
+    },
+
+    "roomModalComponent": {
+      "header": "New Room",
+      "body": "Add a new room to the hotel inventory",
+      "roomNameLabel": "Room name",
+      "roomTypeLabel": "Room type",
+      "roomNamePlaceholder": "Room 009",
+      "roomTypePlaceholder": "Double room",
+      "cancelButton": "Cancel",
+      "addButton": "Add",
+      "validation": {
+        "numberRequired": "Room number is required",
+        "alreadyExists": "Room {number} already exists"
+      }
+    }
   },
   "user-reservations": {
 

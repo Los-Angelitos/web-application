@@ -1,31 +1,32 @@
-<!-- App.vue -->
 <template>
   <MainPageNavigation
       :navigationItems="navigationItems"
   />
   <div class="hotel-management">
+    <!-- Header Section -->
     <header>
       <h1>Royal Decameron Punta Sal</h1>
-      <p>Rooms</p>
+      <p>{{ $t('rooms.title') }}</p>
       <div class="header-buttons">
         <ButtonComponent
-            text="Eliminar"
+            :text="$t('rooms.headerComponent.deleteButton')"
             state="basic"
             @click="handleDelete"
         />
         <ButtonComponent
-            text="Agregar"
+            :text="$t('rooms.headerComponent.addButton')"
             state="primary"
             @click="openAddRoomModal"
         />
       </div>
     </header>
 
+    <!-- Rooms Grid -->
     <div class="rooms-container">
       <BasicCardComponent
           v-for="room in rooms"
           :key="room.id"
-          :title="`Room ${room.number}`"
+          :title="`${$t('rooms.roomLabel')} ${room.number}`"
           class="room-card"
       >
         <template #image>
@@ -34,14 +35,14 @@
           </div>
         </template>
         <template #header-content>
-          <div class="room-guest">{{ room.guest || '-' }}</div>
+          <div class="room-guest">{{ room.guest || $t('rooms.roomCardComponent.guestFallback') }}</div>
         </template>
         <div class="room-dates">
-          <div>Desde: {{ room.checkIn || '--/--/--' }}</div>
-          <div>Hasta: {{ room.checkOut || '--/--/--' }}</div>
+          <div>{{ $t('rooms.from') }}: {{ room.checkIn || $t('rooms.roomCardComponent.dateFallback') }}</div>
+          <div>{{ $t('rooms.to') }}: {{ room.checkOut || $t('rooms.roomCardComponent.dateFallback') }}</div>
         </div>
         <ButtonComponent
-            :text="room.available ? 'DISPONIBLE' : 'NO DISPONIBLE'"
+            :text="room.available ? $t('rooms.available') : $t('rooms.notAvailable')"
             :state="room.available ? 'basic' : 'primary'"
             fullWidth
             :class="{ 'available': room.available, 'not-available': !room.available }"
@@ -50,31 +51,40 @@
       </BasicCardComponent>
     </div>
 
-    <!-- Modal para agregar habitación -->
+    <!-- Add Room Modal -->
     <div class="modal" v-if="showModal">
       <div class="modal-content">
         <div class="modal-header">
           <div class="room-icon blue">
             <div class="door"></div>
           </div>
-          <h2>Nueva habitación</h2>
+          <h2>{{ $t('rooms.roomModalComponent.header') }}</h2>
+          <p>{{ $t('rooms.roomModalComponent.body') }}</p>
         </div>
         <div class="form-group">
-          <label>Nombre de habitación</label>
-          <input type="text" v-model="newRoom.number" placeholder="Room 009" />
+          <label>{{ $t('rooms.roomModalComponent.roomNameLabel') }}</label>
+          <input
+              type="text"
+              v-model="newRoom.number"
+              :placeholder="$t('rooms.roomModalComponent.roomNamePlaceholder')"
+          />
         </div>
         <div class="form-group">
-          <label>Tipo de habitación</label>
-          <input type="text" v-model="newRoom.type" placeholder="Habitación doble" />
+          <label>{{ $t('rooms.roomModalComponent.roomTypeLabel') }}</label>
+          <input
+              type="text"
+              v-model="newRoom.type"
+              :placeholder="$t('rooms.roomModalComponent.roomTypePlaceholder')"
+          />
         </div>
         <div class="modal-buttons">
           <ButtonComponent
-              text="Cancelar"
+              :text="$t('rooms.roomModalComponent.cancelButton')"
               state="basic"
               @click="closeAddRoomModal"
           />
           <ButtonComponent
-              text="Agregar"
+              :text="$t('rooms.roomModalComponent.addButton')"
               state="primary"
               @click="addRoom"
           />
@@ -97,7 +107,7 @@ import OrganizationIcon from "../../assets/organizational-management/organizatio
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
 
 export default {
-  name: 'App',
+  name: 'RoomsComponent',
   components: {
     MainPageNavigation,
     ButtonComponent,
@@ -107,17 +117,17 @@ export default {
     return {
       showModal: false,
       navigationItems: [
-        {id: "overview", label: "Overview", path: "/home/hotel/1/overview", icon: OverviewIcon, isActive: false},
-        {id: "analytics", label: "Analytics", path: "/home/hotel/1/analytics", icon: AnalyticsIcon, isActive: false},
-        {id: "providers", label: "Providers", path: "/home/hotel/1/providers", icon: ProvidersIcon, isActive: false},
-        {id: "inventory", label: "Inventory", path: "/home/hotel/1/inventory", icon: InventoryIcon, isActive: false},
-        {id: "rooms", label: "Rooms", path: "/home/hotel/1/rooms", icon: RoomsIcon, isActive: true},
-        {id: "organization", label: "Organization", path: "/home/hotel/1/organization", icon: OrganizationIcon, isActive: false},
-        {id: "devices", label: "Devices", path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: false}
+        { id: "overview", label: "Overview", path: "/home/hotel/1/overview", icon: OverviewIcon, isActive: false },
+        { id: "analytics", label: "Analytics", path: "/home/hotel/1/analytics", icon: AnalyticsIcon, isActive: false },
+        { id: "providers", label: "Providers", path: "/home/hotel/1/providers", icon: ProvidersIcon, isActive: false },
+        { id: "inventory", label: "Inventory", path: "/home/hotel/1/inventory", icon: InventoryIcon, isActive: false },
+        { id: "rooms", label: "Rooms", path: "/home/hotel/1/rooms", icon: RoomsIcon, isActive: true },
+        { id: "organization", label: "Organization", path: "/home/hotel/1/organization", icon: OrganizationIcon, isActive: false },
+        { id: "devices", label: "Devices", path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: false }
       ],
       newRoom: {
         number: '',
-        type: 'Habitación doble',
+        type: this.$t('rooms.roomModalComponent.roomTypePlaceholder'),
         guest: '',
         checkIn: '',
         checkOut: '',
@@ -189,7 +199,7 @@ export default {
           available: false
         }
       ]
-    }
+    };
   },
   methods: {
     openAddRoomModal() {
@@ -202,7 +212,7 @@ export default {
     resetNewRoom() {
       this.newRoom = {
         number: '',
-        type: 'Habitación doble',
+        type: this.$t('rooms.roomModalComponent.roomTypePlaceholder'),
         guest: '',
         checkIn: '',
         checkOut: '',
@@ -212,36 +222,30 @@ export default {
     addRoom(event) {
       if (event) event.preventDefault();
 
-      // Validar que se haya ingresado un número de habitación
       if (!this.newRoom.number) {
-        alert('Debe ingresar un número de habitación');
+        alert(this.$t('rooms.roomModalComponent.validation.numberRequired'));
         return;
       }
 
-      // Verificar si ya existe una habitación con ese número
       const existingRoom = this.rooms.find(r => r.number === this.newRoom.number);
       if (existingRoom) {
-        alert(`Ya existe una habitación con el número ${this.newRoom.number}`);
+        alert(this.$t('rooms.roomModalComponent.validation.alreadyExists', { number: this.newRoom.number }));
         return;
       }
 
       const roomId = Math.max(...this.rooms.map(r => r.id), 0) + 1;
-      const newRoom = {
+      this.rooms.push({
         ...this.newRoom,
         id: roomId
-      };
-
-      // Agregar solo una habitación
-      this.rooms.push(newRoom);
+      });
       this.closeAddRoomModal();
     },
     handleDelete() {
-      // Lógica para eliminar habitaciones seleccionadas
-      // (Se implementaría con una selección múltiple)
-      alert('Función eliminar presionada');
+      // Delete functionality implementation
+      alert(this.$t('rooms.header.deleteConfirmation'));
     }
   }
-}
+};
 </script>
 
 <style scoped>
@@ -250,10 +254,6 @@ export default {
   margin: 0;
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-}
-
-body {
-  background-color: #f5f5f5;
 }
 
 .hotel-management {
@@ -374,11 +374,17 @@ header p {
   flex-direction: column;
   align-items: center;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .modal-header h2 {
   font-size: 1.2rem;
   margin-top: 10px;
+}
+
+.modal-header p {
+  color: #666;
+  margin-top: 5px;
 }
 
 .form-group {
@@ -407,7 +413,6 @@ header p {
   gap: 10px;
 }
 
-/* Responsive styles */
 @media (max-width: 768px) {
   .rooms-container {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -420,10 +425,6 @@ header p {
 
   .header-buttons button {
     flex: 1;
-  }
-
-  .card {
-    width: 100% !important;
   }
 }
 

@@ -69,7 +69,38 @@
 
   },
   "rooms": {
+    "title": "Habitaciones",
+    "roomLabel": "Habitación",
+    "from": "Desde",
+    "to": "Hasta",
+    "available": "DISPONIBLE",
+    "notAvailable": "NO DISPONIBLE",
 
+    "headerComponent": {
+      "title": "Habitaciones",
+      "deleteButton": "Eliminar",
+      "addButton": "Agregar"
+    },
+
+    "roomCardComponent": {
+      "guestFallback": "-",
+      "dateFallback": "--/--/--"
+    },
+
+    "roomModalComponent": {
+      "header": "Nueva habitación",
+      "body": "Agregar una nueva habitación al inventario del hotel",
+      "roomNameLabel": "Nombre de habitación",
+      "roomTypeLabel": "Tipo de habitación",
+      "roomNamePlaceholder": "Habitación 009",
+      "roomTypePlaceholder": "Habitación doble",
+      "cancelButton": "Cancelar",
+      "addButton": "Agregar",
+      "validation": {
+        "numberRequired": "Se requiere un número de habitación",
+        "alreadyExists": "La habitación {number} ya existe"
+      }
+    }
   },
   "user-reservations": {
 
