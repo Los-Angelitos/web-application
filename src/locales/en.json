@@ -1,6 +1,11 @@
 ﻿{
   "analytics": {
-
+    "overview": "Overview reporting",
+    "loading": "Loading income data...",
+    "line-chart": {
+      "weekly": "Weekly Profit",
+      "monthly": "Monthly Profit"
+    }
   },
   "checkout": {
 

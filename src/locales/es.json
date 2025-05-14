@@ -1,6 +1,11 @@
 ﻿{
   "analytics": {
-
+    "overview": "Reporte general",
+    "loading": "Cargando datos recuperados...",
+    "line-chart": {
+      "weekly": "Ganancias Semanales",
+      "monthly": "Ganancias Mensuales"
+    }
   },
   "checkout": {
 

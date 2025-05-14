@@ -6,7 +6,7 @@
     <div class="content-container">
       <div class="page-header">
         <h1>{{ hotelName }}</h1>
-        <p class="subtitle">Overview Reporting</p>
+        <p class="subtitle">{{ i18n.global.t('analytics.overview')}}</p>
 
         <div class="tabs">
           <div
@@ -28,7 +28,7 @@
             :labels="formattedLabels"
         />
       </div>
-      <div v-else class="loading">Loading income data...</div>
+      <div v-else class="loading">{{ i18n.global.t('analytics.loading')}}</div>
     </div>
   </div>
 </template>
@@ -47,6 +47,7 @@ import InventoryIcon from "../../assets/organizational-management/inventory-icon
 import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
+import i18n from "../../i18n.js";
 
 export default {
   name: "AnalyticsPage",
@@ -68,7 +69,7 @@ export default {
         {id: "organization", label: "Organization", path: "/home/hotel/1/organization", icon: OrganizationIcon, isActive: false},
         {id: "devices", label: "Devices", path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: false}
       ],
-      activeTab: 'weekly', // "weekly" o "monthly"
+      activeTab: 'weekly',
       tabs: [
         { id: 'weekly', label: 'Weekly Profit' },
         { id: 'monthly', label: 'Monthly Profit' }
@@ -77,6 +78,9 @@ export default {
   },
 
   computed: {
+    i18n() {
+      return i18n
+    },
     formattedLabels() {
       if (this.activeTab === 'weekly') {
         return this.dashboard.map((entry) => {
