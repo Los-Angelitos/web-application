@@ -15,17 +15,7 @@
 
       <!-- Menú de escritorio -->
       <div class="menu-container desktop-menu">
-        <div class="language-selector">
-          <button
-            v-for="lang in languages"
-            :key="lang.code"
-            :class="{ active: currentLanguage === lang.code }"
-            @click="changeLanguage(lang.code)"
-            class="lang-btn"
-          >
-            {{ lang.code }}
-          </button>
-        </div>
+        <language-switcher/>
         <div class="menu-items">
           <div class="menu-item" @click="goToPreferences">
             <i class="fas fa-cog"></i>
@@ -123,28 +113,18 @@
 </template>
 
 <script>
+import LanguageSwitcher from "./language-switcher.component.vue";
+
 export default {
   name: 'TopBarComponent',
+  components: {LanguageSwitcher},
   data() {
     return {
-      currentLanguage: 'ES',
       showUserMenu: false,
       showMobileMenu: false,
-      languages: [
-        { code: 'ES', name: 'Español' },
-        { code: 'EN', name: 'English' }
-      ]
     };
   },
   methods: {
-    changeLanguage(langCode) {
-      this.currentLanguage = langCode;
-      this.$i18n.locale = langCode.toLowerCase();
-      localStorage.setItem('userLanguage', langCode.toLowerCase());
-      if (window.innerWidth <= 768) {
-        this.showMobileMenu = false;
-      }
-    },
     goToPreferences() {
       this.$router.push('/home/profile/1/preferences');
       this.closeMobileMenu();
@@ -272,26 +252,6 @@ export default {
 .menu-container {
   display: flex;
   align-items: center;
-}
-
-.language-selector {
-  margin-right: 2rem;
-}
-
-.lang-btn {
-  background: none;
-  border: none;
-  padding: 0.3rem 0.6rem;
-  cursor: pointer;
-  color: #666;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.lang-btn.active {
-  font-weight: 700;
-  color: #0066cc;
-  border-bottom: 2px solid #0066cc;
 }
 
 .menu-items {
