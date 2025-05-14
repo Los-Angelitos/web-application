@@ -1,6 +1,7 @@
 <script>
 import BreadCrumb from '../../shared/components/breadcrumb.component.vue';
 import userMock from '../../mocks/iam/user-profile-account.json';
+
 export default {
   name: 'UserProfile',
   components: {
@@ -56,87 +57,90 @@ export default {
     },
     editingFieldInfo() {
       return this.personalInfo.find(field => field.key === this.editingFieldKey) || {};
+    },
+    i18n(){
+      return i18n;
     }
   },
   methods: {
     fetchUserData() {
       this.loading = true;
-      
+
       setTimeout(() => {
         const apiResponse = userMock;
 
         this.breadcrumbPath[0].route = `/home/profile/${apiResponse.id}`;
         this.breadcrumbPath[1].route = `/home/profile/${apiResponse.id}/account`;
-        
+
         this.userData = { ...apiResponse, country: "pe", language: "es" };
         this.loading = false;
       }, 800);
     },
-    
+
     startEditing(fieldKey) {
       this.editingFieldKey = fieldKey;
       this.editingFieldValue = fieldKey === 'password' ? '' : this.userData[fieldKey];
       this.editingField = true;
     },
-    
+
     cancelEditing() {
       this.editingField = false;
       this.editingFieldKey = null;
       this.editingFieldValue = null;
     },
-    
+
     saveEditing() {
       if (!this.editingFieldValue) {
         alert('This field cannot be empty');
         return;
       }
-      
+
       const fieldToUpdate = this.editingFieldKey;
-      
+
       if (fieldToUpdate !== 'password') {
         this.userData[fieldToUpdate] = this.editingFieldValue;
       } else {
         console.log('Password updated:', this.editingFieldValue);
       }
-      
+
       this.cancelEditing();
-      
+
       this.showNotification('Information updated successfully');
     },
-    
+
     saveAdditionalInfo() {
       this.saving = true;
-      
+
       setTimeout(() => {
         this.saving = false;
         this.showNotification('Additional information updated successfully');
       }, 1000);
     },
-    
+
     openFileUpload() {
       this.$refs.fileInput.click();
     },
-    
+
     handleAvatarChange(event) {
       const file = event.target.files[0];
       if (!file) return;
-      
+
       if (!file.type.match('image.*')) {
         alert('Please select a valid image file');
         return;
       }
-      
+
       const reader = new FileReader();
       reader.onload = (e) => {
         this.userData.avatar = e.target.result;
-        
+
         setTimeout(() => {
           this.showNotification('Avatar updated successfully');
         }, 1000);
       };
       reader.readAsDataURL(file);
     },
-    
+
     goToPreferences() {
       this.$router.push('/home/profile/' + this.userData.id + '/preferences');
     },
@@ -144,15 +148,15 @@ export default {
     goToHotel() {
       this.$router.push('/home/hotel/' + this.userData.hotelId + '/organization');
     },
-    
+
     goToReservations() {
       this.$router.push(`/home/profile/${this.userData.id}/reservations`);
     },
-    
+
     contactSupport() {
       this.$router.push('/support');
     },
-    
+
     showNotification(message) {
       alert(message);
     },
@@ -178,28 +182,28 @@ export default {
 <template>
   <BreadCrumb :path="breadcrumbPath" class="breadcrumb" />
   <div class="container">
-    
+
     <div class="profile-container">
       <!-- Sección principal -->
       <div class="profile-main">
         <!-- Tarjeta de perfil -->
         <div class="card">
           <div class="profile-header">
-            <div 
-              class="profile-avatar" 
-              @mouseover="showAvatarUpload = true" 
-              @mouseleave="showAvatarUpload = false"
+            <div
+                class="profile-avatar"
+                @mouseover="showAvatarUpload = true"
+                @mouseleave="showAvatarUpload = false"
             >
               <img :src="userData.image || defaultAvatar" alt="Foto de perfil">
               <div class="avatar-upload" v-show="showAvatarUpload" @click="openFileUpload">
                 <i class="fas fa-camera"></i>
               </div>
-              <input 
-                type="file" 
-                ref="fileInput" 
-                accept="image/*" 
-                style="display: none;"
-                @change="handleAvatarChange"
+              <input
+                  type="file"
+                  ref="fileInput"
+                  accept="image/*"
+                  style="display: none;"
+                  @change="handleAvatarChange"
               >
             </div>
             <div class="profile-info">
@@ -208,11 +212,11 @@ export default {
             </div>
           </div>
         </div>
-        
+
         <!-- Información personal -->
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">Personal information</h2>
+            <h2 class="card-title"> {{ i18n.global.t('user-profile.info-title') }}</h2>
           </div>
           <div class="card-body">
             <div class="info-item" v-for="(field, index) in personalInfo" :key="index">
@@ -225,7 +229,7 @@ export default {
                 <button class="edit-button">Edit</button>
               </div>
             </div>
-            
+
             <!-- Modal para editar -->
             <div class="modal" v-if="editingField">
               <div class="modal-content">
@@ -235,19 +239,19 @@ export default {
                 </div>
                 <div class="modal-body">
                   <div class="form-group">
-                    <input 
-                      v-if="editingFieldInfo.key !== 'password'" 
-                      type="text" 
-                      class="form-control" 
-                      v-model="editingFieldValue"
-                      :placeholder="'Enter your ' + editingFieldInfo.label.toLowerCase()"
+                    <input
+                        v-if="editingFieldInfo.key !== 'password'"
+                        type="text"
+                        class="form-control"
+                        v-model="editingFieldValue"
+                        :placeholder="'Enter your ' + editingFieldInfo.label.toLowerCase()"
                     >
-                    <input 
-                      v-else 
-                      type="password" 
-                      class="form-control" 
-                      v-model="editingFieldValue"
-                      placeholder="Enter your new password"
+                    <input
+                        v-else
+                        type="password"
+                        class="form-control"
+                        v-model="editingFieldValue"
+                        placeholder="Enter your new password"
                     >
                   </div>
                 </div>
@@ -259,7 +263,7 @@ export default {
             </div>
           </div>
         </div>
-        
+
         <!-- Información adicional -->
         <div class="card">
           <div class="card-header">
@@ -299,7 +303,7 @@ export default {
           </div>
         </div>
       </div>
-      
+
       <!-- Sidebar -->
       <div class="profile-sidebar">
         <div class="card sidebar-card" v-if="userData.type === 'guest'">
@@ -313,13 +317,13 @@ export default {
           <p class="sidebar-text">Modify and edit your hotel in the best way, SweetManager will take care of the rest!</p>
           <button class="btn btn-outline" @click="goToHotel">Enter</button>
         </div>
-        
+
         <div class="card sidebar-card">
           <h3 class="sidebar-title">Reservations History</h3>
           <p class="sidebar-text">Check your previous and future reservations.</p>
           <button class="btn btn-outline" @click="goToReservations">See history</button>
         </div>
-        
+
         <div class="card sidebar-card">
           <h3 class="sidebar-title">Support and help</h3>
           <p class="sidebar-text">Having problems with your account or need help?</p>
@@ -674,22 +678,22 @@ export default {
   .profile-container {
     flex-direction: column;
   }
-  
+
   .profile-header {
     flex-direction: column;
     text-align: center;
     padding: 20px;
   }
-  
+
   .profile-sidebar {
     width: 100%;
   }
-  
+
   .profile-avatar {
     width: 100px;
     height: 100px;
   }
-  
+
   .modal-content {
     width: 95%;
   }
@@ -703,33 +707,33 @@ export default {
   .container {
     padding: 10px;
   }
-  
+
   .card {
     border-radius: 8px;
   }
-  
+
   .info-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 5px;
   }
-  
+
   .edit-button {
     margin-top: 5px;
   }
-  
+
   .profile-name {
     font-size: 24px;
   }
-  
+
   .btn {
     width: 100%;
   }
-  
+
   .modal-footer {
     flex-direction: column;
   }
-  
+
   .modal-footer .btn {
     margin-bottom: 10px;
   }
