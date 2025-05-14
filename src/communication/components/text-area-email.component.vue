@@ -1,10 +1,17 @@
 <script>
+import i18n from '../../i18n.js';
+
 export default {
   name: "TextAreaEmail",
   props: {
     emailContent: {
       type: String,
       default: ""
+    }
+  },
+  computed: {
+    i18n() {
+      return i18n
     }
   },
   emits: ["update:emailContent"]
@@ -16,7 +23,7 @@ export default {
     <textarea
       :value="emailContent"
       @input="$emit('update:emailContent', $event.target.value)"
-      placeholder="Write your email here..."
+      :placeholder="i18n.global.t('notifications.form-email-item.message')"
       rows="10"
       cols="50"
     ></textarea>

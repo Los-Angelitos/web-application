@@ -4,9 +4,15 @@ import BasicCardComponent from "../../shared/components/basic-card.component.vue
 import ButtonComponent from "../../shared/components/button.component.vue";
 import TextAreaEmail from "../components/text-area-email.component.vue";
 import userMock from "../../mocks/iam/user-profile-account.json";
+import i18n from "../../i18n.js";
 
 export default {
     name: "NotificationPage",
+    computed: {
+      i18n() {
+        return i18n
+      }
+    },
     components: {
         ContactsList,
         BasicCardComponent,
@@ -75,10 +81,10 @@ export default {
               />
             </div>
             <div class="form-email-item">
-               <p><strong>From:</strong> {{ !userData? "" : userData.name + " (" + userData.email + ")" }}</p>
-               <p><strong>To:</strong> {{ !contactSelected? "Select a contact" : contactSelected.name + " (" + contactSelected.email + ")"}}</p>
+               <p><strong>{{ i18n.global.t('notifications.form-email-item.from') }}:</strong> {{ !userData? "" : userData.name + " (" + userData.email + ")" }}</p>
+               <p><strong>{{ i18n.global.t('notifications.form-email-item.to') }}:</strong> {{ !contactSelected? "Select a contact" : contactSelected.name + " (" + contactSelected.email + ")"}}</p>
                <div class="form-email-content">
-               <strong>Subject:</strong> <input type="text" class="subject-email-input" placeholder="Write your subject here" v-model="subjectContent"/>
+               <strong>{{   i18n.global.t('notifications.form-email-item.subject') }}</strong> <input type="text" class="subject-email-input" :placeholder=" i18n.global.t('notifications.form-email-item.placeholder') " v-model="subjectContent"/>
                </div>
             </div>  
           </div>

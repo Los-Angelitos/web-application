@@ -5,6 +5,8 @@ import preferencesIcon from "../../assets/iam/preferences-icon.svg";
 import reservationsIcon from "../../assets/iam/schedule-icon.svg";
 import logoutIcon from "../../assets/iam/logout-icon.svg";
 import userMock from "../../mocks/iam/user-profile-account.json";
+import i18n from "../../i18n.js";
+
 
 export default {
   name: 'ProfileView',
@@ -23,21 +25,25 @@ export default {
         { 
           id: 'personal', 
           label: 'Personal Information',
+          labelES: 'Información personal',
           icon: userIcon
         },
         { 
           id: 'preferences', 
           label: 'My preferences as a Guest',
+          labelES: 'Mis preferencias como Huésped',
           icon: preferencesIcon
         },
         { 
           id: 'reservations', 
           label: 'My Reservations',
+          labelES: 'Mis Reservas',
           icon: reservationsIcon
         },
         { 
           id: 'logout', 
           label: 'Logout',
+          labelES: 'Cerrar sesión',
           icon: logoutIcon
         }
       ],
@@ -46,6 +52,11 @@ export default {
   },
   mounted() {
     this.fetchUserData();
+  },
+  computed: {
+    i18n() {
+      return i18n
+    }
   },
   methods: {
     navigateTo(routeName) {
@@ -87,6 +98,9 @@ export default {
         default:
           return 'Unknown';
       }
+    },
+    knowLanguage(item) {
+      return this.$i18n.locale === 'en' ? item.label : item.labelES;
     }
   }
 }
@@ -133,7 +147,7 @@ export default {
             alt="" 
             class="menu-icon"
           />
-          <span class="menu-label">{{ item.label }}</span>
+          <span class="menu-label">{{ knowLanguage(item) }}</span>
         </div>
         <span v-if="item.id !== 'logout'" class="chevron-icon" v-html="chevronIcon"></span>
       </button>

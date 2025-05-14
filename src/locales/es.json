@@ -9,12 +9,23 @@
 
   },
   "notifications": {
-
+    "form-email-item": {
+      "from": "De",
+      "to": "Para",
+      "subject": "Asunto",
+      "placeholder": "Escribe tu asunto aquí",
+      "message": "Escribe tu mensaje aquí"
+    }
   },
   "guest-preferences": {
     "modal-component": {
       "header": "Tarjeta de Habitación",
       "body": "Solicito la cancelación de mi tarjeta de habitación anterior, necesitando una nueva."
+    },
+    "item-fields": {
+      "account-detail-item__field": "¿No puedes encontrar tu tarjeta de entrada?",
+      "account-detail-item__field-value": "Solicita la anulación de tu tarjeta anterior y obten una nueva.",
+      "account-detail-item__edit": "Solicitar"
     }
   },
   "sign-in": {
@@ -30,7 +41,27 @@
 
   },
   "user-profile": {
-
+    "info-title": "Información Personal",
+    "info-adittional": "Información Adicional",
+    "birth-date": "Fecha de nacimiento",
+    "country": "País",
+    "select-country": "Selecciona tu país",
+    "language": "Idioma favorito",
+    "loading": "Cargando información...",
+    "preferences": "Mis preferencias",
+    "preferences-description": "Al entender tus preferencias, SweetManager podrá entender tus comodidades y servicios para que los hoteles lo consideren.",
+    "hotel": "Mi hotel",
+    "hotel-description": "Modifica y edita tu hotel a tu mejor manera, SweetManager se encargará del resto!",
+    "reservations": "Historial de reservas",
+    "reservations-description": "Consulta tus reservas anteriores y futuras.",
+    "support": "Soporte y ayuda",
+    "support-description": "Tienes problemas con tu cuenta o necesitas ayuda?",
+    "contact": "Soporte de contacto",
+    "history": "Ver historial",
+    "enter": "Ingresar",
+    "edit": "Editar",
+    "cancel": "Cancelar",
+    "save": "Guardar"
   },
   "inventory": {
 

@@ -9,11 +9,11 @@ import i18n from "../../i18n.js";
 
 export default {
     name: "GuestPreferencesPage",
-  computed: {
-    i18n() {
-      return i18n
-    }
-  },
+    computed: {
+      i18n() {
+        return i18n
+      }
+    },
     components: {
         BreadCrumb,
         AccountDetailFormEdit,
@@ -98,15 +98,17 @@ export default {
 
       <div class="account-detail-item">
         <div class="item-fields">
-          <p class="account-detail-item__field">Can't you find your room card? </p>
+          <p class="account-detail-item__field">{{ i18n.global.t('guest-preferences.item-fields.account-detail-item__field') }} </p>
           <p class="account-detail-item__field-value">
-            Request the cancellation of your room card and obtain a new one.
+            {{ i18n.global.t('guest-preferences.item-fields.account-detail-item__field-value') }}
           </p>
         </div>
 
         <div class="item-edit" @click="() => handleModal('open')">
           <img src="/icon_open.svg" alt="Request Icon" class="edit-icon" />
-          <p class="account-detail-item__edit">Request</p>
+          <p class="account-detail-item__edit">
+            {{ i18n.global.t('guest-preferences.item-fields.account-detail-item__edit') }}
+          </p>
         </div>
       </div>
     </div>

@@ -1,6 +1,8 @@
 <script>
 import BreadCrumb from '../../shared/components/breadcrumb.component.vue';
 import userMock from '../../mocks/iam/user-profile-account.json';
+import i18n from "../../i18n.js";
+
 export default {
   name: 'UserProfile',
   components: {
@@ -48,95 +50,98 @@ export default {
   computed: {
     personalInfo() {
       return [
-        { key: 'fullName', label: 'Full name', value: this.userData.name },
-        { key: 'email', label: 'Email address', value: this.userData.email },
-        { key: 'phone', label: 'Phone number', value: this.userData.phone },
-        { key: 'password', label: 'Password', value: '••••••••' }
+        { key: 'fullName', label: 'Full name', labelES: "Nombre completo", value: this.userData.name },
+        { key: 'email', label: 'Email address', labelES: "Dirección de correo electrónico", value: this.userData.email },
+        { key: 'phone', label: 'Phone number', labelES: "Número celular", value: this.userData.phone },
+        { key: 'password', label: 'Password', labelES: "Contraseña", value: '••••••••' }
       ];
     },
     editingFieldInfo() {
       return this.personalInfo.find(field => field.key === this.editingFieldKey) || {};
+    },
+    i18n(){
+      return i18n;
     }
   },
   methods: {
     fetchUserData() {
       this.loading = true;
-      
+
       setTimeout(() => {
         const apiResponse = userMock;
 
         this.breadcrumbPath[0].route = `/home/profile/${apiResponse.id}`;
         this.breadcrumbPath[1].route = `/home/profile/${apiResponse.id}/account`;
-        
+
         this.userData = { ...apiResponse, country: "pe", language: "es" };
         this.loading = false;
       }, 800);
     },
-    
+
     startEditing(fieldKey) {
       this.editingFieldKey = fieldKey;
       this.editingFieldValue = fieldKey === 'password' ? '' : this.userData[fieldKey];
       this.editingField = true;
     },
-    
+
     cancelEditing() {
       this.editingField = false;
       this.editingFieldKey = null;
       this.editingFieldValue = null;
     },
-    
+
     saveEditing() {
       if (!this.editingFieldValue) {
         alert('This field cannot be empty');
         return;
       }
-      
+
       const fieldToUpdate = this.editingFieldKey;
-      
+
       if (fieldToUpdate !== 'password') {
         this.userData[fieldToUpdate] = this.editingFieldValue;
       } else {
         console.log('Password updated:', this.editingFieldValue);
       }
-      
+
       this.cancelEditing();
-      
+
       this.showNotification('Information updated successfully');
     },
-    
+
     saveAdditionalInfo() {
       this.saving = true;
-      
+
       setTimeout(() => {
         this.saving = false;
         this.showNotification('Additional information updated successfully');
       }, 1000);
     },
-    
+
     openFileUpload() {
       this.$refs.fileInput.click();
     },
-    
+
     handleAvatarChange(event) {
       const file = event.target.files[0];
       if (!file) return;
-      
+
       if (!file.type.match('image.*')) {
         alert('Please select a valid image file');
         return;
       }
-      
+
       const reader = new FileReader();
       reader.onload = (e) => {
         this.userData.avatar = e.target.result;
-        
+
         setTimeout(() => {
           this.showNotification('Avatar updated successfully');
         }, 1000);
       };
       reader.readAsDataURL(file);
     },
-    
+
     goToPreferences() {
       this.$router.push('/home/profile/' + this.userData.id + '/preferences');
     },
@@ -144,15 +149,15 @@ export default {
     goToHotel() {
       this.$router.push('/home/hotel/' + this.userData.hotelId + '/organization');
     },
-    
+
     goToReservations() {
       this.$router.push(`/home/profile/${this.userData.id}/reservations`);
     },
-    
+
     contactSupport() {
       this.$router.push('/support');
     },
-    
+
     showNotification(message) {
       alert(message);
     },
@@ -167,6 +172,9 @@ export default {
         default:
           return 'Unknown Type';
       }
+    },
+    knowLanguage(item) {
+      return this.$i18n.locale === 'en' ? item.label : item.labelES;
     }
   },
   created() {
@@ -178,28 +186,28 @@ export default {
 <template>
   <BreadCrumb :path="breadcrumbPath" class="breadcrumb" />
   <div class="container">
-    
+
     <div class="profile-container">
       <!-- Sección principal -->
       <div class="profile-main">
         <!-- Tarjeta de perfil -->
         <div class="card">
           <div class="profile-header">
-            <div 
-              class="profile-avatar" 
-              @mouseover="showAvatarUpload = true" 
-              @mouseleave="showAvatarUpload = false"
+            <div
+                class="profile-avatar"
+                @mouseover="showAvatarUpload = true"
+                @mouseleave="showAvatarUpload = false"
             >
               <img :src="userData.image || defaultAvatar" alt="Foto de perfil">
               <div class="avatar-upload" v-show="showAvatarUpload" @click="openFileUpload">
                 <i class="fas fa-camera"></i>
               </div>
-              <input 
-                type="file" 
-                ref="fileInput" 
-                accept="image/*" 
-                style="display: none;"
-                @change="handleAvatarChange"
+              <input
+                  type="file"
+                  ref="fileInput"
+                  accept="image/*"
+                  style="display: none;"
+                  @change="handleAvatarChange"
               >
             </div>
             <div class="profile-info">
@@ -208,79 +216,79 @@ export default {
             </div>
           </div>
         </div>
-        
+
         <!-- Información personal -->
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">Personal information</h2>
+            <h2 class="card-title"> {{ i18n.global.t('user-profile.info-title') }}</h2>
           </div>
           <div class="card-body">
             <div class="info-item" v-for="(field, index) in personalInfo" :key="index">
               <div>
-                <div class="info-label">{{ field.label }}</div>
+                <div class="info-label">{{ knowLanguage(field) }}</div>
                 <div class="info-value">{{ field.value }}</div>
               </div>
               <div class="edit-card" @click="startEditing(field.key)">
                 <img src="/icon_pen.svg" alt="Edit icon" class="edit-icon" />
-                <button class="edit-button">Edit</button>
+                <button class="edit-button">{{ i18n.global.t('user-profile.edit') }}</button>
               </div>
             </div>
-            
+
             <!-- Modal para editar -->
             <div class="modal" v-if="editingField">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h3>Edit {{ editingFieldInfo.label }}</h3>
+                  <h3>{{ i18n.global.t('user-profile.edit') }} {{ editingFieldInfo.label }}</h3>
                   <span class="close-button" @click="cancelEditing">&times;</span>
                 </div>
                 <div class="modal-body">
                   <div class="form-group">
-                    <input 
-                      v-if="editingFieldInfo.key !== 'password'" 
-                      type="text" 
-                      class="form-control" 
-                      v-model="editingFieldValue"
-                      :placeholder="'Enter your ' + editingFieldInfo.label.toLowerCase()"
+                    <input
+                        v-if="editingFieldInfo.key !== 'password'"
+                        type="text"
+                        class="form-control"
+                        v-model="editingFieldValue"
+                        :placeholder="editingFieldInfo.label"
                     >
-                    <input 
-                      v-else 
-                      type="password" 
-                      class="form-control" 
-                      v-model="editingFieldValue"
-                      placeholder="Enter your new password"
+                    <input
+                        v-else
+                        type="password"
+                        class="form-control"
+                        v-model="editingFieldValue"
+                        placeholder="{{ i18n.global.t('user-profile.enter') }} your new password"
                     >
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button class="btn btn-outline" @click="cancelEditing">Cancel</button>
-                  <button class="btn btn-primary" @click="saveEditing">Save</button>
+                  <button class="btn btn-outline" @click="cancelEditing">{{ i18n.global.t('user-profile.cancel') }}</button>
+                  <button class="btn btn-primary" @click="saveEditing">{{ i18n.global.t('user-profile.save') }}</button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        
+
         <!-- Información adicional -->
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">Additional information</h2>
+            <h2 class="card-title">{{ i18n.global.t('user-profile.info-adittional') }}</h2>
           </div>
           <div class="card-body" v-if="!loading">
             <div class="form-group">
-              <label class="form-label">Birth date</label>
+              <label class="form-label">{{ i18n.global.t('user-profile.birth-date') }}</label>
               <input type="date" class="form-control" v-model="userData.dateOfBirth">
             </div>
             <div class="form-group">
-              <label class="form-label">Country</label>
+              <label class="form-label">{{ i18n.global.t('user-profile.country') }}</label>
               <select class="form-control" v-model="userData.country">
-                <option value="">Select country</option>
+                <option value="">{{ i18n.global.t('user-profile.select-country') }}</option>
                 <option v-for="country in countries" :key="country.code" :value="country.code">
                   {{ country.name }}
                 </option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label">Favorite language</label>
+              <label class="form-label">{{ i18n.global.t('user-profile.language') }}</label>
               <select class="form-control" v-model="userData.language">
                 <option v-for="language in languages" :key="language.code" :value="language.code">
                   {{ language.name }}
@@ -294,36 +302,36 @@ export default {
           <div class="card-body" v-else>
             <div class="loading-indicator">
               <i class="fas fa-spinner fa-spin"></i>
-              <span>Loading information...</span>
+              <span>{{ i18n.global.t('user-profile.loading') }}</span>
             </div>
           </div>
         </div>
       </div>
-      
+
       <!-- Sidebar -->
       <div class="profile-sidebar">
         <div class="card sidebar-card" v-if="userData.type === 'guest'">
-          <h3 class="sidebar-title">My preferences</h3>
-          <p class="sidebar-text">By having your preferences, SweetManager will understand your amenities and services for hotels to consider.</p>
-          <button class="btn btn-outline" @click="goToPreferences">Enter</button>
+          <h3 class="sidebar-title">{{ i18n.global.t('user-profile.preferences') }}</h3>
+          <p class="sidebar-text">{{ i18n.global.t('user-profile.preferences-description') }}</p>
+          <button class="btn btn-outline" @click="goToPreferences">{{ i18n.global.t('user-profile.enter') }}</button>
         </div>
 
         <div class="card sidebar-card" v-else>
-          <h3 class="sidebar-title">My hotel</h3>
-          <p class="sidebar-text">Modify and edit your hotel in the best way, SweetManager will take care of the rest!</p>
-          <button class="btn btn-outline" @click="goToHotel">Enter</button>
+          <h3 class="sidebar-title">{{ i18n.global.t('user-profile.hotel') }}</h3>
+          <p class="sidebar-text">{{ i18n.global.t('user-profile.hotel-description') }}</p>
+          <button class="btn btn-outline" @click="goToHotel">{{ i18n.global.t('user-profile.enter') }}</button>
         </div>
-        
+
         <div class="card sidebar-card">
-          <h3 class="sidebar-title">Reservations History</h3>
-          <p class="sidebar-text">Check your previous and future reservations.</p>
-          <button class="btn btn-outline" @click="goToReservations">See history</button>
+          <h3 class="sidebar-title">{{ i18n.global.t('user-profile.reservations') }}</h3>
+          <p class="sidebar-text">{{ i18n.global.t('user-profile.reservations-description') }}</p>
+          <button class="btn btn-outline" @click="goToReservations">{{ i18n.global.t('user-profile.history') }}</button>
         </div>
-        
+
         <div class="card sidebar-card">
-          <h3 class="sidebar-title">Support and help</h3>
-          <p class="sidebar-text">Having problems with your account or need help?</p>
-          <button class="btn btn-outline" @click="contactSupport">Contact support</button>
+          <h3 class="sidebar-title">{{ i18n.global.t('user-profile.support') }}</h3>
+          <p class="sidebar-text">{{ i18n.global.t('user-profile.support-description') }}</p>
+          <button class="btn btn-outline" @click="contactSupport">{{ i18n.global.t('user-profile.contact') }}</button>
         </div>
       </div>
     </div>
@@ -674,22 +682,22 @@ export default {
   .profile-container {
     flex-direction: column;
   }
-  
+
   .profile-header {
     flex-direction: column;
     text-align: center;
     padding: 20px;
   }
-  
+
   .profile-sidebar {
     width: 100%;
   }
-  
+
   .profile-avatar {
     width: 100px;
     height: 100px;
   }
-  
+
   .modal-content {
     width: 95%;
   }
@@ -703,33 +711,33 @@ export default {
   .container {
     padding: 10px;
   }
-  
+
   .card {
     border-radius: 8px;
   }
-  
+
   .info-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 5px;
   }
-  
+
   .edit-button {
     margin-top: 5px;
   }
-  
+
   .profile-name {
     font-size: 24px;
   }
-  
+
   .btn {
     width: 100%;
   }
-  
+
   .modal-footer {
     flex-direction: column;
   }
-  
+
   .modal-footer .btn {
     margin-bottom: 10px;
   }
