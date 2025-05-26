@@ -21,6 +21,7 @@ export default {
         surname: '',
         mail: '',
         phone: '',
+        id: '',
         password: '',
         confirmPassword: '',
         read: false
@@ -71,6 +72,19 @@ export default {
         life: 2000
       });
 
+      // saving in the storage
+      this.$store.dispatch("updateUser", {
+        name: this.data.name,
+        surname: this.data.surname,
+        mail: this.data.mail,
+        phone: this.data.phone,
+        password: this.data.password,
+        id: this.data.id
+      });
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+
       this.$router.push('/auth/sign-up/role');
     },
     sendToSignUp() {
@@ -97,6 +111,7 @@ export default {
 
         <InputTextComponent v-model="data.name" label="Nombre Completo" class="no-movement"/>
         <InputTextComponent v-model="data.mail" label="Correo Electrónico" class="no-movement"/>
+        <InputTextComponent v-model="data.id" label="Número de documento" class="no-movement"/>
         <InputTextComponent v-model="data.phone" label="Teléfono" class="no-movement"/>
         <InputPasswordComponent v-model="data.password" label="Contraseña" class="no-movement" />
         <InputPasswordComponent style="width:100%" v-model="data.confirmPassword" label="Confirmar Contraseña" class="no-movement" />
@@ -202,7 +217,7 @@ export default {
 .login-box {
   padding: 30px;
   width:25rem;
-  height: 37rem;
+  height: auto;
   border: 0.5px solid #ccc;
   border-radius: 20px;
   background-color: white;

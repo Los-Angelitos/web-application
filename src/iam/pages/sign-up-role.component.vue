@@ -6,6 +6,9 @@ import DescriptionRadioButtonComponent from "../components/description-radio-but
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 import '@fortawesome/fontawesome-free/css/all.css';
+import { useAuthenticationStore } from "../services/authentication.store.js";
+import SignUpRequest from "../model/sign-up.request.js";
+import SignInRequest from "../model/sign-in.request.js";
 
 export default {
   name: "SignUpRolePage",
@@ -28,7 +31,7 @@ export default {
     return { toast };
   },
   methods: {
-    handleLogin() {
+    async handleLogin() {
       if (!this.roleSelected) {
         this.toast.add({
           severity: 'warn',
@@ -46,7 +49,72 @@ export default {
         life: 2000
       });
 
-      this.$router.push('/home');
+      console.log("Role selected:", this.roleSelected)
+      var isSignedUp = false;
+
+      const user = localStorage.getItem("user");
+      if (user) {
+        const userData = JSON.parse(user);
+        userData.role = this.roleSelected;
+        this.$store.dispatch('updateUser', userData);
+
+        let authenticationStore = useAuthenticationStore;
+        let signUpRequest = new SignUpRequest(userData.id, userData.name, userData.surname, userData.phone, userData.mail, userData.password);
+
+        if( this.roleSelected === 'guest') {
+          await authenticationStore.dispatch('signUpGuest', signUpRequest)
+          .then(() => {
+            console.log("User guest signed up successfully");
+          })
+          .catch(error => {
+            this.toast.add({
+              severity: 'error',
+              summary: 'Error al registrarse',
+              detail: error.message,
+              life: 3000
+            });
+          });
+
+          let signInRequest = new SignInRequest(userData.mail, userData.password, 3);
+
+          await authenticationStore.dispatch('signIn', signInRequest)
+          .then(() => {
+            console.log("User signed in successfully");
+            isSignedUp = true;
+          })
+          .catch(error => {
+            this.toast.add({
+              severity: 'error',
+              summary: 'Error al iniciar sesión',
+              detail: error.message,
+              life: 3000
+            });
+          }); 
+        } else if (this.roleSelected === 'admin') {
+          
+        } else if (this.roleSelected === 'manager') {
+
+        } else {
+          this.toast.add({
+            severity: 'error',
+            summary: 'Rol no válido',
+            detail: 'Por favor selecciona un rol válido.',
+            life: 3000
+          });
+        }
+        
+      }
+
+      if (isSignedUp) {
+        this.$router.push('/home');
+      } else {
+        this.toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo completar el registro. Por favor, inténtalo de nuevo.',
+          life: 3000
+        });
+      }
     },
     sendToSignUp() {
       this.$router.push('/auth/sign-up');
