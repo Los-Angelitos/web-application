@@ -126,6 +126,9 @@ export default {
         await authenticationStore.dispatch('signIn', signInRequest)
         .then(() => {
           console.log("User signed in successfully");
+          localStorage.setItem('roleId', roleIdSelected);
+          this.$router.push('/home');
+
         })
         .catch(error => {
           this.toast.add({
@@ -136,7 +139,6 @@ export default {
           });
         }); 
 
-        this.$router.push('/home');
       } 
     },
     sendToSignUp() {
