@@ -5,12 +5,15 @@ import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
 import '@fortawesome/fontawesome-free/css/all.css';
 import { mapActions } from 'vuex';
-
+import SignInRequest from "../model/sign-in.request.js";
+import DescriptionRadioButtonComponent from "../components/description-radio-button.component.vue";
+import { useAuthenticationStore } from "../services/authentication.store";
 
 export default {
   name: "SignInPage",
   components: {
     InputTextComponent,
+    DescriptionRadioButtonComponent,
     InputPasswordComponent,
     Toast
   },
@@ -18,6 +21,7 @@ export default {
     return {
       username: '',
       password: '',
+      roleSelected: '',
     };
   },
   setup() {
@@ -29,8 +33,9 @@ export default {
   },
   methods: {
     ...mapActions(['GetUserId']),
-    handleLogin() {
-      if (!this.username || !this.password) {
+    async handleLogin() {
+      console.log("Handling login with:", this.username, this.password, this.roleSelected);
+      if (!this.username || !this.password || !this.roleSelected) {
         this.toast.add({
           severity: 'error',
           summary: 'Campos requeridos',
@@ -40,15 +45,40 @@ export default {
         return;
       }
 
-      this.toast.add({
-        severity: 'success',
-        summary: 'Ingreso exitoso',
-        detail: 'Bienvenido a SweetManager',
-        life: 2000
-      });
+      let roleId = null;
+      if (this.roleSelected === 'guest') {
+        roleId = 3; // ID de rol para Guest
+      } else if (this.roleSelected === 'admin') {
+        roleId = 2; // ID de rol para Admin
+      } else if (this.roleSelected === 'manager') {
+        roleId = 1; // ID de rol para Owner
+      }
+
+      let signInRequest = new SignInRequest(this.username, this.password, roleId);
+
+      let authenticationStore = useAuthenticationStore;
+      await authenticationStore.dispatch("signIn", signInRequest)
+        .then(() => {
+          this.toast.add({
+            severity: 'success',
+            summary: 'Login successful',
+            detail: 'Welcome back!',
+            life: 2000
+          });
+
+          this.$router.push('/home');
+        })
+        .catch((error) => {
+          this.toast.add({
+            severity: 'error',
+            summary: 'Error logging in',
+            detail: error.response?.data || 'An error occurred during login.',
+            life: 3000
+          });
+        });
 
       //this.GetUserId(user.id);
-      this.$router.push('/home/hotel/:id/overview'); // Ruta simulada
+      //this.$router.push('/home/hotel/:id/overview'); // Ruta simulada
     },
     sendToSignUp() {
       this.$router.push('/auth/sign-up');
@@ -77,7 +107,23 @@ export default {
 
       <InputTextComponent v-model="username" label="User" class="no-movement"  @input="errorMessage = ''"/>
         <InputPasswordComponent v-model="password" label="Password" class="no-movement" />
+        
           <a  class="github-link">Forgot your password?</a>
+
+          <div class="role-group">
+            <text class="ask">Select your role:</text>
+            <DescriptionRadioButtonComponent
+              v-model="this.roleSelected"
+                  :options="[
+          { value: 'guest', label: 'Guest', description: '' },
+          { value: 'admin', label: 'Admin', description: '' },
+          { value: 'manager', label: 'Owner', description: '' }
+        ]"
+                  groupName="accountRole"
+              />
+          </div>
+          
+          
       <button @click="handleLogin" class="login-button">Log in</button>
 
         <div class="line-container">
@@ -100,6 +146,12 @@ export default {
 </template>
 
 <style scoped>
+::v-deep(.radio-group) {
+  flex-direction: row;
+  justify-content: center;
+  gap: 2.5rem;
+}
+
 .web-logos{
   display: flex;
   justify-content: center;
@@ -171,7 +223,7 @@ export default {
 .login-box {
   padding: 30px;
   width:25rem;
-  height: 35rem;
+  height: auto;
   border: 0.5px solid #ccc;
   border-radius: 20px;
   background-color: white;

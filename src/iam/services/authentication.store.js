@@ -27,7 +27,7 @@ export const useAuthenticationStore = createStore({
     },
     actions: {
         async signIn({ commit }, signInRequest) {
-            authenticationService.signIn(signInRequest)
+            return authenticationService.signIn(signInRequest)
                 .then(response => {
                     let signInResponse = new SignInResponse(
                         response.data.id,
@@ -44,6 +44,7 @@ export const useAuthenticationStore = createStore({
                     localStorage.setItem('token', signInResponse.token);
 
                     console.log("Sign-in successful:", signInResponse);
+                    
                 })
                 .catch(error => {
                     console.error("Sign-in failed:", error);
