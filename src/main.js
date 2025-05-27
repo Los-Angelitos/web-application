@@ -15,6 +15,7 @@ import RadioButton from 'primevue/radiobutton';
 import RadioButtonGroup from 'primevue/radiobuttongroup';
 import ToastService from 'primevue/toastservice';
 import Toast from "primevue/toast";
+import store from './shared/services/store.js';
 
 // i18n
 import i18n from "./i18n.js"
@@ -25,6 +26,7 @@ const app = createApp(App);
 app.use(router);
 app.use(vuetify);
 app.use(i18n);
+app.use(store);
 
 app.use(PrimeVue, {
     unstyled: false,

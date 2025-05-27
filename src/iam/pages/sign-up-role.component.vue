@@ -6,6 +6,9 @@ import DescriptionRadioButtonComponent from "../components/description-radio-but
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 import '@fortawesome/fontawesome-free/css/all.css';
+import { useAuthenticationStore } from "../services/authentication.store.js";
+import SignUpRequest from "../model/sign-up.request.js";
+import SignInRequest from "../model/sign-in.request.js";
 
 export default {
   name: "SignUpRolePage",
@@ -28,7 +31,7 @@ export default {
     return { toast };
   },
   methods: {
-    handleLogin() {
+    async handleLogin() {
       if (!this.roleSelected) {
         this.toast.add({
           severity: 'warn',
@@ -46,7 +49,95 @@ export default {
         life: 2000
       });
 
-      this.$router.push('/home');
+      console.log("Role selected:", this.roleSelected)
+      var isSignedUp = false;
+      var roleIdSelected = null;
+      var authenticationStore = useAuthenticationStore;
+
+      const user = localStorage.getItem("user");
+      if (user) {
+        var userData = JSON.parse(user);
+        userData.role = this.roleSelected;
+        this.$store.dispatch('updateUser', userData);
+
+        let signUpRequest = new SignUpRequest(userData.id, userData.name, userData.surname, userData.phone, userData.mail, userData.password);
+
+        if(this.roleSelected === 'guest') {
+          roleIdSelected = 3; // ID de rol para Guest
+          await authenticationStore.dispatch('signUpGuest', signUpRequest)
+          .then(() => {
+            console.log("User guest signed up successfully");
+            isSignedUp = true;
+          })
+          .catch(error => {
+            this.toast.add({
+              severity: 'error',
+              summary: 'Error signing up',
+              detail: error.response?.data || 'An error occurred during registration.',
+              life: 3000
+            });
+          });    
+        } else if (this.roleSelected === 'admin') {
+          roleIdSelected = 2; // ID de rol para Guest
+          await authenticationStore.dispatch('signUpAdmin', signUpRequest)
+          .then(() => {
+            console.log("User admin signed up successfully");
+            isSignedUp = true;
+          })
+          .catch(error => {
+            this.toast.add({
+              severity: 'error',
+              summary: 'Error signing up',
+              detail: error.response?.data || 'An error occurred during registration.',
+              life: 3000
+            });
+          });   
+          
+        } else if (this.roleSelected === 'manager') {
+          roleIdSelected = 1; // ID de rol para Owner
+          await authenticationStore.dispatch('signUpOwner', signUpRequest)
+          .then(() => {
+            console.log("User owner signed up successfully");
+            isSignedUp = true;
+          })
+          .catch(error => {
+            this.toast.add({
+              severity: 'error',
+              summary: 'Error signing up',
+              detail: error.response?.data || 'An error occurred during registration.',
+              life: 3000
+            });
+          });   
+
+        } else {
+          this.toast.add({
+            severity: 'error',
+            summary: 'Rol no válido',
+            detail: 'Por favor selecciona un rol válido.',
+            life: 3000
+          });
+        }
+        
+      }
+
+      if (isSignedUp && user) {
+        let signInRequest = new SignInRequest(userData.mail, userData.password, roleIdSelected);
+
+        await authenticationStore.dispatch('signIn', signInRequest)
+        .then(() => {
+          console.log("User signed in successfully");
+        })
+        .catch(error => {
+          this.toast.add({
+            severity: 'error',
+            summary: 'Error al iniciar sesión',
+            detail: error.message,
+            life: 3000
+          });
+        }); 
+
+        this.$router.push('/home');
+      } 
     },
     sendToSignUp() {
       this.$router.push('/auth/sign-up');
