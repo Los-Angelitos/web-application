@@ -51,48 +51,63 @@ export default {
 
       console.log("Role selected:", this.roleSelected)
       var isSignedUp = false;
+      var roleIdSelected = null;
+      var authenticationStore = useAuthenticationStore;
 
       const user = localStorage.getItem("user");
       if (user) {
-        const userData = JSON.parse(user);
+        var userData = JSON.parse(user);
         userData.role = this.roleSelected;
         this.$store.dispatch('updateUser', userData);
 
-        let authenticationStore = useAuthenticationStore;
         let signUpRequest = new SignUpRequest(userData.id, userData.name, userData.surname, userData.phone, userData.mail, userData.password);
 
-        if( this.roleSelected === 'guest') {
+        if(this.roleSelected === 'guest') {
+          roleIdSelected = 3; // ID de rol para Guest
           await authenticationStore.dispatch('signUpGuest', signUpRequest)
           .then(() => {
             console.log("User guest signed up successfully");
-          })
-          .catch(error => {
-            this.toast.add({
-              severity: 'error',
-              summary: 'Error al registrarse',
-              detail: error.message,
-              life: 3000
-            });
-          });
-
-          let signInRequest = new SignInRequest(userData.mail, userData.password, 3);
-
-          await authenticationStore.dispatch('signIn', signInRequest)
-          .then(() => {
-            console.log("User signed in successfully");
             isSignedUp = true;
           })
           .catch(error => {
             this.toast.add({
               severity: 'error',
-              summary: 'Error al iniciar sesión',
-              detail: error.message,
+              summary: 'Error signing up',
+              detail: error.response?.data || 'An error occurred during registration.',
               life: 3000
             });
-          }); 
+          });    
         } else if (this.roleSelected === 'admin') {
+          roleIdSelected = 2; // ID de rol para Guest
+          await authenticationStore.dispatch('signUpAdmin', signUpRequest)
+          .then(() => {
+            console.log("User admin signed up successfully");
+            isSignedUp = true;
+          })
+          .catch(error => {
+            this.toast.add({
+              severity: 'error',
+              summary: 'Error signing up',
+              detail: error.response?.data || 'An error occurred during registration.',
+              life: 3000
+            });
+          });   
           
         } else if (this.roleSelected === 'manager') {
+          roleIdSelected = 1; // ID de rol para Owner
+          await authenticationStore.dispatch('signUpOwner', signUpRequest)
+          .then(() => {
+            console.log("User owner signed up successfully");
+            isSignedUp = true;
+          })
+          .catch(error => {
+            this.toast.add({
+              severity: 'error',
+              summary: 'Error signing up',
+              detail: error.response?.data || 'An error occurred during registration.',
+              life: 3000
+            });
+          });   
 
         } else {
           this.toast.add({
@@ -105,16 +120,24 @@ export default {
         
       }
 
-      if (isSignedUp) {
+      if (isSignedUp && user) {
+        let signInRequest = new SignInRequest(userData.mail, userData.password, roleIdSelected);
+
+        await authenticationStore.dispatch('signIn', signInRequest)
+        .then(() => {
+          console.log("User signed in successfully");
+        })
+        .catch(error => {
+          this.toast.add({
+            severity: 'error',
+            summary: 'Error al iniciar sesión',
+            detail: error.message,
+            life: 3000
+          });
+        }); 
+
         this.$router.push('/home');
-      } else {
-        this.toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'No se pudo completar el registro. Por favor, inténtalo de nuevo.',
-          life: 3000
-        });
-      }
+      } 
     },
     sendToSignUp() {
       this.$router.push('/auth/sign-up');
