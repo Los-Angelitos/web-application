@@ -17,15 +17,15 @@
       <div class="menu-container desktop-menu">
         <language-switcher/>
         <div class="menu-items">
-          <div class="menu-item" @click="goToPreferences">
+          <div class="menu-item" @click="goToPreferences" v-if="roleId === 'guest'">
             <i class="fas fa-cog"></i>
             <span>preferences</span>
           </div>
-          <div class="menu-item" @click="goToHotel">
+          <div class="menu-item" @click="goToHotel" v-if="roleId === 'admin' || roleId === 'manager'">
             <i class="fas fa-hotel"></i>
             <span>my hotel</span>
           </div>
-          <div class="menu-item" @click="goToNotifications">
+          <div class="menu-item" @click="goToNotifications" v-if="roleId === 'admin' || roleId === 'manager'">
             <img src="/bell-icon.svg" alt="Notifications" class="notification-icon" />
           </div>
           <div class="user-profile" @click="toggleUserMenu">
@@ -122,6 +122,7 @@ export default {
     return {
       showUserMenu: false,
       showMobileMenu: false,
+      roleId: null
     };
   },
   methods: {
@@ -153,7 +154,11 @@ export default {
     },
     toggleUserMenu(e) {
       e.stopPropagation();
-      this.showUserMenu = !this.showUserMenu;
+      if(this.roleId) {
+        this.showUserMenu = !this.showUserMenu;
+      }else {
+        this.$router.push('/auth/sign-in')
+      }
     },
     closeUserMenu(e) {
       if (!this.$el.contains(e.target)) {
@@ -177,6 +182,19 @@ export default {
   mounted() {
     document.addEventListener('click', this.closeUserMenu);
     window.addEventListener('resize', this.handleResize);
+
+    // Check if roleId is stored in localStorage
+    const storedRoleId = localStorage.getItem('roleId');
+    if (storedRoleId) {
+      if(storedRoleId  === '1') {
+        this.roleId = 'manager';
+      }
+      else if(storedRoleId === '2') {
+        this.roleId = 'admin';
+      } else {
+        this.roleId = 'guest';
+      }
+    }
   },
   beforeDestroy() {
     document.removeEventListener('click', this.closeUserMenu);
