@@ -66,6 +66,8 @@ export default {
             life: 2000
           });
 
+          localStorage.setItem('roleId', roleId);
+
           this.$router.push('/home');
         })
         .catch((error) => {
