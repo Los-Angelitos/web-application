@@ -1,23 +1,15 @@
-﻿import { useAuthenticationStore } from "./authentication.store.js";
-
-/**
- * Authentication interceptor for Axios
- * @summary Intercepts requests to add authentication token
- * @param {Object} config - Axios request configuration
- * @returns {Object} - Modified Axios request configuration
- */
+﻿import { useAuthenticationStore } from "./authentication.store.js"; // está bien
 
 export function authenticationInterceptor(config) {
-    const authenticationStore = useAuthenticationStore;
-    const isAuthenticated = authenticationStore.state.isAuthenticated;
+    const token = useAuthenticationStore.state.token;
+    const isAuthenticated = useAuthenticationStore.state.isAuthenticated;
 
-    if (isAuthenticated) {
-        const token = authenticationStore.state.token;
+    if (isAuthenticated && token) {
         config.headers['Authorization'] = `Bearer ${token}`;
-
-        console.log("Authentication interceptor: Token added to request headers.");
+        console.log("🔐 Interceptor: token agregado:", token);
     } else {
         delete config.headers['Authorization'];
+        console.log("🔐 Interceptor: sin token");
     }
 
     return config;
