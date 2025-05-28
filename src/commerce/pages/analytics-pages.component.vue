@@ -181,8 +181,7 @@ export default {
 
   async created() {
     try {
-      const response = await this.hotelApi.getHotelsById(this.hotelId);
-      const displayableHotel = response;
+      const displayableHotel = await this.hotelApi.getHotelsById(this.hotelId);
 
       this.hotel = Hotel.fromDisplayableHotel(displayableHotel);
       this.hotelName = this.hotel.getHotelName();
