@@ -55,7 +55,7 @@ export default {
   data() {
     return {
       hotelName: '',
-      hotelId: 3,
+      hotelId: 11,
       dashboardApi: new DashboardApiService(),
       hotelApi: new HotelsApiService(),
       dashboard: [],
@@ -182,7 +182,7 @@ export default {
   async created() {
     try {
       const response = await this.hotelApi.getHotelsById(this.hotelId);
-      const displayableHotel = response.data;
+      const displayableHotel = response;
 
       this.hotel = Hotel.fromDisplayableHotel(displayableHotel);
       this.hotelName = this.hotel.getHotelName();

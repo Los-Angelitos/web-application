@@ -15,6 +15,4 @@ export class HotelsApiService {
         return http.put(`/hotels/${hotel.id}`, hotel).then(response => response.data);
     }
 
-
-
 }
