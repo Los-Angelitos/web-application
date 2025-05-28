@@ -605,8 +605,8 @@ export default {
 
 .avatar-upload {
   position: absolute;
-  bottom: 0;
-  right: 0;
+  bottom: 8%;
+  right: 8%;
   background: var(--primary-color);
   color: white;
   width: 36px;

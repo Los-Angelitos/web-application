@@ -145,7 +145,7 @@ export default {
     <div class="profile-info">
       <div class="profile-image-container">
         <img 
-          :src="user.image || defaultAvatar"
+          :src="user.photoURL || defaultAvatar"
           :alt="user.name" 
           alt="Profile picture" 
           class="profile-image"
