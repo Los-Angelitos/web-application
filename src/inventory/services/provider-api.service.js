@@ -4,19 +4,18 @@ import providersMock from "../../mocks/inventory/providers.json";
 
 export class ProviderApiService {
     createProvider(provider) {
-        return http.post('/v1/providers', Provider.toDisplayableProvider(provider));
+        return http.post('/providers', Provider.toDisplayableProvider(provider));
     }
 
     getProviders() {
-        return providersMock; // For testing purposes, replace with the line below when ready for production
-        return http.get('/v1/providers');
+        return http.get('/providers');
     }
 
     getProviderById(id) {
-        return http.get(`/v1/providers/${id}`);
+        return http.get(`/providers/${id}`);
     }
 
     deleteProvider(providerId) {
-        return http.delete(`/v1/providers/${providerId}`);
+        return http.delete(`/providers/${providerId}`);
     }
 }
