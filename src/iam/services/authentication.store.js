@@ -6,11 +6,12 @@ const authenticationService = new AuthenticationService();
 
 export const useAuthenticationStore = createStore({
     state: {
-        userId: null,
-        user: null,
-        token: null,
-        isAuthenticated: false
+        userId: localStorage.getItem('userId') || null,
+        user: JSON.parse(localStorage.getItem('user')) || null,
+        token: localStorage.getItem('token') || null,
+        isAuthenticated: !!localStorage.getItem('token'),
     },
+
     mutations: {
         setUserId(state, userId) {
             state.userId = userId;
