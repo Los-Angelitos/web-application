@@ -18,7 +18,7 @@ export class SupplierApiService {
      * @returns {Promise<AxiosResponse>} - A promise containing the server's response.
      */
     getSupplies(hotelId) {
-        return suppliesMock; // For testing purposes, replace with the line below when ready for production
+        //return suppliesMock; // For testing purposes, replace with the line below when ready for production
         return http.get(`/supply/get-all-supplies?hotelId=${hotelId}`);
     }
 
