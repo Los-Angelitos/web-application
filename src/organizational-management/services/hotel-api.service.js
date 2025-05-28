@@ -1,5 +1,4 @@
 ﻿import http from "../../shared/services/http-common.js";
-import {Hotel} from "../../shared/model/hotel.entity.js";
 
 export class HotelApiService {
     createHotel(hotel){
@@ -21,7 +20,7 @@ export class HotelApiService {
     updateHotel(hotel) {
         return http.put(`/hotels/${hotel.hotelId}`, hotel)
             .then(response => {
-                if(response.status === 201) {
+                if(response.status === 200) {
                     return response.data;
                 }
                 else {
@@ -37,12 +36,12 @@ export class HotelApiService {
     getAllHotels() {
         return http.get("/hotels")
             .then(response => {
-                return response.data.map(hotel => new Hotel(
-                    hotel.hotelId,
-                    hotel.name,
-                    hotel.location,
-                    hotel.rating
-                ));
+                if (response.status === 200) {
+                    return response.data;
+                }
+                else {
+                    return [];
+                }
             })
             .catch(error => {
                 console.error("Error fetching all hotels:", error);
@@ -53,12 +52,12 @@ export class HotelApiService {
     getHotelByOwnerId(ownerId) {
         return http.get(`/hotels/owner/${ownerId}`)
             .then(response => {
-                return response.data.map(hotel => new Hotel(
-                    hotel.hotelId,
-                    hotel.name,
-                    hotel.location,
-                    hotel.rating
-                ));
+                if (response.status === 200){
+                    return response.data;
+                }
+                else {
+                    return null;
+                }
             })
             .catch(error => {
                 console.error("Error fetching hotels by owner ID:", error);
