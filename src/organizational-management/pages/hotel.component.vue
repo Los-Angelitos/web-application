@@ -10,6 +10,11 @@ import InventoryIcon from "../../assets/organizational-management/inventory-icon
 import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
+import {HotelsApiService} from "../../shared/services/hotels-api.service.js";
+
+import {useAuthenticationStore} from '/src/iam/services/authentication.store.js'; // Ajusta la ruta según tu estructura
+
+const userId = useAuthenticationStore.state.userId;
 
 export default {
   name: "HotelOverviewPage",
@@ -18,6 +23,7 @@ export default {
   data() {
     return {
       hotelId: null,
+      userId: userId, // Obtenemos el userId del store de autenticación
       navigationItems: [
         {id: "overview", label: "Overview", path: "/home/hotel/1/overview", icon: OverviewIcon, isActive: true},
         {id: "analytics", label: "Analytics", path: "/home/hotel/1/analytics", icon: AnalyticsIcon, isActive: false},
@@ -28,11 +34,13 @@ export default {
         {id: "devices", label: "Devices", path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: false}
       ],
       hotel: {
+        id: null,
         name: "",
         address: "",
         description: "",
         email: "",
-        phone: ""
+        phone: "",
+        ownerId: userId
       },
       editable: {
         description: '',
@@ -47,28 +55,16 @@ export default {
     };
   },
 
-  mounted() {
-    this.hotelId = 1; // this.$route.params.hotelId
-    this.loadHotelMockData(); // ← Simulamos una petición
+  async mounted() {
+    await this.loadHotelMockData(); // ← Simulamos una petición
   },
 
   methods: {
-    loadHotelMockData() {
-      // Aquí iría el fetch al backend con el this.hotelId
-      // Por ahora lo simulamos con datos de prueba
-      this.hotel = {
-        name: "Royal Decameron Punta Sal",
-        address: "Av. Panamericana N, Punta Sal 24560",
-        description: `Este vibrante hotel todo incluido se ubica entre palmeras en la playa Punta Sal, a 6 km del centro del pueblo y a 89 km del Aeropuerto Tumbes.
-Las habitaciones sencillas cuentan con terraza o balcón, pantalla plana y acceso a internet (con cargo); algunos tienen área de visitas.
-Los servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y alquiler de equipo para la playa, además de las comidas y bebidas en 3 restaurantes y 5 bares. Otros servicios: club nocturno animado, jardines, playa extensa con cabañas, piscina al aire libre, hidromasaje y gimnasio.
-• 🙌 Wifi pago
-• 🍳 Desayuno incluido
-• 🚗 Estacionamiento gratuito
-• 👙 Piscina al aire libre`,
-        email: "bookings@decameron.com",
-        phone: "073 55 4877"
-      };
+    async loadHotelMockData() {
+      this.hotel = await HotelsApiService.getHotelByOwnerId(this.userId);
+      this.hotel.ownerId = this.userId; // Aseguramos que el ownerId esté presente
+      this.editable = this.hotel;
+      console.log("Hotel data loaded:", this.hotel);
     },
 
     enableEdit(field) {
@@ -80,8 +76,9 @@ Los servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y
       });
     },
 
-    saveEdit(field) {
+    async saveEdit(field) {
       this.hotel[field] = this.editable[field];
+      await HotelsApiService.UpdateHotel(this.hotel);
       this.editing[field] = false;
       // En el futuro: aquí iría el PUT al backend
     }
