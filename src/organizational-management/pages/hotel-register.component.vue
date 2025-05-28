@@ -88,6 +88,8 @@ import ButtonComponent from "../../shared/components/button.component.vue";
 import InputTextComponent from "../../shared/components/input-text.component.vue";
 import ModalComponent from "../../shared/components/modal.component.vue";
 import i18n from "../../i18n.js";
+import {HotelApiService} from "../services/hotel-api.service.js";
+import {Hotel} from "../../shared/model/hotel.entity.js";
 
 export default {
   name: 'HotelRegisterPage',
@@ -112,11 +114,23 @@ export default {
       errorMessage: ''
     }
   },
+  props: {
+    hotelApiService: {
+      type: Object,
+      default: () => new HotelApiService()
+    }
+  },
   methods: {
-    submitForm() {
+    async submitForm() {
       // Validate form
       if (this.validateForm()) {
-        this.$router.push('/home/hotel/set-up/details');
+        let response = await this.hotelApiService.createHotel({name: this.hotelName, description: this.description, email: this.email, address: this.hotelAddress, phone: this.phone});
+        if (response) {
+          this.$router.push('/home/hotel/set-up/details');
+        } else {
+          this.errorMessage = 'Error al registrar el hotel. Por favor, inténtelo de nuevo más tarde.';
+          this.showErrorModal = true;
+        }
       }
     },
     isValidEmail(email) {
