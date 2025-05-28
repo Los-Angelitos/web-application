@@ -4,6 +4,12 @@ class Cloudinary {
     constructor() {
         this.cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
         this.uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+        console.log("Cloudinary Config:", {
+            cloudName: this.cloudName,
+            uploadPreset: this.uploadPreset,
+            apiUrl: `https://api.cloudinary.com/v1_1/${this.cloudName}/image/upload`
+        }
+        )
         this.apiUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}/image/upload`;
     }
 
@@ -26,4 +32,4 @@ class Cloudinary {
     }
 }
 
-export default new Cloudinary();
+export default Cloudinary;
