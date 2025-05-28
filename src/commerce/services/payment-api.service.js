@@ -3,7 +3,6 @@ import {PaymentOwner} from "../model/payment-owner.entity.js";
 
 export class PaymentApiService {
 
-
     createPaymentOwner(paymentOwner) {
         return http.post("/payment-owner", paymentOwner)
             .then(response => {
