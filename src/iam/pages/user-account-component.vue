@@ -6,6 +6,9 @@ import reservationsIcon from "../../assets/iam/schedule-icon.svg";
 import logoutIcon from "../../assets/iam/logout-icon.svg";
 import userMock from "../../mocks/iam/user-profile-account.json";
 import i18n from "../../i18n.js";
+import { UserProfileService } from "../services/user-profile.service.js";
+import {User} from "../model/user.entity.js";
+import { HttpStatusCode } from "axios";
 
 
 export default {
@@ -47,7 +50,8 @@ export default {
           icon: logoutIcon
         }
       ],
-      chevronIcon: '<svg xmlns="http://www.w3.org/2000/svg" class="chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>'
+      chevronIcon: '<svg xmlns="http://www.w3.org/2000/svg" class="chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>',
+      userProfileService: new UserProfileService()
     }
   },
   mounted() {
@@ -78,23 +82,47 @@ export default {
           console.error('Unknown route:', routeName);
       }
     },
-    fetchUserData() {
-      setTimeout(() => {
-        this.user = {
-          ...userMock
-        };
-        this.breadcrumbPath[0].route = "/home/profile/" + this.user.id;
-      }, 1000);
+    async fetchUserData() {
+      const userId = localStorage.getItem('userId');
+      const roleId = localStorage.getItem('roleId');
+
+      if (!userId || !roleId) {
+        console.error('User ID or Role ID not found in localStorage');
+        return;
+      }
+
+      try {
+        let response = null;
+        if(roleId == 3) {
+          response =  await this.userProfileService.getGuestById(userId);
+        }else if(roleId == 2) {
+          response = await this.userProfileService.getAdminById(userId);
+        }else if(roleId == 1) {
+          response = await this.userProfileService.getOwnerById(userId);
+        } else {
+          console.error('Invalid role ID:', roleId);
+          return;
+        }
+
+        if(response.status === HttpStatusCode.Ok) {
+          this.user = User.fromDisplayableUser(response.data);
+          console.log('User data fetched successfully:', this.user);
+
+          this.breadcrumbPath[0].route = '/home/profile/' + this.user.id;
+        }
+      }catch(e) {
+        console.error('Error fetching user data:', e);
+      }
 
     },
     obtainRole(type) {
       switch (type) {
-        case 'admin':
+        case 2:
           return 'Administrator';
-        case 'guest':
+        case 3:
           return 'Guest';
-        case 'employee':
-          return 'Employee';
+        case 1:
+          return 'Owner';
         default:
           return 'Unknown';
       }
@@ -127,7 +155,7 @@ export default {
       
       <div class="profile-details">
         <h2>{{ user.name }}</h2>
-        <p>{{ obtainRole(user.type) }}</p>
+        <p>{{ obtainRole(user.roleId) }}</p>
       </div>
     </div>
     
