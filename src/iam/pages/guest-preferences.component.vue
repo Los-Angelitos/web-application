@@ -5,7 +5,12 @@ import AccountInfoOverview from '../components/account-info-overview.component.v
 import ModalComponent from '../../shared/components/modal.component.vue';
 import ButtonComponent from '../../shared/components/button.component.vue';
 import userMock from '../../mocks/iam/user-profile-account.json';
+import { UserProfileService } from '../services/user-profile.service.js';
 import i18n from "../../i18n.js";
+import { User } from '../model/user.entity.js';
+import { HttpStatusCode } from 'axios';
+import Toast from 'primevue/toast';
+import { useToast } from 'primevue/usetoast';
 
 export default {
     name: "GuestPreferencesPage",
@@ -19,10 +24,17 @@ export default {
         AccountDetailFormEdit,
         AccountInfoOverview,
         ModalComponent,
-        ButtonComponent
+        ButtonComponent,
+        Toast
+    },
+    setup() {
+      const toast = useToast();
+      return { toast };
     },
     data() {
       return {
+        hasPreferences: false,
+        userProfileService: new UserProfileService(),
         userData: null,
         showModal: false,
         breadcrumbPath: [
@@ -36,20 +48,98 @@ export default {
       this.fetchUserData();
     },
     methods: {
-      fetchUserData() {
-        setTimeout(() => {
-            this.userData = userMock;
-            console.log("User data fetched:", this.userData);
+      async fetchUserData() {
+        const userId = localStorage.getItem('userId');
+        const roleId = localStorage.getItem('roleId');
 
+        if (!userId || !roleId) {
+          console.error('User ID or Role ID not found in localStorage');
+          return;
+        }
 
+        try {
+          let response = null;
+          if(roleId == 3) {
+            response =  await this.userProfileService.getGuestById(userId);
+          }else if(roleId == 2) {
+            response = await this.userProfileService.getAdminById(userId);
+          }else if(roleId == 1) {
+            response = await this.userProfileService.getOwnerById(userId);
+          } else {
+            console.error('Invalid role ID:', roleId);
+            return;
+          }
+
+          if(response.status === HttpStatusCode.Ok) {
+            this.userData = User.fromDisplayableUser(response.data);
+            if(roleId==3) this.userData.type = 'guest';
+            else if(roleId==2) this.userData.type = 'admin';
+            else if(roleId==1) this.userData.type = 'owner';
+            this.userData.preferences = userMock.preferences; // Mocking preferences for demonstration
+
+            try {
+              const guestPreferences = await this.userProfileService.getPreferences(this.userData.id);
+              if(guestPreferences.status === HttpStatusCode.Ok && guestPreferences.data) {
+                const {temperature} = guestPreferences.data;
+                this.userDataPreferences = {
+                  ...this.userData.preferences,
+                  temperature: temperature || this.userData.preferences.temperature // Fallback to existing preference if not set
+                };
+                this.hasPreferences = true;
+              }
+            }catch(e) {
+              this.toast.add({
+                  severity: 'warn',
+                  summary: 'Warning',
+                  detail: 'No preferences found for this user.',
+                  life: 5000
+                });
+            }
+
+            console.log('User data fetched successfully:', this.userData);
+          
             this.breadcrumbPath[0].route = `/home/profile/${this.userData.id}`;
             this.breadcrumbPath[1].route = `/home/profile/${this.userData.id}/account`;
             this.breadcrumbPath[2].route = `/home/profile/${this.userData.id}/preferences`;
-        }, 300);
+          }
+        }catch(e) {
+          console.error('Error fetching user data:', e);
+        }
       },
-      saveField(field, value) {
+      async saveField(field, value) {
         console.log("Saving field:", field, "New value:", value);
         this.userData.preferences[field] = value; 
+        
+        try {
+          if(!this.hasPreferences) {
+            const response = await this.userProfileService.setPreferences(parseInt(this.userData.id, 10), parseInt(this.userData.preferences[field], 10));
+            if(response.status === HttpStatusCode.Created) {
+              console.log("Preferences created successfully:", response.data);
+              this.hasPreferences = true;
+
+              this.toast.add({
+                severity: 'success',
+                summary: 'Success',
+                detail: 'Preferences created successfully',
+                life: 5000
+              });
+
+
+            } else {
+              console.error("Failed to create preferences:", response);
+            }
+          }
+          /*
+          const response = await this.userProfileService.editPreferences(this.userData.id, this.userData.preferences);
+          if(response.status === HttpStatusCode.Ok) {
+            console.log("Preferences updated successfully:", response.data);
+          } else {
+            console.error("Failed to update preferences:", response);
+          }
+            */
+        } catch (error) {
+          console.error("Error updating preferences:", error);
+        }
       },
       editField(field, value) {
         console.log("Editing field:", field, "Current value:", value);
@@ -69,7 +159,7 @@ export default {
 </script>
 
 <template>
-  
+  <Toast position="bottom-right" />
   <ModalComponent v-model="showModal" title="Request Room Card" :showCloseButton="true" :closeOnOverlayClick="true" width="350px" height="auto" class="modal">
     <template #image>
       <img src="../../assets/iam/card_id_room.svg" alt="Card ID" class="icon-card-id" />
