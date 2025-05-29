@@ -2,14 +2,28 @@
 import BreadCrumb from '../../shared/components/breadcrumb.component.vue';
 import userMock from '../../mocks/iam/user-profile-account.json';
 import i18n from "../../i18n.js";
+import { UserProfileService } from '../services/user-profile.service.js';
+import Toast from 'primevue/toast';
+import { useToast } from 'primevue/usetoast';
+import { User } from '../model/user.entity.js';
+import { HttpStatusCode } from 'axios';
+import UserEditRequest from '../model/user-edit.request.js';
+import Cloudinary from '../../shared/services/external/cloudinary.js';
 
 export default {
   name: 'UserProfile',
   components: {
-    BreadCrumb
+    BreadCrumb,
+    Toast
+  },
+  setup() {
+    const toast = useToast();
+    return { toast };
   },
   data() {
     return {
+      userProfileService: new UserProfileService(),
+      cloudinary: new Cloudinary(),
       loading: true,
       saving: false,
       userData: {
@@ -18,7 +32,7 @@ export default {
         email: '',
         phone: '',
         type: '',
-        image: null,
+        photoURL: '',
         country: '',
         language: 'es',
         preferences: null,
@@ -50,7 +64,8 @@ export default {
   computed: {
     personalInfo() {
       return [
-        { key: 'fullName', label: 'Full name', labelES: "Nombre completo", value: this.userData.name },
+        { key: 'name', label: 'Name', labelES: "Nombres", value: this.userData.name },
+        { key: 'surname', label: 'Last Name', labelES: "Apellidos", value: this.userData.surname || "N/A" },
         { key: 'email', label: 'Email address', labelES: "Dirección de correo electrónico", value: this.userData.email },
         { key: 'phone', label: 'Phone number', labelES: "Número celular", value: this.userData.phone },
         { key: 'password', label: 'Password', labelES: "Contraseña", value: '••••••••' }
@@ -64,18 +79,70 @@ export default {
     }
   },
   methods: {
-    fetchUserData() {
+    async fetchUserData() {
       this.loading = true;
 
-      setTimeout(() => {
-        const apiResponse = userMock;
+      const userId = localStorage.getItem('userId');
+      const roleId = localStorage.getItem('roleId');
 
-        this.breadcrumbPath[0].route = `/home/profile/${apiResponse.id}`;
-        this.breadcrumbPath[1].route = `/home/profile/${apiResponse.id}/account`;
+      if (!userId || !roleId) {
+        console.error('User ID or Role ID not found in localStorage');
+        return;
+      }
 
-        this.userData = { ...apiResponse, country: "pe", language: "es" };
-        this.loading = false;
-      }, 800);
+      try {
+        let response = null;
+        if(roleId == 3) {
+          response =  await this.userProfileService.getGuestById(userId);
+        }else if(roleId == 2) {
+          response = await this.userProfileService.getAdminById(userId);
+        }else if(roleId == 1) {
+          response = await this.userProfileService.getOwnerById(userId);
+        } else {
+          console.error('Invalid role ID:', roleId);
+          return;
+        }
+
+        if(response.status === HttpStatusCode.Ok) {
+          this.user = User.fromDisplayableUser(response.data);
+
+          const additionalInfo = JSON.parse(localStorage.getItem('additionalInfo')) || {};
+          this.user.dateOfBirth = additionalInfo.dateOfBirth || null;
+          this.user.country = additionalInfo.country || 'pe';
+          this.user.language = additionalInfo.language || 'es';
+
+          console.log('User data fetched successfully:', this.user);
+
+          let typeUser;
+          if(roleId==3) typeUser = 'guest';
+          else if(roleId==2) typeUser = 'admin';
+          else if(roleId==1) typeUser = 'owner';
+
+          this.userData = {
+            id: this.user.id,
+            name: this.user.name,
+            email: this.user.email,
+            phone: this.user.phone,
+            surname: this.user.surname || 'N/A',
+            state: this.user.state || 'ACTIVE',
+            type: typeUser,
+            photoURL: this.user.photoURL || this.defaultAvatar,
+            country: this.user.country || 'pe',
+            language: this.user.language || 'es',
+            dateOfBirth: this.user.dateOfBirth || null,
+            preferences: this.user.preferences || null,
+            hotelId: this.user.hotelId || null
+          };
+
+          this.loading = false;
+
+          this.breadcrumbPath[0].route = `/home/profile/${this.user.id}`;
+          this.breadcrumbPath[1].route = `/home/profile/${this.user.id}/account`;
+        }
+      }catch(e) {
+        console.error('Error fetching user data:', e);
+      }
+
     },
 
     startEditing(fieldKey) {
@@ -90,23 +157,56 @@ export default {
       this.editingFieldValue = null;
     },
 
-    saveEditing() {
+    async saveEditing() {
       if (!this.editingFieldValue) {
-        alert('This field cannot be empty');
+        this.toast.add({
+          severity: 'warn',
+          summary: 'Warning',
+          detail: 'Please enter a value to save',
+          life: 5000
+        });
         return;
       }
 
-      const fieldToUpdate = this.editingFieldKey;
+      console.log('Saving changes for field:', this.editingFieldKey, 'with value:', this.editingFieldValue);
+      const roleId = localStorage.getItem('roleId');
 
-      if (fieldToUpdate !== 'password') {
-        this.userData[fieldToUpdate] = this.editingFieldValue;
-      } else {
-        console.log('Password updated:', this.editingFieldValue);
+      const fieldToUpdate = this.editingFieldKey;
+      const userEdit = new UserEditRequest(this.userData.name, this.userData.surname, this.userData.phone, this.userData.email, this.userData.state, parseInt(roleId, 10), this.userData.photoURL);
+      userEdit[fieldToUpdate] = this.editingFieldValue;
+      console.log('User edit request:', userEdit);
+     
+
+      try {
+          if (fieldToUpdate !== 'password') {
+            const response = await this.userProfileService.editGuest(this.userData.id, userEdit);
+
+            if (response.status !== HttpStatusCode.Ok) {
+              throw new Error(response.message);
+            }
+
+            this.userData[fieldToUpdate] = this.editingFieldValue;
+            this.toast.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Information updated successfully',
+              life: 5000
+            });
+          } else {
+            console.log('Password updated:', this.editingFieldValue);
+          }
+      }catch(error) {
+        console.error('Error updating user information:', error);
+        this.toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: error.message || 'An error occurred while updating information',
+          life: 5000
+        });
+        return;
       }
 
       this.cancelEditing();
-
-      this.showNotification('Information updated successfully');
     },
 
     saveAdditionalInfo() {
@@ -114,7 +214,24 @@ export default {
 
       setTimeout(() => {
         this.saving = false;
-        this.showNotification('Additional information updated successfully');
+
+        const additionalInfo = {
+          dateOfBirth: this.userData.dateOfBirth,
+          country: this.userData.country,
+          language: this.userData.language
+        }
+
+        localStorage.setItem('additionalInfo', JSON.stringify(additionalInfo));
+        this.userData.dateOfBirth = additionalInfo.dateOfBirth;
+        this.userData.country = additionalInfo.country;
+        this.userData.language = additionalInfo.language;        
+
+        this.toast.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Information updated successfully',
+          life: 5000
+        });
       }, 1000);
     },
 
@@ -127,17 +244,70 @@ export default {
       if (!file) return;
 
       if (!file.type.match('image.*')) {
-        alert('Please select a valid image file');
+        this.toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Please select a valid image file',
+          life: 5000
+        });
         return;
       }
 
       const reader = new FileReader();
-      reader.onload = (e) => {
-        this.userData.avatar = e.target.result;
+      reader.onload = async (e) => {
+        this.userData.photoURL = e.target.result; // Update the local preview
 
-        setTimeout(() => {
-          this.showNotification('Avatar updated successfully');
-        }, 1000);
+        const url = await this.cloudinary.uploadImage(file);
+
+        if (url) {
+          this.userData.photoURL = url; // Update the URL after upload
+
+          try {
+              const editResponse = await this.userProfileService.editGuest(this.userData.id, new UserEditRequest(
+                this.userData.name,
+                this.userData.surname,
+                this.userData.phone,
+                this.userData.email,
+                this.userData.state,
+                parseInt(localStorage.getItem('roleId'), 10),
+                this.userData.photoURL
+              ));
+
+              if (editResponse.status !== HttpStatusCode.Ok) {
+                throw new Error(editResponse.message);
+              }
+
+          }catch(e) {
+            console.error('Error updating profile picture:', e);
+            this.userData.photoURL = this.defaultAvatar; // Revert to default on error
+
+            this.toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Failed to update profile picture in the server',
+              life: 5000
+            });
+            return;
+          }
+
+          this.toast.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Profile picture updated successfully',
+            life: 5000
+          });
+        } else {
+          this.userData.photoURL = this.defaultAvatar; // Revert to default on error
+          this.toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to upload profile picture',
+            life: 5000
+          });
+        }
+
+
+        
       };
       reader.readAsDataURL(file);
     },
@@ -162,15 +332,16 @@ export default {
       alert(message);
     },
     obtainRole(type) {
+      console.log('User type:', type);
       switch (type) {
-        case 'guest':
-          return 'Guest';
         case 'admin':
           return 'Administrator';
+        case 'guest':
+          return 'Guest';
         case 'owner':
           return 'Chief Owner';
         default:
-          return 'Unknown Type';
+          return 'Unknown';
       }
     },
     knowLanguage(item) {
@@ -184,6 +355,7 @@ export default {
 </script>
 
 <template>
+  <Toast position="bottom-right" />
   <BreadCrumb :path="breadcrumbPath" class="breadcrumb" />
   <div class="container">
 
@@ -198,7 +370,8 @@ export default {
                 @mouseover="showAvatarUpload = true"
                 @mouseleave="showAvatarUpload = false"
             >
-              <img :src="userData.image || defaultAvatar" alt="Foto de perfil">
+            
+              <img :src="userData.photoURL || defaultAvatar" alt="Foto de perfil">
               <div class="avatar-upload" v-show="showAvatarUpload" @click="openFileUpload">
                 <i class="fas fa-camera"></i>
               </div>
@@ -432,8 +605,8 @@ export default {
 
 .avatar-upload {
   position: absolute;
-  bottom: 0;
-  right: 0;
+  bottom: 8%;
+  right: 8%;
   background: var(--primary-color);
   color: white;
   width: 36px;
