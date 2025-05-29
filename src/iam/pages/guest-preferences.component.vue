@@ -41,7 +41,8 @@ export default {
           { name: "Account", route: "" },
           { name: "Personal Information", route: "" },
           { name: "My Preferences", route: "" },
-        ]
+        ],
+        preferenceId: null
       };
     },
     mounted() {
@@ -80,12 +81,16 @@ export default {
             try {
               const guestPreferences = await this.userProfileService.getPreferences(this.userData.id);
               if(guestPreferences.status === HttpStatusCode.Ok && guestPreferences.data) {
-                const {temperature} = guestPreferences.data;
-                this.userDataPreferences = {
+                const {id, temperature} = guestPreferences.data;
+                this.userData.preferences = {
                   ...this.userData.preferences,
                   temperature: temperature || this.userData.preferences.temperature // Fallback to existing preference if not set
                 };
+                
                 this.hasPreferences = true;
+                this.preferenceId = id;
+
+                console.log('has preferences', this.hasPreferences);
               }
             }catch(e) {
               this.toast.add({
@@ -128,15 +133,31 @@ export default {
             } else {
               console.error("Failed to create preferences:", response);
             }
+
+            return;
           }
-          /*
-          const response = await this.userProfileService.editPreferences(this.userData.id, this.userData.preferences);
+          
+          const response = await this.userProfileService.editPreferences(this.preferenceId, this.userData.id, this.userData.preferences[field]);
           if(response.status === HttpStatusCode.Ok) {
             console.log("Preferences updated successfully:", response.data);
+
+            this.toast.add({
+                severity: 'success',
+                summary: 'Success',
+                detail: 'Preference updated successfully!',
+                life: 5000
+              });
           } else {
             console.error("Failed to update preferences:", response);
+
+            this.toast.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'There is an error with the preferences updated',
+                life: 5000
+              });
           }
-            */
+            
         } catch (error) {
           console.error("Error updating preferences:", error);
         }
