@@ -7,7 +7,7 @@
     "phone": "+34 654 123 456",
     "address": "Calle de la Libertad, 123",
     "preferences": {
-        "temperature": "24",
+        "temperature": "",
         "lighting": "Cálido",
         "food": "Carnes",
         "drink": "Gaseosa, Agua"

@@ -45,4 +45,8 @@ export class UserProfileService {
         return http.get(`/guest-preferences/guests/${guestId}`);
     }
 
+    editPreferences(preferencesId, guestId, temperature) {
+        return http.put(`/guest-preferences/${preferencesId}`, { guestId, temperature });
+    }
+
 }
