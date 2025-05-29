@@ -24,7 +24,8 @@ export default {
   props: {
     incomes: Array,
     expenses: Array,
-    labels: Array
+    labels: Array,
+    t: Function
   },
   computed: {
     chartData() {
@@ -32,17 +33,16 @@ export default {
         labels: this.labels,
         datasets: [
           {
-            label: 'Incomes',
+            label: this.t('analytics.line-chart.incomes'),
             data: this.incomes,
-            borderColor: '#0066cc',
+            borderColor: '#ff9999',
             tension: 0.4,
             fill: false
           },
           {
-            label: 'Expenses',
+            label: this.t('analytics.line-chart.expenses'),
             data: this.expenses,
-            borderColor: '#ff9999',
-            borderDash: [5, 5],
+            borderColor: '#0066cc',
             tension: 0.4,
             fill: false
           }

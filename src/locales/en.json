@@ -4,7 +4,9 @@
     "loading": "Loading income data...",
     "line-chart": {
       "weekly": "Weekly Profit",
-      "monthly": "Monthly Profit"
+      "monthly": "Monthly Profit",
+      "expenses": "Expenses",
+      "incomes": "Incomes"
     }
   },
   "checkout": {

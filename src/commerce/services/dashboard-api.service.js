@@ -9,12 +9,12 @@ export class DashboardApiService {
      * @returns {Promise<AxiosResponse>} - A promise containing the server's response.
      */
     getWeeklyData(hotelId) {
-        return dashboardWeeklyMocked; // For testing purposes, replace with the line below when ready for production
-        return http.get(`/v1/payment-owner/weekly-incomes/${hotelId}`);
+        //return dashboardWeeklyMocked; // For testing purposes, replace with the line below when ready for production
+        return http.get(`/payment-owner/weekly-incomes/${hotelId}`);
     }
 
     getMonthlyData(hotelId) {
-        return dashboardMonthlyMocked; // For testing purposes, replace with the line below when ready for production
-        return http.get(`/v1/payment-owner/monthly-incomes/${hotelId}`);
+        //return dashboardMonthlyMocked; // For testing purposes, replace with the line below when ready for production
+        return http.get(`/payment-owner/monthly-incomes/${hotelId}`);
     }
 }

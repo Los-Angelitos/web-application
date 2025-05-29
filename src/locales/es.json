@@ -4,7 +4,9 @@
     "loading": "Cargando datos recuperados...",
     "line-chart": {
       "weekly": "Ganancias Semanales",
-      "monthly": "Ganancias Mensuales"
+      "monthly": "Ganancias Mensuales",
+      "expenses": "Ganancias",
+      "incomes": "Gastos"
     }
   },
   "checkout": {

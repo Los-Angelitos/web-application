@@ -28,7 +28,7 @@ export default {
   },
   data() {
     return {
-      hotelId: 1,
+      hotelId: 11,
       hotel: null,
       hotelApi: new HotelsApiService(),
       providers: [],
@@ -53,14 +53,16 @@ export default {
     try {
       const res = await this.providerApi.getProviders();
       console.log(res);
-      this.providers = res.data.map((p) => Provider.fromDisplayableProvider(p));
+      this.providers = res.data
+          .filter(p => p.state === "active")
+          .map(p => Provider.fromDisplayableProvider(p));
     } catch (error) {
       console.error("Error al obtener los proveedores:", error);
     }
 
     try {
       const res = await this.hotelApi.getHotelsById(this.hotelId);
-      this.hotel = Hotel.fromDisplayableHotel(res.data);
+      this.hotel = Hotel.fromDisplayableHotel(res);
     } catch (error) {
       console.error("Error al obtener hotel:", error);
     }
