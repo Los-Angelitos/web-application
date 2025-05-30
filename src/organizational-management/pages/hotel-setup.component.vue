@@ -43,13 +43,6 @@
           </div>
 
           <div class="form-section">
-            <InputTextComponent
-                v-model="hotelType"
-                :label="i18n.global.t('hotel-setup.form-section.hotel-type')"
-            />
-          </div>
-
-          <div class="form-section">
             <div class="section-title">{{i18n.global.t('hotel-setup.form-section.room-type')}}</div>
 
             <div class="checkbox-options">
