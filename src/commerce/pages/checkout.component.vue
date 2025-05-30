@@ -120,6 +120,8 @@ import ModalComponent from "../../shared/components/modal.component.vue";
 import i18n from "../../i18n.js";
 import {PaymentApiService} from "../services/payment-api.service.js";
 import {PaymentOwner} from "../model/payment-owner.entity.js";
+import {ContractApiService} from "../services/contract-api.service.js";
+import {ContractOwner} from "../model/contract-owner.entity.js";
 
 export default {
   name: 'CheckoutPage',
@@ -145,6 +147,10 @@ export default {
     paymentApiService:{
       type: Object,
       default: () => new PaymentApiService()
+    },
+    contractApiService: {
+      type: Object,
+      default: () => new ContractApiService()
     }
   },
   mounted() {
@@ -164,6 +170,22 @@ export default {
     }
   },
   methods: {
+    getStartDate() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+      const day = String(today.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    },
+    getFinalDate() {
+      const today = new Date();
+      const finalDate = new Date(today);
+      finalDate.setMonth(finalDate.getMonth() + 1); // Add one month
+      const year = finalDate.getFullYear();
+      const month = String(finalDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+      const day = String(finalDate.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    },
     loadSubscriptionData(id){
         if (this.$i18n.locale === 'en') {
           if (id == 1) {
@@ -229,7 +251,7 @@ export default {
         }
 
         await this.paymentApiService.createPaymentOwner(new PaymentOwner(userId, 'CONTRACT',finalAmmount));
-
+        await this.contractApiService.createContractOwner(new ContractOwner(userId, this.getStartDate(), this.getFinalDate(), this.$route.params.id));
         this.$router.push('/home/hotel/set-up');
       }
     },
