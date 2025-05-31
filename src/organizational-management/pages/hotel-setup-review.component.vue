@@ -2,6 +2,8 @@
 import PicturePlaceholderComponent from "../../shared/components/picture-placeholder.component.vue";
 import ButtonComponent from "../../shared/components/button.component.vue";
 import {HotelsApiService} from "../../shared/services/hotels-api.service.js";
+import {MultimediaApiService} from "../services/multimedia-api.service.js";
+import Cloudinary from "../../shared/services/external/cloudinary.js";
 
 export default {
   name: "HotelSetupReview",
@@ -20,9 +22,8 @@ export default {
         ownerId: 0
       },
       mainImage: null,
-      roomImage: null,
-      beachImage: null,
-      logoImage: null,
+      secondariesImages: [],
+      imagesLoaded: false,
       editing: {
         description: false,
         email: false,
@@ -32,17 +33,50 @@ export default {
         description: '',
         email: '',
         phone: ''
-      }
+      },
+      // Image data storage
+      mainImageData: {
+        file: null,
+        dataUrl: null,
+        cloudinaryUrl: null
+      },
+      roomImageData: {
+        file: null,
+        dataUrl: null,
+        cloudinaryUrl: null
+      },
+      beachImageData: {
+        file: null,
+        dataUrl: null,
+        cloudinaryUrl: null
+      },
+      logoImageData: {
+        file: null,
+        dataUrl: null,
+        cloudinaryUrl: null
+      },
+      // Upload status tracking
+      uploadingImages: {
+        main: false,
+        room: false,
+        beach: false
+      },
+      cloudinary: new Cloudinary()
     };
   },
   props: {
     hotelsApiService: {
       type: Object,
       default: () => new HotelsApiService()
+    },
+    multimediaApiService: {
+      type: Object,
+      default: () => new MultimediaApiService()
     }
   },
   async mounted() {
-    await this.loadHotelData()
+    await this.loadHotelData();
+    await this.getImageUrls();
   },
   methods: {
     async loadHotelData() {
@@ -67,21 +101,145 @@ export default {
         console.error("Error loading hotel data:", error);
       }
     },
-    onMainImageSelected(imageData) {
-      this.mainImage = imageData;
+    async getImageUrls() {
+      try {
+        let hotelId = localStorage.getItem("hotelId");
+
+        if (hotelId) {
+          this.mainImage = await this.multimediaApiService.getMainMultimediaByHotelId(hotelId);
+          console.log('Main image:', this.mainImage);
+          this.secondariesImages = await this.multimediaApiService.getDetailsMultimediaByHotelId(hotelId);
+          console.log('Secondary images:', this.secondariesImages);
+          this.imagesLoaded = true; // Mark images as loaded
+        }
+      } catch (error) {
+        console.error('Error fetching images:', error);
+        this.imagesLoaded = true; // Still mark as loaded to show fallbacks
+      }
+    },
+    getMainImageUrl() {
+      if (this.mainImage && this.mainImage.url) {
+        return this.mainImage.url;
+      }
+      return '/public/hotel_aerial_view.png'; // Fallback image
+    },
+    getSecondaryImageUrl(index) {
+      // Check if secondariesImages array exists and has enough items
+      if (!this.secondariesImages || this.secondariesImages.length <= index) {
+        console.log('Secondary images not loaded yet or index out of bounds:', index);
+        const fallbacks = ['/public/hotel_room.png', '/public/hotel_beach.png'];
+        return fallbacks[index] || '/public/hotel_room.png';
+      }
+
+      let entity = this.secondariesImages[index];
+      console.log('Entity at index', index, ':', entity);
+
+      if (entity && entity.url) {
+        console.log('Using entity URL:', entity.url);
+        return entity.url;
+      }
+
+      // Fallback images
+      const fallbacks = ['/public/hotel_room.png', '/public/hotel_beach.png'];
+      console.log('Using fallback image for index:', index);
+      return fallbacks[index] || '/public/hotel_room.png';
+    },
+    async onMainImageSelected(imageData) {
       console.log("Main image selected:", imageData);
+
+      if (imageData && imageData.file) {
+        // Store the file and dataUrl immediately for preview
+        this.mainImageData.file = imageData.file;
+        this.mainImageData.dataUrl = imageData.dataUrl;
+
+        // Upload to Cloudinary
+        await this.uploadImageToCloudinary('main', imageData.file);
+      }
     },
-    onRoomImageSelected(imageData) {
-      this.roomImage = imageData;
+    async onRoomImageSelected(imageData) {
       console.log("Room image selected:", imageData);
+
+      if (imageData && imageData.file) {
+        // Store the file and dataUrl immediately for preview
+        this.roomImageData.file = imageData.file;
+        this.roomImageData.dataUrl = imageData.dataUrl;
+
+        // Upload to Cloudinary
+        await this.uploadImageToCloudinary('room', imageData.file);
+      }
     },
-    onBeachImageSelected(imageData) {
-      this.beachImage = imageData;
+    async onBeachImageSelected(imageData) {
       console.log("Beach image selected:", imageData);
+
+      if (imageData && imageData.file) {
+        // Store the file and dataUrl immediately for preview
+        this.beachImageData.file = imageData.file;
+        this.beachImageData.dataUrl = imageData.dataUrl;
+
+        // Upload to Cloudinary
+        await this.uploadImageToCloudinary('beach', imageData.file);
+      }
     },
-    onLogoSelected(imageData) {
-      this.logoImage = imageData;
+    async onLogoSelected(imageData) {
       console.log("Logo selected:", imageData);
+
+      if (imageData && imageData.file) {
+        // Store the file and dataUrl immediately for preview
+        this.logoImageData.file = imageData.file;
+        this.logoImageData.dataUrl = imageData.dataUrl;
+
+        // Upload to Cloudinary
+        await this.uploadImageToCloudinary('logo', imageData.file);
+      }
+    },
+    async uploadImageToCloudinary(imageType, file) {
+      this.uploadingImages[imageType] = true;
+
+      try {
+        console.log(`Uploading ${imageType} image to Cloudinary...`);
+        const cloudinaryUrl = await this.cloudinary.uploadImage(file);
+
+        if (cloudinaryUrl) {
+          // Store the Cloudinary URL
+          switch (imageType) {
+            case 'main':
+              this.mainImageData.cloudinaryUrl = cloudinaryUrl;
+              break;
+            case 'room':
+              this.roomImageData.cloudinaryUrl = cloudinaryUrl;
+              break;
+            case 'beach':
+              this.beachImageData.cloudinaryUrl = cloudinaryUrl;
+              break;
+            case 'logo':
+              this.logoImageData.cloudinaryUrl = cloudinaryUrl;
+              break;
+          }
+
+          console.log(`${imageType} image uploaded successfully:`, cloudinaryUrl);
+        } else {
+          throw new Error('Failed to upload image to Cloudinary');
+        }
+      } catch (error) {
+        console.error(`Error uploading ${imageType} image:`, error);
+        this.errorMessage = `Error al subir la imagen ${imageType}. Por favor, inténtelo de nuevo.`;
+        this.showErrorModal = true;
+
+        // Reset the image data on error
+        switch (imageType) {
+          case 'main':
+            this.mainImageData = { file: null, dataUrl: null, cloudinaryUrl: null };
+            break;
+          case 'room':
+            this.roomImageData = { file: null, dataUrl: null, cloudinaryUrl: null };
+            break;
+          case 'beach':
+            this.beachImageData = { file: null, dataUrl: null, cloudinaryUrl: null };
+            break;
+        }
+      } finally {
+        this.uploadingImages[imageType] = false;
+      }
     },
     enableEdit(field) {
       this.editable[field] = this.hotel[field];
@@ -106,6 +264,8 @@ export default {
 
       await this.hotelsApiService.UpdateHotel({"description": this.hotel.description, "email": this.hotel.email,
         "address": this.hotel.address, "phone": this.hotel.phone, "ownerId": this.hotel.ownerId}, hotelId);
+
+      await this.multimediaApiService.createMultimedia({"hotelId": hotelId, "url": this.logoImageData.cloudinaryUrl, "type": "LOGO", "position": 1});
 
       this.$router.push(`/home/hotel/${hotelId}/overview`);
     }
@@ -132,9 +292,10 @@ export default {
           <!-- Main aerial image -->
           <div class="main-image-container">
             <PicturePlaceholderComponent
+                :key="`main-${imagesLoaded}`"
                 ref="mainImagePlaceholder"
-                @image-selected="onMainImageSelected"
-                :initialImage="'/public/hotel_aerial_view.png'"
+                @image-selected="onRoomImageSelected"
+                :initialImage="getSecondaryImageUrl(0)"
                 width="100%"
                 height="100%"
                 class="hotel-image-placeholder"
@@ -144,9 +305,10 @@ export default {
           <!-- Room image -->
           <div class="room-image-container">
             <PicturePlaceholderComponent
+                :key="`room-${imagesLoaded}`"
                 ref="roomImagePlaceholder"
-                @image-selected="onRoomImageSelected"
-                :initialImage="'/public/hotel_room.png'"
+                @image-selected="onBeachImageSelected"
+                :initialImage="getSecondaryImageUrl(1)"
                 width="100%"
                 height="100%"
                 class="hotel-image-placeholder"
@@ -156,9 +318,10 @@ export default {
           <!-- Beach image -->
           <div class="beach-image-container">
             <PicturePlaceholderComponent
+                :key="`beach-${imagesLoaded}`"
                 ref="beachImagePlaceholder"
-                @image-selected="onBeachImageSelected"
-                :initialImage="'/public/hotel_beach.png'"
+                @image-selected="onMainImageSelected"
+                :initialImage="getMainImageUrl()"
                 width="100%"
                 height="100%"
                 class="hotel-image-placeholder"

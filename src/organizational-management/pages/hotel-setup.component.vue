@@ -192,12 +192,12 @@
 
       <div class="hotel-images-section">
         <div class="image-gallery">
-          <div class="main-images">
-            <img src="/public/hotel_aerial_view.png" alt="Vista aérea del hotel" class="hotel-image main-image" />
-            <img src="/public/hotel_room.png" alt="Habitación del hotel" class="hotel-image secondary-image" />
-          </div>
           <div class="bottom-image">
-            <img src="/public/hotel_beach.png" alt="Playa del hotel" class="hotel-image" />
+            <img :src="getMainImageUrl()" alt="Playa del hotel" class="hotel-image" />
+          </div>
+          <div class="main-images">
+            <img :src="getSecondaryImageUrl(0)" alt="Vista aérea del hotel" class="hotel-image main-image" />
+            <img :src="getSecondaryImageUrl(1)" alt="Habitación del hotel" class="hotel-image secondary-image" />
           </div>
         </div>
       </div>
@@ -210,8 +210,8 @@ import ButtonComponent from "../../shared/components/button.component.vue";
 import InputTextComponent from "../../shared/components/input-text.component.vue";
 import CheckboxComponent from "../../shared/components/checkbox.component.vue";
 import i18n from "../../i18n.js";
-import {TypeRoomApiService} from "../../reservations/services/type-room-api.service.js";
 import {SetupApiService} from "../services/setup-api.service.js";
+import {MultimediaApiService} from "../services/multimedia-api.service.js";
 
 export default {
   name: 'HotelSetupPage',
@@ -250,16 +250,50 @@ export default {
         }
       },
       adminEmail: '',
-      adminEmails: []
+      adminEmails: [],
+      mainImage: null,
+      secondariesImages: [],
     }
   },
   props: {
     setupApiService: {
       type: Object,
       default: () => new SetupApiService()
+    },
+    multimediaApiService: {
+      type: Object,
+      default: () => new MultimediaApiService()
     }
   },
+  async mounted() {
+    await this.getImageUrls();
+  },
   methods: {
+    async getImageUrls() {
+      try {
+        let hotelId = localStorage.getItem("hotelId");
+        this.mainImage = await this.multimediaApiService.getMainMultimediaByHotelId(hotelId);
+        console.log('Main image:', this.mainImage);
+        this.secondariesImages = await this.multimediaApiService.getDetailsMultimediaByHotelId(hotelId);
+        console.log('Secondary images:', this.secondariesImages);
+      } catch (error) {
+        console.error('Error fetching images:', error);
+      }
+    },
+    getMainImageUrl() {
+      if (this.mainImage && this.mainImage.url) {
+        return this.mainImage.url;
+      }
+      return '/public/hotel_beach.png'; // Fallback image
+    },
+    getSecondaryImageUrl(index) {
+      if (this.secondariesImages && this.secondariesImages[index] && this.secondariesImages[index].url) {
+        return this.secondariesImages[index].url;
+      }
+      // Fallback images
+      const fallbacks = ['/public/hotel_aerial_view.png', '/public/hotel_room.png'];
+      return fallbacks[index] || '/public/hotel_aerial_view.png';
+    },
     // Number validation methods (for room count - integers only)
     onlyNumbers(event) {
       const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter'];
