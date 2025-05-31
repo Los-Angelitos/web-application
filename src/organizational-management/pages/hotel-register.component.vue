@@ -176,6 +176,7 @@ export default {
           beachImage: this.beachImage
         });
         if (response) {
+          localStorage.setItem("hotelId", response.id);
           this.$router.push('/home/hotel/set-up/details');
         } else {
           this.errorMessage = 'Error al registrar el hotel. Por favor, inténtelo de nuevo más tarde.';
