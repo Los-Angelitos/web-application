@@ -1,4 +1,4 @@
-﻿{
+{
   "analytics": {
     "overview": "Reporte general",
     "loading": "Cargando datos recuperados...",
@@ -298,6 +298,9 @@
     "to": "Hasta",
     "available": "DISPONIBLE",
     "notAvailable": "NO DISPONIBLE",
+    "changeState": "Cambiar estado",
+    "state" : "Estado ",
+
 
     "headerComponent": {
       "title": "Habitaciones",
@@ -310,12 +313,23 @@
       "dateFallback": "--/--/--"
     },
 
+    "stateModalComponent": {
+      "header": "Cambiar estado de habitación",
+      "body": "Selecciona el nuevo estado de la habitación",
+      "available": "Disponible",
+      "notAvailable": "No disponible",
+      "cancelButton": "Cancelar",
+      "changeButton": "Cambiar",
+      "stateLabel": "Estado de habitación",
+      "updateButton": "Actualizar"
+    },
+
     "roomModalComponent": {
       "header": "Nueva habitación",
       "body": "Agregar una nueva habitación al inventario del hotel",
       "roomNameLabel": "Nombre de habitación",
       "roomTypeLabel": "Tipo de habitación",
-      "roomNamePlaceholder": "Habitación 009",
+      "roomNamePlaceholder": "Habitación number",
       "roomTypePlaceholder": "Habitación doble",
       "cancelButton": "Cancelar",
       "addButton": "Agregar",
@@ -336,3 +350,4 @@
     "cancelSuccess": "Reserva cancelada para {hotelName}"
   }
 }
+
