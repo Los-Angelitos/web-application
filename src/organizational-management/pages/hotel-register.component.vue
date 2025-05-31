@@ -58,11 +58,32 @@
       <div class="hotel-images-section">
         <div class="image-gallery">
           <div class="main-image">
-            <img src="/public/hotel_aerial_view.png" alt="Vista aérea del hotel" class="hotel-image" />
+            <PicturePlaceholderComponent
+                ref="mainImagePlaceholder"
+                @image-selected="onMainImageSelected"
+                :initialImage="'/public/hotel_aerial_view.png'"
+                width="100%"
+                height="300px"
+                class="hotel-image-placeholder"
+            />
           </div>
           <div class="secondary-images">
-            <img src="/public/hotel_room.png" alt="Habitación del hotel" class="hotel-image" />
-            <img src="/public/hotel_beach.png" alt="Playa del hotel" class="hotel-image" />
+            <PicturePlaceholderComponent
+                ref="roomImagePlaceholder"
+                @image-selected="onRoomImageSelected"
+                :initialImage="'/public/hotel_room.png'"
+                width="100%"
+                height="200px"
+                class="hotel-image-placeholder secondary-image"
+            />
+            <PicturePlaceholderComponent
+                ref="beachImagePlaceholder"
+                @image-selected="onBeachImageSelected"
+                :initialImage="'/public/hotel_beach.png'"
+                width="100%"
+                height="200px"
+                class="hotel-image-placeholder secondary-image"
+            />
           </div>
         </div>
       </div>
@@ -87,6 +108,7 @@
 import ButtonComponent from "../../shared/components/button.component.vue";
 import InputTextComponent from "../../shared/components/input-text.component.vue";
 import ModalComponent from "../../shared/components/modal.component.vue";
+import PicturePlaceholderComponent from "../../shared/components/picture-placeholder.component.vue";
 import i18n from "../../i18n.js";
 import {HotelApiService} from "../services/hotel-api.service.js";
 import {Hotel} from "../../shared/model/hotel.entity.js";
@@ -101,7 +123,8 @@ export default {
   components: {
     ModalComponent,
     ButtonComponent,
-    InputTextComponent
+    InputTextComponent,
+    PicturePlaceholderComponent
   },
   data() {
     return {
@@ -111,7 +134,10 @@ export default {
       phone: '',
       description: '',
       showErrorModal: false,
-      errorMessage: ''
+      errorMessage: '',
+      mainImage: null,
+      roomImage: null,
+      beachImage: null
     }
   },
   props: {
@@ -121,11 +147,36 @@ export default {
     }
   },
   methods: {
+    onMainImageSelected(imageData) {
+      this.mainImage = imageData;
+      console.log("Main image selected:", imageData);
+    },
+    onRoomImageSelected(imageData) {
+      this.roomImage = imageData;
+      console.log("Room image selected:", imageData);
+    },
+    onBeachImageSelected(imageData) {
+      this.beachImage = imageData;
+      console.log("Beach image selected:", imageData);
+    },
     async submitForm() {
       // Validate form
       if (this.validateForm()) {
-        let response = await this.hotelApiService.createHotel({name: this.hotelName, description: this.description, email: this.email, address: this.hotelAddress, phone: this.phone});
+        let userId = localStorage.getItem('userId');
+        let response = await this.hotelApiService.createHotel({
+          ownerId: userId,
+          name: this.hotelName,
+          description: this.description,
+          email: this.email,
+          address: this.hotelAddress,
+          phone: this.phone,
+          // You can include the image data here if needed
+          mainImage: this.mainImage,
+          roomImage: this.roomImage,
+          beachImage: this.beachImage
+        });
         if (response) {
+          localStorage.setItem("hotelId", response.id);
           this.$router.push('/home/hotel/set-up/details');
         } else {
           this.errorMessage = 'Error al registrar el hotel. Por favor, inténtelo de nuevo más tarde.';
@@ -282,25 +333,38 @@ export default {
   width: 100%;
 }
 
-.secondary-images > img {
+.secondary-images > .hotel-image-placeholder {
   flex: 1;
   width: 50%;
-  height: 200px;
-  overflow: hidden;
-  border-radius: 10px;
-  object-fit: cover;
 }
 
-.hotel-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 10px;
+/* Custom styles for picture placeholders to match the original design */
+.hotel-image-placeholder {
+  border-radius: 10px !important;
+  overflow: hidden;
+}
+
+.hotel-image-placeholder .image-placeholder {
+  border-radius: 10px !important;
+  border: none !important;
   transition: transform 0.3s ease;
 }
 
-.hotel-image:hover {
+.hotel-image-placeholder .image-placeholder:hover {
   transform: scale(1.03);
+}
+
+/* Override placeholder component styles to match hotel image design */
+.hotel-image-placeholder .image-placeholder {
+  background-color: #f8f9fa;
+}
+
+.hotel-image-placeholder .placeholder-content {
+  color: #666;
+}
+
+.hotel-image-placeholder .image-overlay {
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 /* Responsive styles */
@@ -313,7 +377,7 @@ export default {
     height: 250px;
   }
 
-  .secondary-images img {
+  .secondary-images .hotel-image-placeholder {
     height: 170px;
   }
 }
@@ -339,7 +403,7 @@ export default {
     height: 300px;
   }
 
-  .secondary-images img {
+  .secondary-images .hotel-image-placeholder {
     height: 180px;
   }
 }
@@ -366,7 +430,7 @@ export default {
     height: 250px;
   }
 
-  .secondary-images img {
+  .secondary-images .hotel-image-placeholder {
     height: 150px;
   }
 }
@@ -384,7 +448,7 @@ export default {
     flex-direction: column;
   }
 
-  .secondary-images img {
+  .secondary-images .hotel-image-placeholder {
     width: 100%;
     height: 180px;
   }
@@ -411,7 +475,7 @@ export default {
     height: 180px;
   }
 
-  .secondary-images img {
+  .secondary-images .hotel-image-placeholder {
     height: 150px;
   }
 }

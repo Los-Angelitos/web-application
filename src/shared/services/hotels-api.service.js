@@ -11,8 +11,8 @@ export class HotelsApiService {
         return http.get(`/hotels/owner/${userId}`).then(response => response.data[0]);
     }
 
-    static UpdateHotel(hotel) {
-        return http.put(`/hotels/${hotel.id}`, hotel).then(response => response.data);
+    UpdateHotel(hotel, id) {
+        return http.put(`/hotels/${id}`, hotel).then(response => response.data);
     }
 
 }
