@@ -1,4 +1,4 @@
-﻿{
+{
   "analytics": {
     "overview": "Overview reporting",
     "loading": "Loading income data...",
@@ -299,12 +299,26 @@
     "to": "To",
     "available": "AVAILABLE",
     "notAvailable": "NOT AVAILABLE",
+    "changeState": "Change state",
+    "state" : "State ",
 
     "headerComponent": {
       "title": "Rooms",
       "deleteButton": "Delete",
       "addButton": "Add"
     },
+
+    "stateModalComponent": {
+      "header": "Change Room State",
+      "body": "Select the new state for the room",
+      "available": "Available",
+      "notAvailable": "Not available",
+      "cancelButton": "Cancel",
+      "changeButton": "Change",
+      "stateLabel": "Room state",
+      "updateButton": "Update"
+    },
+
 
     "roomCardComponent": {
       "guestFallback": "-",
@@ -316,7 +330,7 @@
       "body": "Add a new room to the hotel inventory",
       "roomNameLabel": "Room name",
       "roomTypeLabel": "Room type",
-      "roomNamePlaceholder": "Room 009",
+      "roomNamePlaceholder": "Room number",
       "roomTypePlaceholder": "Double room",
       "cancelButton": "Cancel",
       "addButton": "Add",
