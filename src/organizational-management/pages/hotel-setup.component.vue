@@ -192,12 +192,12 @@
 
       <div class="hotel-images-section">
         <div class="image-gallery">
+          <div class="bottom-image">
+            <img :src="getMainImageUrl()" alt="Playa del hotel" class="hotel-image" />
+          </div>
           <div class="main-images">
             <img :src="getSecondaryImageUrl(0)" alt="Vista aérea del hotel" class="hotel-image main-image" />
             <img :src="getSecondaryImageUrl(1)" alt="Habitación del hotel" class="hotel-image secondary-image" />
-          </div>
-          <div class="bottom-image">
-            <img :src="getMainImageUrl()" alt="Playa del hotel" class="hotel-image" />
           </div>
         </div>
       </div>
