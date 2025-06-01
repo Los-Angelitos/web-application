@@ -15,6 +15,7 @@
 <script>
 import HotelCard from "../components/hotel-card.component.vue"
 import hotelsMocked from "../../mocks/organizational-management/hotels-data.json"
+import { HotelApiService } from "../services/hotel-api.service.js";
 
 export default {
   name: 'HotelGallery',
@@ -23,8 +24,32 @@ export default {
   },
   data() {
     return {
-      hotels: hotelsMocked
+      hotels: [],
+      hotelApi: new HotelApiService(),
+      hotelsMocked: hotelsMocked // Mocked data
     };
+  },
+  
+  
+  async created() {
+    try {
+      
+      const response = await this.hotelApi.getHotels();
+      console.log(response);
+      const data = response.data;
+      this.hotels = data.map(hotel => ({
+        id: hotel.id,
+        name: hotel.name,
+        description: hotel.description,
+        email: hotel.email,
+        address: hotel.address,
+        phone: hotel.phone,
+        ownerId: hotel.ownerId,
+      }));
+    } catch (error) {
+      console.error("Error fetching hotels:", error);
+    }
+    //this.hotels = hotelsMocked; // Use mocked data for now
   },
   methods: {
     onSelectHotel(hotelId) {

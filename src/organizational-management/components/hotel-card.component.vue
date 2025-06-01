@@ -8,7 +8,7 @@
       </div>
     </div>
     <div class="hotel-info">
-      <h3 class="hotel-location">{{ hotel.location }}</h3>
+      <h3 class="hotel-location">{{ hotel.address }}</h3>
       <p class="hotel-name">{{ hotel.name }}</p>
     </div>
     <div class="hotel-price">
