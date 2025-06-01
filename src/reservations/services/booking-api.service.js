@@ -7,7 +7,11 @@ export class BookingApiService {
     }
 
     getBookings(hotelId) {
-        return http.get('/booking/get-all-bookings?hotelId=${hotelId}');
+        return http.get(`/booking/get-all-bookings?hotelId=${hotelId}`);
+    }
+
+    getBookingsByCustomer(customerId) {
+        return http.get(`/booking/get-booking-by-customer-id?customerId=${customerId}`);
     }
 
     updateBooking(bookingId, state) {
