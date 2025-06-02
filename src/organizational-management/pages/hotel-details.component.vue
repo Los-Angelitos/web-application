@@ -105,10 +105,24 @@ export default {
     async getHotelDetailsImages(hotelId) {
       try {
         const response = await this.hotelApiService.getHotelDetailMultimedia(hotelId);
-        return response.data.map(image => image.url); // Asumiendo que la API devuelve un array de objetos con una propiedad 'url'
+        if (!response.data || response.data.length === 0) {
+          console.warn("No images found for hotel:", hotelId);
+          return [
+            'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg',
+            'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg',
+            'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg'
+          ];
+        }
+
+
+        return response.data.map(image => image.url);
       } catch (error) {
         console.error("Error fetching hotel images:", error);
-        return [];
+        return [
+          'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg',
+          'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg',
+          'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg'
+        ]
       }
     },
     async getLogoHotelImage(hotelId) {
