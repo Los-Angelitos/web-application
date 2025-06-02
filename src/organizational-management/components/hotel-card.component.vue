@@ -30,10 +30,7 @@ export default {
   props: {
     hotel: {
       type: Object,
-      required: true,
-      validator: (hotel) => {
-        return hotel.imageUrl && hotel.name && hotel.location && hotel.price;
-      }
+      required: true
     }
   },
   methods: {
