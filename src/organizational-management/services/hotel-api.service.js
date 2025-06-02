@@ -12,4 +12,12 @@ export class HotelApiService {
     getHotelByCategory(category) {
         return http.get(`/hotels/category/${category}`);
     }
+
+    getHotelMainMultimedia(hotelId) {
+        return http.get(`/multimedia/main?hotelId=${hotelId}`);
+    }
+
+    getHotelLogoMultimedia(hotelId) {
+        return http.get(`/multimedia/logo?hotelId=${hotelId}`);
+    }
 }
