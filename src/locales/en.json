@@ -231,7 +231,8 @@
       "ownerAlt": "Owner photo",
       "ownerTitle": "Owner",
       "adminAlt": "Administrator photo",
-      "adminTitle": "Administrator"
+      "adminTitle": "Administrator",
+      "guestTitle": "Hotel Owner"
     },
     "modal": {
       "title": "Invite administrator",
