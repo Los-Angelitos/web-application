@@ -18,6 +18,9 @@ export default {
       handleButton() {
         console.log("Hello!");
       },
+      onCategoryChanged(category) {
+      console.log('Category changed to:', category);
+    }
 
   }
 }
@@ -25,8 +28,8 @@ export default {
 
 <template>
   <SearchBar />
-  <MainPageNavigation />
-  <HotelGallery />
+  <MainPageNavigation @category-changed="onCategoryChanged"/>
+  <HotelGallery ref="hotelGallery"/>
 </template>
 
 <style scoped>
