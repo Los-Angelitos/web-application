@@ -61,12 +61,12 @@ export default {
     navigationItems: {
       type: Array,
       default: () => [
-        {id: "featured", label: i18n.global.t('main-page.main-page-nav-component.featured'), path: "", icon: TrophyIcon, isActive: true},
-        {id: "lake", label: i18n.global.t('main-page.main-page-nav-component.lake'), path: "", icon: LakeIcon, isActive: false},
-        {id: "pool", label: i18n.global.t('main-page.main-page-nav-component.pool'), path: "", icon: PoolIcon, isActive: false},
-        {id: "beach", label: i18n.global.t('main-page.main-page-nav-component.beach'), path: "", icon: BeachIcon, isActive: false},
-        {id: "rural", label: i18n.global.t('main-page.main-page-nav-component.rural'), path: "", icon: RuralIcon, isActive: false},
-        {id: "suite", label: i18n.global.t('main-page.main-page-nav-component.suite'), path: "", icon: SuiteIcon, isActive: false}
+        {id: "featured", label: i18n.global.t('main-page.main-page-nav-component.featured'), category: "all", icon: TrophyIcon, isActive: true},
+        {id: "lake", label: i18n.global.t('main-page.main-page-nav-component.lake'), category: "near_the_lake", icon: LakeIcon, isActive: false},
+        {id: "pool", label: i18n.global.t('main-page.main-page-nav-component.pool'), category: "with_a_pool", icon: PoolIcon, isActive: false},
+        {id: "beach", label: i18n.global.t('main-page.main-page-nav-component.beach'), category: "near_the_beach", icon: BeachIcon, isActive: false},
+        {id: "rural", label: i18n.global.t('main-page.main-page-nav-component.rural'), category: "rural_hotel", icon: RuralIcon, isActive: false},
+        {id: "suite", label: i18n.global.t('main-page.main-page-nav-component.suite'), category: "suite", icon: SuiteIcon, isActive: false}
       ]
     }
   },
@@ -75,7 +75,7 @@ export default {
     return {
       isMobile: false,
       isMobileMenuOpen: false,
-      navigationItemsData: this.navigationItems, // Initialize with prop data
+      navigationItemsData: [], // Will be populated in mounted
       screenWidth: window.innerWidth
     };
   },
@@ -85,11 +85,27 @@ export default {
       return i18n;
     },
     currentSelection() {
-      return this.navigationItems.find(item => item.isActive) || this.navigationItems[0];
+      return this.navigationItemsData.find(item => item.isActive) || this.navigationItemsData[0];
+    }
+  },
+
+  watch: {
+    // Watch for URL changes to update active item
+    '$route.query.category': {
+      handler(newCategory) {
+        this.updateActiveItemFromURL(newCategory);
+      },
+      immediate: true
     }
   },
 
   mounted() {
+    // Initialize navigation items data
+    this.navigationItemsData = [...this.navigationItems];
+    
+    // Set initial active item based on URL
+    this.updateActiveItemFromURL(this.$route.query.category);
+    
     this.checkScreenSize();
     window.addEventListener('resize', this.handleResize);
   },
@@ -100,12 +116,47 @@ export default {
 
   methods: {
     setActiveItem(id) {
-      this.navigationItemsData = this.navigationItems.map(item => ({
+      // Update local state
+      this.navigationItemsData = this.navigationItemsData.map(item => ({
         ...item,
         isActive: item.id === id
       }));
       
-      this.$router.push({ path: this.navigationItemsData.find(item => item.id === id).path });
+      // Get the selected item
+      const selectedItem = this.navigationItemsData.find(item => item.id === id);
+      
+      // Update URL with category query parameter
+      const query = selectedItem.category === "all" ? {} : { category: selectedItem.category };
+      
+      // Only push to router if the query is different from current
+      if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) {
+        this.$router.push({ 
+          path: this.$route.path, 
+          query 
+        });
+      }
+      
+      // Emit event for parent components to listen
+      this.$emit('category-changed', selectedItem.category);
+    },
+
+    updateActiveItemFromURL(categoryFromURL) {
+      // Find the item that matches the category from URL
+      const category = categoryFromURL || "all";
+      const matchingItem = this.navigationItemsData.find(item => item.category === category);
+      
+      if (matchingItem) {
+        this.navigationItemsData = this.navigationItemsData.map(item => ({
+          ...item,
+          isActive: item.category === category
+        }));
+      } else {
+        // If no matching category, default to "featured" (all)
+        this.navigationItemsData = this.navigationItemsData.map(item => ({
+          ...item,
+          isActive: item.category === "all"
+        }));
+      }
     },
 
     handleResize() {
