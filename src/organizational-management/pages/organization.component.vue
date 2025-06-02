@@ -3,7 +3,6 @@
       :navigationItems="navigationItems"
   />
   <div class="organization-container">
-    <!-- Header Section -->
     <div class="org-header">
       <h1>Royal Decameron Punta Sal</h1>
       <span class="subtitle">{{ $t('organization.title') }}</span>
@@ -17,24 +16,45 @@
       />
     </div>
 
-    <!-- Org Chart -->
     <div class="org-chart">
-      <!-- Level 1 -->
       <div class="level level-1">
-        <div class="node">
+        <div class="node" v-if="!isLoading && guestData">
           <div class="avatar-container">
             <div class="avatar">
-              <img src="../../assets/images/owner.png" :alt="$t('organization.chart.ownerAlt')" />
+              <img :src="guestData.profileImage || '../../assets/images/guest.png'" :alt="$t('organization.chart.guestAlt')" />
             </div>
           </div>
           <div class="node-info">
-            <div class="name">Carlo Rebagliati</div>
-            <div class="title">{{ $t('organization.chart.ownerTitle') }}</div>
+            <div class="name">{{ guestData.name }} {{ guestData.surname }}</div>
+            <div class="title">{{ $t('organization.chart.guestTitle') }}</div>
+          </div>
+        </div>
+
+        <div class="node" v-else-if="isLoading">
+          <div class="avatar-container">
+            <div class="avatar loading-avatar">
+              <div class="loading-spinner"></div>
+            </div>
+          </div>
+          <div class="node-info">
+            <div class="name">{{ $t('common.loading') }}</div>
+            <div class="title">...</div>
+          </div>
+        </div>
+
+        <div class="node" v-else>
+          <div class="avatar-container">
+            <div class="avatar">
+              <img src="../../assets/images/default-user.png" :alt="$t('organization.chart.defaultAlt')" />
+            </div>
+          </div>
+          <div class="node-info">
+            <div class="name">{{ $t('common.error') }}</div>
+            <div class="title">{{ $t('organization.chart.guestTitle') }}</div>
           </div>
         </div>
       </div>
 
-      <!-- Connection lines -->
       <div class="connections">
         <div class="vertical-line"></div>
         <div class="horizontal-line"></div>
@@ -42,7 +62,6 @@
         <div class="right-vertical-line"></div>
       </div>
 
-      <!-- Level 2 -->
       <div class="level level-2">
         <div class="node-container">
           <div class="node">
@@ -72,11 +91,9 @@
       </div>
     </div>
 
-    <!-- Invite Admin Modal -->
     <div v-if="showModal" class="modal-overlay" @click="closeOnOverlayClick && closeModal()">
       <div class="modal-container" @click.stop>
         <div class="modal-content">
-          <!-- Icon -->
           <div class="modal-icon">
             <div class="icon-circle">
               <svg xmlns="http://www.w3.org/2000/svg" class="user-plus-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -88,12 +105,10 @@
             </div>
           </div>
 
-          <!-- Title -->
           <div class="modal-header">
             <h3>{{ $t('organization.modal.title') }}</h3>
           </div>
 
-          <!-- Email field -->
           <div class="modal-body">
             <div class="input-group">
               <label for="email">{{ $t('organization.modal.emailLabel') }}</label>
@@ -130,6 +145,7 @@ import InventoryIcon from "../../assets/organizational-management/inventory-icon
 import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
+import { OrganizationApiService } from "../services/organization-api.service.js";
 
 export default {
   name: "OrganizationPage",
@@ -142,6 +158,8 @@ export default {
       showModal: false,
       email: '',
       closeOnOverlayClick: true,
+      guestData: null,
+      isLoading: true,
       navigationItems: [
         {id: "overview", label: "Overview", path: "/home/hotel/1/overview", icon: OverviewIcon, isActive: false},
         {id: "analytics", label: "Analytics", path: "/home/hotel/1/analytics", icon: AnalyticsIcon, isActive: false},
@@ -151,9 +169,92 @@ export default {
         {id: "organization", label: "Organization", path: "/home/hotel/1/organization", icon: OrganizationIcon, isActive: true},
         {id: "devices", label: "Devices", path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: false}
       ],
+      organizationService: new OrganizationApiService(),
     };
   },
+  async mounted() {
+    await this.loadGuestData();
+  },
   methods: {
+
+    async loadGuestData() {
+      try {
+        this.isLoading = true;
+        const guestId = this.getGuestIdFromToken();
+
+        if (!guestId) {
+          console.error('Guest ID not found in token');
+          this.guestData = null;
+          return;
+        }
+
+        console.log('Loading guest data for ID:', guestId);
+        const response = await this.organizationService.getOwnerById(guestId);
+
+        if (response && response.data) {
+          this.guestData = response.data;
+          console.log('Guest data loaded successfully:', this.guestData);
+        } else {
+          console.warn('No data received from API');
+          this.guestData = null;
+        }
+
+      } catch (error) {
+        console.error('Error loading guest data:', error);
+        this.guestData = null;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    getGuestIdFromToken() {
+      try {
+        const token = localStorage.getItem('token') || this.$store.getters.getToken;
+
+        if (!token) {
+          console.error('No token found');
+          return null;
+        }
+
+        const tokenParts = token.split('.');
+        if (tokenParts.length !== 3) {
+          console.error('Invalid token structure');
+          return null;
+        }
+
+        const base64Url = tokenParts[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+
+        const padLength = 4 - (base64.length % 4);
+        const paddedBase64 = base64 + '='.repeat(padLength % 4);
+
+        const jsonPayload = decodeURIComponent(
+            atob(paddedBase64)
+                .split('')
+                .map(function(c) {
+                  return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                })
+                .join('')
+        );
+
+        const decoded = JSON.parse(jsonPayload);
+        console.log('Decoded token:', decoded);
+
+        const guestId = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid"];
+
+        const currentTime = Math.floor(Date.now() / 1000);
+        if (decoded.exp && decoded.exp < currentTime) {
+          console.error('Token has expired');
+          return null;
+        }
+
+        return guestId ? parseInt(guestId) : null;
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        return null;
+      }
+    },
+
     saveUser() {
       if (this.email.trim() === '') {
         alert(this.$t('organization.modal.validation.emailRequired'));
@@ -164,6 +265,7 @@ export default {
       this.email = '';
       this.showModal = false;
     },
+
     closeModal() {
       this.showModal = false;
     }
@@ -309,7 +411,27 @@ export default {
   background-color: #ccc;
 }
 
-/* Modal */
+.loading-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+}
+
+.loading-spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #0066cc;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
