@@ -35,10 +35,14 @@ export default {
     try {
       
       const response = await this.hotelApi.getHotels();
+      
+
       console.log(response);
       const data = response.data;
       this.hotels = data.map(hotel => ({
         id: hotel.id,
+        logoUrl: this.getLogoHotelImage(hotel.id),
+        imageUrl: this.getMainHotelImage(hotel.id),
         name: hotel.name,
         description: hotel.description,
         email: hotel.email,
@@ -49,14 +53,24 @@ export default {
     } catch (error) {
       console.error("Error fetching hotels:", error);
     }
-    //this.hotels = hotelsMocked; // Use mocked data for now
+    //this.hotels = hotelsMocked; 
   },
   methods: {
     onSelectHotel(hotelId) {
       console.log(`Selected hotel ID: ${hotelId}`);
       this.$router.push(`/home/hotel/${hotelId}`);
+    },
+    getMainHotelImage(hotelId) {
+      const response = this.hotelApi.getHotelMainMultimedia(hotelId);
+      return response.data.imageUrl || 'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg'; // Fallback image URL
+    },
+    getLogoHotelImage(hotelId) {
+      const response = this.hotelApi.getHotelLogoMultimedia(hotelId);
+      return response.data.imageUrl || 'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg'; // Fallback image URL
+  
     }
   }
+
 }
 </script>
   
