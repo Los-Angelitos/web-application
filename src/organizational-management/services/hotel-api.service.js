@@ -1,67 +1,27 @@
-﻿import http from "../../shared/services/http-common.js";
+import http from "../../shared/services/http-common.js"
 
 export class HotelApiService {
-    createHotel(hotel){
-        return http.post("/hotels", hotel)
-            .then(response => {
-                if(response.status === 201) {
-                    return response.data;
-                }
-                else {
-                    return null;
-                }
-            })
-            .catch(error => {
-                console.error("Error creating hotel:", error);
-                throw error;
-            });
+    getHotels() {
+        return http.get(`/hotels`);
     }
 
-    updateHotel(hotel) {
-        return http.put(`/hotels/${hotel.hotelId}`, hotel)
-            .then(response => {
-                if(response.status === 200) {
-                    return response.data;
-                }
-                else {
-                    return null;
-                }
-            })
-            .catch(error => {
-                console.error("Error updating hotel:", error);
-                throw error;
-            });
+    async getHotelById(hotelId) {
+        return http.get(`/hotels/${hotelId}`);
     }
 
-    getAllHotels() {
-        return http.get("/hotels")
-            .then(response => {
-                if (response.status === 200) {
-                    return response.data;
-                }
-                else {
-                    return [];
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching all hotels:", error);
-                throw error;
-            });
+    getHotelByCategory(category) {
+        return http.get(`/hotels/category/${category}`);
     }
 
-    getHotelByOwnerId(ownerId) {
-        return http.get(`/hotels/owner/${ownerId}`)
-            .then(response => {
-                if (response.status === 200){
-                    return response.data;
-                }
-                else {
-                    return null;
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching hotels by owner ID:", error);
-                throw error;
-            });
+    async getHotelMainMultimedia(hotelId) {
+        return http.get(`/multimedia/main?hotelId=${hotelId}`);
+    }
+
+    async getHotelDetailMultimedia(hotelId) {
+        return http.get(`/multimedia/details?hotelId=${hotelId}`);
+    }
+
+    async getHotelLogoMultimedia(hotelId) {
+        return http.get(`/multimedia/logo?hotel=${hotelId}`);
     }
 }

@@ -34,7 +34,7 @@
           <h2>📍</h2>
         </div>
         <div class="location-text">
-          <h2>{{ hotel.location }}</h2>
+          <h2>{{ hotel.name }}</h2>
           <p>{{ hotel.address }}</p>
         </div>
       </div>
@@ -42,12 +42,12 @@
       <!-- Información del contacto -->
       <div class="contact-info">
         <div class="hotel-brand">
-          <img :src="hotel.logoUrl" :alt="hotel.brand" class="brand-logo">
+          <img :src="hotel.logoUrl" :alt="hotel.name" class="brand-logo">
           <div class="brand-details">
-            <h3>{{ hotel.brand }}</h3>
-            <p>✉️ {{ hotel.contactEmail }}</p>
+            <h3>{{ hotel.name }}</h3>
+            <p>✉️ {{ hotel.email }}</p>
             <p class="phone-number">
-              <span class="phone-icon">📞</span> {{ hotel.contactPhone }}
+              <span class="phone-icon">📞</span> {{ hotel.phone }}
             </p>
           </div>
         </div>
@@ -80,8 +80,8 @@
 
 
 <script>
-import hotelsMocked from "../../mocks/organizational-management/hotels-data.json"
 import i18n from "../../i18n.js";
+import { HotelApiService } from "../services/hotel-api.service.js";
 
 export default {
   name: 'HotelDetailPage',
@@ -92,25 +92,80 @@ export default {
   },
   data() {
     return {
-      hotel: null,
+      hotelApiService: new HotelApiService(),
       currentImageIndex: 0,
-      // Datos de ejemplo para demostración
-      hotelData: hotelsMocked
+      hotel: null
     };
   },
-  created() {
+  async created() {
     // llamada a la API
-    this.fetchHotelData();
+    await this.fetchHotelData();
   },
   methods: {
-    fetchHotelData() {
+    async getHotelDetailsImages(hotelId) {
+      try {
+        const response = await this.hotelApiService.getHotelDetailMultimedia(hotelId);
+        if (!response.data || response.data.length === 0) {
+          console.warn("No images found for hotel:", hotelId);
+          return [
+            'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg',
+            'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg',
+            'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg'
+          ];
+        }
+
+
+        return response.data.map(image => image.url);
+      } catch (error) {
+        console.error("Error fetching hotel images:", error);
+        return [
+          'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg',
+          'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg',
+          'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg'
+        ]
+      }
+    },
+    async getLogoHotelImage(hotelId) {
+      try {
+        const response = await this.hotelApiService.getHotelLogoMultimedia(hotelId);
+        return response.data.url || 'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg'; // Fallback image URL
+      } catch (error) {
+        console.error("Error fetching hotel logo:", error);
+        return 'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg'; // Fallback image URL
+      }
+    },
+    async getMainHotelImage(hotelId) {
+      try {
+        const response = await this.hotelApiService.getHotelMainMultimedia(hotelId);
+        return response.data.url || 'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg'; // Fallback image URL
+      } catch (error) {
+        console.error("Error fetching hotel main image:", error);
+        return 'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg'; // Fallback image URL
+      }
+    },
+    async fetchHotelData() {
       // Simulación de una llamada a la API para obtener los datos del hotel
       const hotelId = this.$route.params.id; // Obtener el ID del hotel de la ruta
-      this.hotel = this.hotelData.find(hotel => hotel.id === parseInt(hotelId)); // Buscar el hotel por ID
-      if (!this.hotel) {
-        this.$router.push('/not-found'); // Redirigir si no se encuentra el hotel
+      console.log("Hotel ID meneme:", hotelId);
+
+      try {
+        const hotel = await this.hotelApiService.getHotelById(hotelId);
+        if(!hotel) {
+          console.error("Hotel not found");
+          this.$router.push('/not-found'); // Redirigir si no se encuentra el hotel
+          return;
+        }
+
+        this.hotel = hotel.data; // Asignar los datos del hotel
+        this.hotel.images = await this.getHotelDetailsImages(hotelId); // Obtener las imágenes del hotel
+        this.hotel.logoUrl = await this.getLogoHotelImage(hotelId); // Obtener la imagen del logo
+        this.hotel.mainImageUrl = await this.getMainHotelImage(hotelId); // Obtener la imagen principal
+
+        console.log("Hotel data:", this.hotel);
+
+      }catch(e) {
+        console.error("Error fetching hotel data:", e);
       }
-      
     },
     prevImage() {
       if (this.currentImageIndex > 0) {
