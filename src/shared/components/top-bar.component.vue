@@ -127,20 +127,24 @@ export default {
   },
   methods: {
     goToPreferences() {
-      this.$router.push('/home/profile/1/preferences');
+      const userId = localStorage.getItem('userId');
+      this.$router.push(`/home/profile/${userId}/preferences`);
       this.closeMobileMenu();
     },
     goToHotel() {
+      const hotelId = localStorage.getItem('hotelId');
       this.$router.push('/home/hotel/1/overview');
       this.closeMobileMenu();
     },
     goToProfile() {
-      this.$router.push('/home/profile/1');
+      const userId = localStorage.getItem('userId');
+      this.$router.push(`/home/profile/${userId}`);
       this.showUserMenu = false;
       this.closeMobileMenu();
     },
     goToSettings() {
-      this.$router.push('/home/profile/1/account');
+      const userId = localStorage.getItem('userId');
+      this.$router.push(`/home/profile/${userId}/account`);
       this.showUserMenu = false;
       this.closeMobileMenu();
     },

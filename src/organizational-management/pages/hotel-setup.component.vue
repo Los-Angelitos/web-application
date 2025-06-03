@@ -7,73 +7,150 @@
 
         <div class="details-form">
           <div class="form-section">
-            <div class="section-title">{{i18n.global.t('hotel-setup.form-section.title')}}</div>
-
-            <div class="radio-options">
-              <div class="radio-option">
-                <RadioButton
-                    :inputId="'rooms10to50'"
-                    name="roomsCount"
-                    value="10 a 50 habitaciones"
-                    v-model="roomsCount"
-                />
-                <label for="rooms10to50">{{i18n.global.t('hotel-setup.form-section.rooms-10-50')}}</label>
-              </div>
-
-              <div class="radio-option">
-                <RadioButton
-                    :inputId="'rooms51to250'"
-                    name="roomsCount"
-                    value="51 a 250 habitaciones"
-                    v-model="roomsCount"
-                />
-                <label for="rooms51to250">{{i18n.global.t('hotel-setup.form-section.rooms-51-250')}}</label>
-              </div>
-
-              <div class="radio-option">
-                <RadioButton
-                    :inputId="'roomsMore250'"
-                    name="roomsCount"
-                    value="más de 250 habitaciones"
-                    v-model="roomsCount"
-                />
-                <label for="roomsMore250">{{i18n.global.t('hotel-setup.form-section.more-than-250')}}</label>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-section">
-            <InputTextComponent
-                v-model="hotelType"
-                :label="i18n.global.t('hotel-setup.form-section.hotel-type')"
-            />
-          </div>
-
-          <div class="form-section">
             <div class="section-title">{{i18n.global.t('hotel-setup.form-section.room-type')}}</div>
 
             <div class="checkbox-options">
               <div class="checkbox-row">
-                <div class="checkbox-option">
-                  <CheckboxComponent v-model="roomTypes.simple" />
-                  <label>{{i18n.global.t('hotel-setup.form-section.rooms-types.single-room')}}</label>
+                <div class="room-type-option">
+                  <div class="checkbox-option">
+                    <CheckboxComponent v-model="roomTypes.simple.selected" />
+                    <label>{{i18n.global.t('hotel-setup.form-section.rooms-types.single-room')}}</label>
+                  </div>
+                  <div v-if="roomTypes.simple.selected" class="room-inputs-row">
+                    <div class="room-count-input">
+                      <InputTextComponent
+                          v-model="roomTypes.simple.count"
+                          :label="'Número de habitaciones'"
+                          type="number"
+                          placeholder="0"
+                          @input="validateNumberInput($event, 'simple')"
+                          @keypress="onlyNumbers"
+                          @paste="preventPaste"
+                          autocomplete="off"
+                          spellcheck="false"
+                      />
+                    </div>
+                    <div class="room-price-input">
+                      <InputTextComponent
+                          v-model="roomTypes.simple.price"
+                          :label="'Precio por noche (S/.)'"
+                          type="number"
+                          placeholder="0.00"
+                          @input="validatePriceInput($event, 'simple')"
+                          @keypress="onlyNumbersAndDecimal"
+                          @paste="preventPaste"
+                          autocomplete="off"
+                          spellcheck="false"
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                <div class="checkbox-option">
-                  <CheckboxComponent v-model="roomTypes.matrimonial" />
-                  <label>{{i18n.global.t('hotel-setup.form-section.rooms-types.matrimonial-room')}}</label>
+                <div class="room-type-option">
+                  <div class="checkbox-option">
+                    <CheckboxComponent v-model="roomTypes.matrimonial.selected" />
+                    <label>{{i18n.global.t('hotel-setup.form-section.rooms-types.matrimonial-room')}}</label>
+                  </div>
+                  <div v-if="roomTypes.matrimonial.selected" class="room-inputs-row">
+                    <div class="room-count-input">
+                      <InputTextComponent
+                          v-model="roomTypes.matrimonial.count"
+                          :label="'Número de habitaciones'"
+                          type="number"
+                          placeholder="0"
+                          @input="validateNumberInput($event, 'matrimonial')"
+                          @keypress="onlyNumbers"
+                          @paste="preventPaste"
+                          autocomplete="off"
+                          spellcheck="false"
+                      />
+                    </div>
+                    <div class="room-price-input">
+                      <InputTextComponent
+                          v-model="roomTypes.matrimonial.price"
+                          :label="'Precio por noche (S/.)'"
+                          type="number"
+                          placeholder="0.00"
+                          @input="validatePriceInput($event, 'matrimonial')"
+                          @keypress="onlyNumbersAndDecimal"
+                          @paste="preventPaste"
+                          autocomplete="off"
+                          spellcheck="false"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <div class="checkbox-row">
-                <div class="checkbox-option">
-                  <CheckboxComponent v-model="roomTypes.double" />
-                  <label>{{i18n.global.t('hotel-setup.form-section.rooms-types.double-room')}}</label>
+                <div class="room-type-option">
+                  <div class="checkbox-option">
+                    <CheckboxComponent v-model="roomTypes.double.selected" />
+                    <label>{{i18n.global.t('hotel-setup.form-section.rooms-types.double-room')}}</label>
+                  </div>
+                  <div v-if="roomTypes.double.selected" class="room-inputs-row">
+                    <div class="room-count-input">
+                      <InputTextComponent
+                          v-model="roomTypes.double.count"
+                          :label="'Número de habitaciones'"
+                          type="number"
+                          placeholder="0"
+                          @input="validateNumberInput($event, 'double')"
+                          @keypress="onlyNumbers"
+                          @paste="preventPaste"
+                          autocomplete="off"
+                          spellcheck="false"
+                      />
+                    </div>
+                    <div class="room-price-input">
+                      <InputTextComponent
+                          v-model="roomTypes.double.price"
+                          :label="'Precio por noche (S/.)'"
+                          type="number"
+                          placeholder="0.00"
+                          @input="validatePriceInput($event, 'double')"
+                          @keypress="onlyNumbersAndDecimal"
+                          @paste="preventPaste"
+                          autocomplete="off"
+                          spellcheck="false"
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                <div class="checkbox-option">
-                  <CheckboxComponent v-model="roomTypes.balcony" />
-                  <label>{{i18n.global.t('hotel-setup.form-section.rooms-types.suite-room')}}</label>
+                <div class="room-type-option">
+                  <div class="checkbox-option">
+                    <CheckboxComponent v-model="roomTypes.balcony.selected" />
+                    <label>{{i18n.global.t('hotel-setup.form-section.rooms-types.suite-room')}}</label>
+                  </div>
+                  <div v-if="roomTypes.balcony.selected" class="room-inputs-row">
+                    <div class="room-count-input">
+                      <InputTextComponent
+                          v-model="roomTypes.balcony.count"
+                          :label="'Número de habitaciones'"
+                          type="number"
+                          placeholder="0"
+                          @input="validateNumberInput($event, 'balcony')"
+                          @keypress="onlyNumbers"
+                          @paste="preventPaste"
+                          autocomplete="off"
+                          spellcheck="false"
+                      />
+                    </div>
+                    <div class="room-price-input">
+                      <InputTextComponent
+                          v-model="roomTypes.balcony.price"
+                          :label="'Precio por noche (S/.)'"
+                          type="number"
+                          placeholder="0.00"
+                          @input="validatePriceInput($event, 'balcony')"
+                          @keypress="onlyNumbersAndDecimal"
+                          @paste="preventPaste"
+                          autocomplete="off"
+                          spellcheck="false"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -86,6 +163,8 @@
                   v-model="adminEmail"
                   :label="i18n.global.t('hotel-setup.form-section.admin-mail')"
                   @keyup.enter="addAdminEmail"
+                  autocomplete="off"
+                  spellcheck="false"
               />
               <div class="admin-chips">
                 <div v-for="(email, index) in adminEmails" :key="index" class="admin-chip">
@@ -113,12 +192,12 @@
 
       <div class="hotel-images-section">
         <div class="image-gallery">
-          <div class="main-images">
-            <img src="/public/hotel_aerial_view.png" alt="Vista aérea del hotel" class="hotel-image main-image" />
-            <img src="/public/hotel_room.png" alt="Habitación del hotel" class="hotel-image secondary-image" />
-          </div>
           <div class="bottom-image">
-            <img src="/public/hotel_beach.png" alt="Playa del hotel" class="hotel-image" />
+            <img :src="getMainImageUrl()" alt="Playa del hotel" class="hotel-image" />
+          </div>
+          <div class="main-images">
+            <img :src="getSecondaryImageUrl(0)" alt="Vista aérea del hotel" class="hotel-image main-image" />
+            <img :src="getSecondaryImageUrl(1)" alt="Habitación del hotel" class="hotel-image secondary-image" />
           </div>
         </div>
       </div>
@@ -131,6 +210,8 @@ import ButtonComponent from "../../shared/components/button.component.vue";
 import InputTextComponent from "../../shared/components/input-text.component.vue";
 import CheckboxComponent from "../../shared/components/checkbox.component.vue";
 import i18n from "../../i18n.js";
+import {SetupApiService} from "../services/setup-api.service.js";
+import {MultimediaApiService} from "../services/multimedia-api.service.js";
 
 export default {
   name: 'HotelSetupPage',
@@ -146,19 +227,142 @@ export default {
   },
   data() {
     return {
-      roomsCount: '10 a 50 habitaciones',
-      hotelType: '',
       roomTypes: {
-        simple: false,
-        matrimonial: false,
-        double: false,
-        balcony: false
+        simple: {
+          selected: false,
+          count: '',
+          price: ''
+        },
+        matrimonial: {
+          selected: false,
+          count: '',
+          price: ''
+        },
+        double: {
+          selected: false,
+          count: '',
+          price: ''
+        },
+        balcony: {
+          selected: false,
+          count: '',
+          price: ''
+        }
       },
       adminEmail: '',
-      adminEmails: []
+      adminEmails: [],
+      mainImage: null,
+      secondariesImages: [],
     }
   },
+  props: {
+    setupApiService: {
+      type: Object,
+      default: () => new SetupApiService()
+    },
+    multimediaApiService: {
+      type: Object,
+      default: () => new MultimediaApiService()
+    }
+  },
+  async mounted() {
+    await this.getImageUrls();
+  },
   methods: {
+    async getImageUrls() {
+      try {
+        let hotelId = localStorage.getItem("hotelId");
+        this.mainImage = await this.multimediaApiService.getMainMultimediaByHotelId(hotelId);
+        console.log('Main image:', this.mainImage);
+        this.secondariesImages = await this.multimediaApiService.getDetailsMultimediaByHotelId(hotelId);
+        console.log('Secondary images:', this.secondariesImages);
+      } catch (error) {
+        console.error('Error fetching images:', error);
+      }
+    },
+    getMainImageUrl() {
+      if (this.mainImage && this.mainImage.url) {
+        return this.mainImage.url;
+      }
+      return '/public/hotel_beach.png'; // Fallback image
+    },
+    getSecondaryImageUrl(index) {
+      if (this.secondariesImages && this.secondariesImages[index] && this.secondariesImages[index].url) {
+        return this.secondariesImages[index].url;
+      }
+      // Fallback images
+      const fallbacks = ['/public/hotel_aerial_view.png', '/public/hotel_room.png'];
+      return fallbacks[index] || '/public/hotel_aerial_view.png';
+    },
+    // Number validation methods (for room count - integers only)
+    onlyNumbers(event) {
+      const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter'];
+      if (allowedKeys.includes(event.key)) {
+        return;
+      }
+
+      if (!/[0-9]/.test(event.key)) {
+        event.preventDefault();
+      }
+    },
+    // Number validation for prices (allows decimal point)
+    onlyNumbersAndDecimal(event) {
+      const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter'];
+      if (allowedKeys.includes(event.key)) {
+        return;
+      }
+
+      // Allow numbers and decimal point
+      if (!/[0-9.]/.test(event.key)) {
+        event.preventDefault();
+        return;
+      }
+
+      // Prevent multiple decimal points
+      const currentValue = event.target.value;
+      if (event.key === '.' && currentValue.includes('.')) {
+        event.preventDefault();
+      }
+    },
+    preventPaste(event) {
+      event.preventDefault();
+      return false;
+    },
+    validateNumberInput(value, roomType) {
+      // Remove any non-numeric characters
+      const numericValue = value.replace(/[^0-9]/g, '');
+
+      // Update the room count with only numeric value
+      this.roomTypes[roomType].count = numericValue;
+
+      // Add maximum limit (e.g., 999 rooms)
+      if (parseInt(numericValue) > 999) {
+        this.roomTypes[roomType].count = '999';
+      }
+    },
+    validatePriceInput(value, roomType) {
+      // Remove any non-numeric characters except decimal point
+      let numericValue = value.replace(/[^0-9.]/g, '');
+
+      // Ensure only one decimal point
+      const decimalParts = numericValue.split('.');
+      if (decimalParts.length > 2) {
+        numericValue = decimalParts[0] + '.' + decimalParts.slice(1).join('');
+      }
+
+      // Limit to 2 decimal places
+      if (decimalParts.length === 2 && decimalParts[1].length > 2) {
+        numericValue = decimalParts[0] + '.' + decimalParts[1].substring(0, 2);
+      }
+
+      // Update the room price with validated value
+      this.roomTypes[roomType].price = numericValue;
+
+      // Add maximum limit (e.g., 9999.99)
+      if (parseFloat(numericValue) > 9999.99) {
+        this.roomTypes[roomType].price = '9999.99';
+      }
+    },
     addAdminEmail() {
       if (this.adminEmail.trim() !== '' && this.isValidEmail(this.adminEmail)) {
         this.adminEmails.push(this.adminEmail.trim());
@@ -175,20 +379,28 @@ export default {
     goBack() {
       this.$router.push('/home/hotel/set-up');
     },
-    submitForm() {
-      // Gather selected room types
+    async submitForm() {
+      // Gather selected room types with their counts and prices
       const selectedRoomTypes = Object.entries(this.roomTypes)
-          .filter(([_, isSelected]) => isSelected)
-          .map(([type]) => type);
+          .filter(([_, roomType]) => roomType.selected && roomType.count > 0 && roomType.price > 0)
+          .map(([type, roomType]) => ({
+            type: type,
+            count: parseInt(roomType.count),
+            price: parseFloat(roomType.price)
+          }));
+
+      for (const roomType of selectedRoomTypes) {
+        await this.setupApiService.setUpRoomsByTypeRoom({"description": roomType.type, "price": roomType.price, "count": roomType.count});
+      }
 
       const formData = {
-        roomsCount: this.roomsCount,
-        hotelType: this.hotelType,
         roomTypes: selectedRoomTypes,
         adminEmails: [...this.adminEmails]
       };
 
+      console.log('Form data:', formData);
       this.$emit('submit-form', formData);
+      this.$router.push('/home/hotel/set-up/review');
     }
   }
 }
@@ -252,50 +464,55 @@ export default {
   margin-bottom: 10px;
 }
 
-.radio-options {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  padding-left: 5px;
-  width: 100%;
-}
-
-.radio-option {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 5px 0;
-  border-bottom: 1px solid #eee;
-  width: 100%;
-}
-
-.radio-option label {
-  font-size: 14px;
-  color: #333;
-}
-
 .checkbox-options {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
 }
 
 .checkbox-row {
   display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.room-type-option {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: #fafafa;
 }
 
 .checkbox-option {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: 200px;
 }
 
 .checkbox-option label {
   font-size: 14px;
   color: #333;
+  font-weight: 500;
+}
+
+.room-inputs-row {
+  display: flex;
+  gap: 15px;
+  margin-left: 30px;
+  align-items: flex-start;
+}
+
+.room-count-input {
+  flex: 1;
+  max-width: 180px;
+}
+
+.room-price-input {
+  flex: 1;
+  max-width: 180px;
 }
 
 .admin-section {
@@ -456,9 +673,14 @@ export default {
     justify-content: space-between;
   }
 
-  .checkbox-row {
-    flex-direction: column;
-    gap: 15px;
+  .room-inputs-row {
+    margin-left: 20px;
+    gap: 10px;
+  }
+
+  .room-count-input,
+  .room-price-input {
+    max-width: 150px;
   }
 }
 
@@ -480,8 +702,15 @@ export default {
     aspect-ratio: 16/9;
   }
 
-  .checkbox-option {
-    min-width: 150px;
+  .room-inputs-row {
+    flex-direction: column;
+    margin-left: 15px;
+    gap: 10px;
+  }
+
+  .room-count-input,
+  .room-price-input {
+    max-width: 200px;
   }
 
   .admin-chips {
@@ -511,9 +740,17 @@ export default {
     font-size: 15px;
   }
 
-  .radio-option label,
   .checkbox-option label {
     font-size: 13px;
+  }
+
+  .room-inputs-row {
+    margin-left: 10px;
+  }
+
+  .room-count-input,
+  .room-price-input {
+    max-width: 160px;
   }
 }
 </style>

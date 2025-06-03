@@ -10,7 +10,7 @@
 
         <div class="tabs">
           <div
-              v-for="tab in tabs"
+              v-for="tab in tabsWithLabels"
               :key="tab.id"
               :class="['tab', { active: activeTab === tab.id }]"
               @click="changeTab(tab.id)"
@@ -26,6 +26,7 @@
             :incomes="activeDashboard.map(e => e.totalIncome)"
             :expenses="activeDashboard.map(e => e.totalExpense)"
             :labels="formattedLabels"
+            :t="i18n.global.t"
         />
       </div>
       <div v-else class="loading">{{ i18n.global.t('analytics.loading')}}</div>
@@ -55,7 +56,7 @@ export default {
   data() {
     return {
       hotelName: '',
-      hotelId: 3,
+      hotelId: 11,
       dashboardApi: new DashboardApiService(),
       hotelApi: new HotelsApiService(),
       dashboard: [],
@@ -71,8 +72,8 @@ export default {
       ],
       activeTab: 'weekly',
       tabs: [
-        { id: 'weekly', label: 'Weekly Profit' },
-        { id: 'monthly', label: 'Monthly Profit' }
+        { id: 'weekly' },
+        { id: 'monthly' }
       ]
     };
   },
@@ -80,6 +81,17 @@ export default {
   computed: {
     i18n() {
       return i18n
+    },
+    tabsWithLabels() {
+      return this.tabs.map(tab => {
+        if (tab.id === 'weekly') {
+          return { ...tab, label: this.i18n.global.t('analytics.line-chart.weekly') };
+        }
+        if (tab.id === 'monthly') {
+          return { ...tab, label: this.i18n.global.t('analytics.line-chart.monthly') };
+        }
+        return tab;
+      });
     },
     formattedLabels() {
       if (this.activeTab === 'weekly') {
@@ -181,8 +193,7 @@ export default {
 
   async created() {
     try {
-      const response = await this.hotelApi.getHotelsById(this.hotelId);
-      const displayableHotel = response.data;
+      const displayableHotel = await this.hotelApi.getHotelsById(this.hotelId);
 
       this.hotel = Hotel.fromDisplayableHotel(displayableHotel);
       this.hotelName = this.hotel.getHotelName();

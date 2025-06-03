@@ -46,9 +46,10 @@
 
           <div class="form-buttons">
             <button-component
-                :text="i18n.global.t('hotel-register.registration-form.button')"
+                :text="submitting ? 'Registrando...' : i18n.global.t('hotel-register.registration-form.button')"
                 state="primary"
                 width="300"
+                :disabled="submitting"
                 @click="submitForm"
             ></button-component>
           </div>
@@ -58,11 +59,54 @@
       <div class="hotel-images-section">
         <div class="image-gallery">
           <div class="main-image">
-            <img src="/public/hotel_aerial_view.png" alt="Vista aérea del hotel" class="hotel-image" />
+            <PicturePlaceholderComponent
+                ref="mainImagePlaceholder"
+                @image-selected="onMainImageSelected"
+                :initialImage="'/public/hotel_aerial_view.png'"
+                width="100%"
+                height="300px"
+                class="hotel-image-placeholder"
+            />
+            <div v-if="uploadingImages.main" class="upload-overlay">
+              <div class="upload-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <span>Subiendo imagen...</span>
+              </div>
+            </div>
           </div>
           <div class="secondary-images">
-            <img src="/public/hotel_room.png" alt="Habitación del hotel" class="hotel-image" />
-            <img src="/public/hotel_beach.png" alt="Playa del hotel" class="hotel-image" />
+            <div class="secondary-image-container">
+              <PicturePlaceholderComponent
+                  ref="roomImagePlaceholder"
+                  @image-selected="onRoomImageSelected"
+                  :initialImage="'/public/hotel_room.png'"
+                  width="100%"
+                  height="200px"
+                  class="hotel-image-placeholder secondary-image"
+              />
+              <div v-if="uploadingImages.room" class="upload-overlay">
+                <div class="upload-spinner">
+                  <i class="fas fa-spinner fa-spin"></i>
+                  <span>Subiendo...</span>
+                </div>
+              </div>
+            </div>
+            <div class="secondary-image-container">
+              <PicturePlaceholderComponent
+                  ref="beachImagePlaceholder"
+                  @image-selected="onBeachImageSelected"
+                  :initialImage="'/public/hotel_beach.png'"
+                  width="100%"
+                  height="200px"
+                  class="hotel-image-placeholder secondary-image"
+              />
+              <div v-if="uploadingImages.beach" class="upload-overlay">
+                <div class="upload-spinner">
+                  <i class="fas fa-spinner fa-spin"></i>
+                  <span>Subiendo...</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -87,7 +131,11 @@
 import ButtonComponent from "../../shared/components/button.component.vue";
 import InputTextComponent from "../../shared/components/input-text.component.vue";
 import ModalComponent from "../../shared/components/modal.component.vue";
+import PicturePlaceholderComponent from "../../shared/components/picture-placeholder.component.vue";
 import i18n from "../../i18n.js";
+import {HotelApiService} from "../services/hotel-api.service.js";
+import Cloudinary from "../../shared/services/external/cloudinary.js";
+import {MultimediaApiService} from "../services/multimedia-api.service.js";
 
 export default {
   name: 'HotelRegisterPage',
@@ -99,7 +147,8 @@ export default {
   components: {
     ModalComponent,
     ButtonComponent,
-    InputTextComponent
+    InputTextComponent,
+    PicturePlaceholderComponent
   },
   data() {
     return {
@@ -109,20 +158,184 @@ export default {
       phone: '',
       description: '',
       showErrorModal: false,
-      errorMessage: ''
+      errorMessage: '',
+      submitting: false,
+      // Image data storage
+      mainImage: {
+        file: null,
+        dataUrl: null,
+        cloudinaryUrl: null
+      },
+      roomImage: {
+        file: null,
+        dataUrl: null,
+        cloudinaryUrl: null
+      },
+      beachImage: {
+        file: null,
+        dataUrl: null,
+        cloudinaryUrl: null
+      },
+      // Upload status tracking
+      uploadingImages: {
+        main: false,
+        room: false,
+        beach: false
+      },
+      cloudinary: new Cloudinary()
+    }
+  },
+  props: {
+    hotelApiService: {
+      type: Object,
+      default: () => new HotelApiService()
+    },
+    multimediaApiService: {
+      type: Object,
+      default: () => new MultimediaApiService()
     }
   },
   methods: {
-    submitForm() {
-      // Validate form
-      if (this.validateForm()) {
-        this.$router.push('/home/hotel/set-up/details');
+    async onMainImageSelected(imageData) {
+      console.log("Main image selected:", imageData);
+
+      if (imageData && imageData.file) {
+        // Store the file and dataUrl immediately for preview
+        this.mainImage.file = imageData.file;
+        this.mainImage.dataUrl = imageData.dataUrl;
+
+        // Upload to Cloudinary
+        await this.uploadImageToCloudinary('main', imageData.file);
       }
     },
+
+    async onRoomImageSelected(imageData) {
+      console.log("Room image selected:", imageData);
+
+      if (imageData && imageData.file) {
+        // Store the file and dataUrl immediately for preview
+        this.roomImage.file = imageData.file;
+        this.roomImage.dataUrl = imageData.dataUrl;
+
+        // Upload to Cloudinary
+        await this.uploadImageToCloudinary('room', imageData.file);
+      }
+    },
+
+    async onBeachImageSelected(imageData) {
+      console.log("Beach image selected:", imageData);
+
+      if (imageData && imageData.file) {
+        // Store the file and dataUrl immediately for preview
+        this.beachImage.file = imageData.file;
+        this.beachImage.dataUrl = imageData.dataUrl;
+
+        // Upload to Cloudinary
+        await this.uploadImageToCloudinary('beach', imageData.file);
+      }
+    },
+
+    async uploadImageToCloudinary(imageType, file) {
+      this.uploadingImages[imageType] = true;
+
+      try {
+        console.log(`Uploading ${imageType} image to Cloudinary...`);
+        const cloudinaryUrl = await this.cloudinary.uploadImage(file);
+
+        if (cloudinaryUrl) {
+          // Store the Cloudinary URL
+          switch (imageType) {
+            case 'main':
+              this.mainImage.cloudinaryUrl = cloudinaryUrl;
+              break;
+            case 'room':
+              this.roomImage.cloudinaryUrl = cloudinaryUrl;
+              break;
+            case 'beach':
+              this.beachImage.cloudinaryUrl = cloudinaryUrl;
+              break;
+          }
+
+          console.log(`${imageType} image uploaded successfully:`, cloudinaryUrl);
+        } else {
+          throw new Error('Failed to upload image to Cloudinary');
+        }
+      } catch (error) {
+        console.error(`Error uploading ${imageType} image:`, error);
+        this.errorMessage = `Error al subir la imagen ${imageType}. Por favor, inténtelo de nuevo.`;
+        this.showErrorModal = true;
+
+        // Reset the image data on error
+        switch (imageType) {
+          case 'main':
+            this.mainImage = { file: null, dataUrl: null, cloudinaryUrl: null };
+            break;
+          case 'room':
+            this.roomImage = { file: null, dataUrl: null, cloudinaryUrl: null };
+            break;
+          case 'beach':
+            this.beachImage = { file: null, dataUrl: null, cloudinaryUrl: null };
+            break;
+        }
+      } finally {
+        this.uploadingImages[imageType] = false;
+      }
+    },
+
+    async submitForm() {
+      // Validate form
+      if (!this.validateForm()) {
+        return;
+      }
+
+      // Check if any images are still uploading
+      if (this.uploadingImages.main || this.uploadingImages.room || this.uploadingImages.beach) {
+        this.errorMessage = 'Por favor espere a que todas las imágenes terminen de subirse.';
+        this.showErrorModal = true;
+        return;
+      }
+
+      this.submitting = true;
+
+      try {
+        let userId = localStorage.getItem('userId');
+
+        // Prepare hotel data with Cloudinary URLs
+        const hotelData = {
+          ownerId: userId,
+          name: this.hotelName,
+          description: this.description,
+          email: this.email,
+          address: this.hotelAddress,
+          phone: this.phone
+        };
+
+        console.log('Submitting hotel data:', hotelData);
+
+        let response = await this.hotelApiService.createHotel(hotelData);
+        if (response) {
+          localStorage.setItem("hotelId", response.id);
+          await this.multimediaApiService.createMultimedia({"hotelId": response.id, "url": this.mainImage.cloudinaryUrl, "type": "MAIN", "position": 1});
+          await this.multimediaApiService.createMultimedia({"hotelId": response.id, "url": this.roomImage.cloudinaryUrl, "type": "DETAIL", "position": 2});
+          await this.multimediaApiService.createMultimedia({"hotelId": response.id, "url": this.beachImage.cloudinaryUrl, "type": "DETAIL", "position": 3});
+          this.$router.push('/home/hotel/set-up/details');
+        } else {
+          throw new Error('No response from server');
+        }
+      } catch (error) {
+        console.error('Error creating hotel:', error);
+        this.errorMessage = 'Error al registrar el hotel. Por favor, inténtelo de nuevo más tarde.';
+        this.showErrorModal = true;
+      } finally {
+        this.submitting = false;
+      }
+    },
+
     isValidEmail(email) {
       const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return re.test(email);
     },
+
     validateForm() {
       // Basic validation
       if (!this.hotelName.trim()) {
@@ -148,6 +361,7 @@ export default {
         this.showErrorModal = true;
         return false;
       }
+
       return true;
     }
   }
@@ -260,6 +474,7 @@ export default {
   height: 300px;
   overflow: hidden;
   border-radius: 10px;
+  position: relative;
 }
 
 .secondary-images {
@@ -268,25 +483,75 @@ export default {
   width: 100%;
 }
 
-.secondary-images > img {
+.secondary-image-container {
   flex: 1;
   width: 50%;
+  position: relative;
   height: 200px;
+  border-radius: 10px;
   overflow: hidden;
-  border-radius: 10px;
-  object-fit: cover;
 }
 
-.hotel-image {
-  width: 100%;
+.secondary-images > .secondary-image-container .hotel-image-placeholder {
   height: 100%;
-  object-fit: cover;
-  border-radius: 10px;
-  transition: transform 0.3s ease;
 }
 
-.hotel-image:hover {
+/* Upload overlay styles */
+.upload-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 10px;
+}
+
+.upload-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  font-size: 0.875rem;
+}
+
+.upload-spinner i {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Custom styles for picture placeholders to match the original design */
+.hotel-image-placeholder {
+  border-radius: 10px !important;
+  overflow: hidden;
+}
+
+.hotel-image-placeholder .image-placeholder {
+  border-radius: 10px !important;
+  border: none !important;
+  transition: transform 0.3s ease;
+  height: 100%;
+}
+
+.hotel-image-placeholder .image-placeholder:hover {
   transform: scale(1.03);
+}
+
+/* Override placeholder component styles to match hotel image design */
+.hotel-image-placeholder .image-placeholder {
+  background-color: #f8f9fa;
+}
+
+.hotel-image-placeholder .placeholder-content {
+  color: #666;
+}
+
+.hotel-image-placeholder .image-overlay {
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 /* Responsive styles */
@@ -299,7 +564,7 @@ export default {
     height: 250px;
   }
 
-  .secondary-images img {
+  .secondary-image-container {
     height: 170px;
   }
 }
@@ -325,7 +590,7 @@ export default {
     height: 300px;
   }
 
-  .secondary-images img {
+  .secondary-image-container {
     height: 180px;
   }
 }
@@ -352,7 +617,7 @@ export default {
     height: 250px;
   }
 
-  .secondary-images img {
+  .secondary-image-container {
     height: 150px;
   }
 }
@@ -370,7 +635,7 @@ export default {
     flex-direction: column;
   }
 
-  .secondary-images img {
+  .secondary-image-container {
     width: 100%;
     height: 180px;
   }
@@ -397,8 +662,16 @@ export default {
     height: 180px;
   }
 
-  .secondary-images img {
+  .secondary-image-container {
     height: 150px;
+  }
+
+  .upload-spinner {
+    font-size: 0.75rem;
+  }
+
+  .upload-spinner i {
+    font-size: 1.5rem;
   }
 }
 </style>

@@ -28,7 +28,7 @@ export default {
   },
   data() {
     return {
-      hotelId: 3,
+      hotelId: 11,
       supplies: [],
       providers: [],
       supplierApi: new SupplierApiService(),
@@ -66,7 +66,7 @@ export default {
 
     try {
       const res = await this.hotelApi.getHotelsById(this.hotelId);
-      this.hotel = Hotel.fromDisplayableHotel(res.data);
+      this.hotel = Hotel.fromDisplayableHotel(res);
     } catch (error) {
       console.error("Error al obtener hotel:", error);
     }

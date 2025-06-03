@@ -10,6 +10,12 @@ import InventoryIcon from "../../assets/organizational-management/inventory-icon
 import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
+import {HotelsApiService} from "../../shared/services/hotels-api.service.js";
+
+import {useAuthenticationStore} from '/src/iam/services/authentication.store.js';
+import {MultimediaApiService} from "../services/multimedia-api.service.js"; // Ajusta la ruta según tu estructura
+
+const userId = useAuthenticationStore.state.userId;
 
 export default {
   name: "HotelOverviewPage",
@@ -18,6 +24,11 @@ export default {
   data() {
     return {
       hotelId: null,
+      detailImages: [],
+      filteredImages: [],
+      mainImages: [],
+      allImages: [],
+      userId: userId, // Obtenemos el userId del store de autenticación
       navigationItems: [
         {id: "overview", label: "Overview", path: "/home/hotel/1/overview", icon: OverviewIcon, isActive: true},
         {id: "analytics", label: "Analytics", path: "/home/hotel/1/analytics", icon: AnalyticsIcon, isActive: false},
@@ -28,11 +39,13 @@ export default {
         {id: "devices", label: "Devices", path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: false}
       ],
       hotel: {
+        id: null,
         name: "",
         address: "",
         description: "",
         email: "",
-        phone: ""
+        phone: "",
+        ownerId: userId
       },
       editable: {
         description: '',
@@ -47,30 +60,57 @@ export default {
     };
   },
 
-  mounted() {
-    this.hotelId = 1; // this.$route.params.hotelId
-    this.loadHotelMockData(); // ← Simulamos una petición
+  async mounted() {
+    await this.loadHotelMockData(); // ← Simulamos una petición
   },
 
   methods: {
-    loadHotelMockData() {
-      // Aquí iría el fetch al backend con el this.hotelId
-      // Por ahora lo simulamos con datos de prueba
-      this.hotel = {
-        name: "Royal Decameron Punta Sal",
-        address: "Av. Panamericana N, Punta Sal 24560",
-        description: `Este vibrante hotel todo incluido se ubica entre palmeras en la playa Punta Sal, a 6 km del centro del pueblo y a 89 km del Aeropuerto Tumbes.
-Las habitaciones sencillas cuentan con terraza o balcón, pantalla plana y acceso a internet (con cargo); algunos tienen área de visitas.
-Los servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y alquiler de equipo para la playa, además de las comidas y bebidas en 3 restaurantes y 5 bares. Otros servicios: club nocturno animado, jardines, playa extensa con cabañas, piscina al aire libre, hidromasaje y gimnasio.
-• 🙌 Wifi pago
-• 🍳 Desayuno incluido
-• 🚗 Estacionamiento gratuito
-• 👙 Piscina al aire libre`,
-        email: "bookings@decameron.com",
-        phone: "073 55 4877"
-      };
-    },
+    async loadHotelMockData() {
+      try {
+        const multimediaService = new MultimediaApiService();
+        console.log("User ID:", this.userId);
 
+        this.hotel = await HotelsApiService.getHotelByOwnerId(this.userId);
+
+        if (!this.hotel || !this.hotel.id) {
+          console.error("Hotel not found or missing ID");
+          return;
+        }
+
+        this.hotel.ownerId = this.userId;
+
+        const mainMultimedia = await multimediaService.getMainMultimediaByHotelId(this.hotel.id) || [];
+        const detailMultimedia = await multimediaService.getDetailsMultimediaByHotelId(this.hotel.id) || [];
+
+        if (!Array.isArray(mainMultimedia)) {
+          console.error("mainMultimedia no es un array:", mainMultimedia);
+        }
+        if (!Array.isArray(detailMultimedia)) {
+          console.error("detailMultimedia no es un array:", detailMultimedia);
+        }
+
+        const allImages = [
+          ...(Array.isArray(mainMultimedia) ? mainMultimedia : [mainMultimedia]),
+          ...(Array.isArray(detailMultimedia) ? detailMultimedia : [])
+        ];
+
+        console.log("All images loaded:", allImages);
+
+        this.allImages = allImages.length >= 3 ? allImages.slice(2) : [];
+        this.filteredImages = allImages.map(img => ({
+          src: img.url,
+          alt: img.type,
+          type: img.type
+        }));
+
+
+        this.editable = this.hotel;
+
+        console.log("Hotel data loaded:", this.hotel);
+      } catch (error) {
+        console.error("Error in loadHotelMockData:", error);
+      }
+    },
     enableEdit(field) {
       this.editable[field] = this.hotel[field];
       this.editing[field] = true;
@@ -80,8 +120,9 @@ Los servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y
       });
     },
 
-    saveEdit(field) {
+    async saveEdit(field) {
       this.hotel[field] = this.editable[field];
+      await HotelsApiService.UpdateHotel(this.hotel);
       this.editing[field] = false;
       // En el futuro: aquí iría el PUT al backend
     }
@@ -100,10 +141,19 @@ Los servicios gratuitos incluyen deportes acuáticos, entretenimiento nocturno y
        <h2 class="hotel-title">{{hotel.name}}</h2>
        <p class="hotel-address">{{hotel.address}}</p>
 
-       <div class="image-gallery">
-         <img src="/img1.png" alt="Hotel Aéreo" />
-         <img src="/img2.png" alt="Habitación" />
-         <img src="/img3.png" alt="Playa" class="full-width-image" />
+       <div>
+         <div v-if="filteredImages.length > 0">
+           <div class="image-gallery">
+             <img
+                 v-for="(image, index) in filteredImages"
+                 :key="index"
+                 :src="image.src"
+                 :alt="image.alt || 'Hotel Image'"
+                 :class="{ 'full-width-image': image.type === 'MAIN' }"
+             />
+           </div>
+         </div>
+         <p v-else>No images available to display.</p>
        </div>
      </div>
 
