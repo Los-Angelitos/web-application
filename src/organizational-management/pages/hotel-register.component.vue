@@ -14,6 +14,23 @@
           </div>
 
           <div class="form-group">
+            <label for="hotelType" class="combo-label">Tipo de Hotel</label>
+            <select
+                id="hotelType"
+                v-model="hotelType"
+                class="combo-select"
+            >
+              <option value="">Selecciona un tipo de hotel</option>
+              <option value="featured">Featured</option>
+              <option value="near-lake">Near the Lake</option>
+              <option value="with-pool">With a Pool</option>
+              <option value="near-beach">Near the Beach</option>
+              <option value="rural">Rural Hotel</option>
+              <option value="suite">Suite</option>
+            </select>
+          </div>
+
+          <div class="form-group">
             <InputTextComponent
                 v-model="hotelAddress"
                 :label="i18n.global.t('hotel-register.registration-form.hotel-address')"
@@ -154,6 +171,7 @@ export default {
     return {
       hotelName: '',
       hotelAddress: '',
+      hotelType: '',
       email: '',
       phone: '',
       description: '',
@@ -299,7 +317,29 @@ export default {
 
       try {
         let userId = localStorage.getItem('userId');
-
+        let category = '';
+        switch (this.hotelType) {
+          case 'featured':
+            category = 'FEATURED';
+            break;
+          case 'near-lake':
+            category = 'NEAR_THE_LAKE';
+            break;
+          case 'with-pool':
+            category = 'WITH_A_POOL';
+            break;
+          case 'near-beach':
+            category = 'NEAR_THE_BEACH';
+            break;
+          case 'rural':
+            category = 'RURAL_HOTEL';
+            break;
+          case 'suite':
+            category = 'SUITE';
+            break;
+          default:
+            category = '';
+        }
         // Prepare hotel data with Cloudinary URLs
         const hotelData = {
           ownerId: userId,
@@ -307,7 +347,8 @@ export default {
           description: this.description,
           email: this.email,
           address: this.hotelAddress,
-          phone: this.phone
+          phone: this.phone,
+          category: category
         };
 
         console.log('Submitting hotel data:', hotelData);
@@ -442,6 +483,42 @@ export default {
   outline: none;
 }
 
+.combo-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.7rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.combo-select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border-color 0.2s;
+  background-color: #f5f5f5;
+  box-sizing: border-box;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+.combo-select:focus {
+  border-color: #0066cc;
+  outline: none;
+}
+
+.combo-select option {
+  background-color: white;
+  color: #333;
+}
+
 .form-buttons {
   display: flex;
   gap: 15px;
@@ -496,33 +573,7 @@ export default {
   height: 100%;
 }
 
-/* Upload overlay styles */
-.upload-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  border-radius: 10px;
-}
-
-.upload-spinner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: white;
-  font-size: 0.875rem;
-}
-
-.upload-spinner i {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-}
+/* Upload overlay styles - Removed since no longer needed */
 
 /* Custom styles for picture placeholders to match the original design */
 .hotel-image-placeholder {
@@ -664,14 +715,6 @@ export default {
 
   .secondary-image-container {
     height: 150px;
-  }
-
-  .upload-spinner {
-    font-size: 0.75rem;
-  }
-
-  .upload-spinner i {
-    font-size: 1.5rem;
   }
 }
 </style>

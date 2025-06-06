@@ -24,4 +24,37 @@ export class HotelApiService {
     async getHotelLogoMultimedia(hotelId) {
         return http.get(`/multimedia/logo?hotel=${hotelId}`);
     }
+
+    createHotel(hotel){
+        return http.post("/hotels", hotel)
+            .then(response => {
+                if(response.status === 201) {
+                    return response.data;
+                }
+                else {
+                    return null;
+                }
+            })
+            .catch(error => {
+                console.error("Error creating hotel:", error);
+                throw error;
+            });
+    }
+
+    updateHotel(hotel) {
+        return http.put(`/hotels/${hotel.hotelId}`, hotel)
+            .then(response => {
+                if(response.status === 200) {
+                    return response.data;
+                }
+                else {
+                    return null;
+                }
+            })
+            .catch(error => {
+                console.error("Error updating hotel:", error);
+                throw error;
+            });
+    }
+
 }
