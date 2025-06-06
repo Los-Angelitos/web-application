@@ -19,7 +19,8 @@ export default {
         description: "",
         email: "",
         phone: "",
-        ownerId: 0
+        ownerId: 0,
+        category: ""
       },
       mainImage: null,
       secondariesImages: [],
@@ -92,7 +93,8 @@ export default {
               description: hotel.description || "",
               email: hotel.email || "",
               phone: hotel.phone || "",
-              ownerId: hotel.ownerId || 0
+              ownerId: hotel.ownerId || 0,
+              category: hotel.category || ""
             };
             console.log("Hotel data loaded:", this.hotel);
           }
@@ -263,7 +265,7 @@ export default {
       let hotelId = localStorage.getItem("hotelId");
 
       await this.hotelsApiService.UpdateHotel({"description": this.hotel.description, "email": this.hotel.email,
-        "address": this.hotel.address, "phone": this.hotel.phone, "ownerId": this.hotel.ownerId}, hotelId);
+        "address": this.hotel.address, "phone": this.hotel.phone, "ownerId": this.hotel.ownerId, "category": this.hotel.category}, hotelId);
 
       await this.multimediaApiService.createMultimedia({"hotelId": hotelId, "url": this.logoImageData.cloudinaryUrl, "type": "LOGO", "position": 1});
 
