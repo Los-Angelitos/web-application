@@ -5,9 +5,9 @@
   <div class="organization-container">
     <div class="org-header">
       <h1>Royal Decameron Punta Sal</h1>
-      <span class="subtitle">{{ $t('organization.title') }}</span>
+      <span class="subtitle">{{ i18n.global.t('organization.title') }}</span>
       <button-component
-          :text="$t('organization.header.addButton')"
+          :text="i18n.global.t('organization.header.addButton')"
           state="primary"
           class="add-button"
           :width="70"
@@ -21,12 +21,12 @@
         <div class="node" v-if="!isLoading && guestData">
           <div class="avatar-container">
             <div class="avatar">
-              <img :src="guestData.profileImage || '../../assets/images/guest.png'" :alt="$t('organization.chart.guestAlt')" />
+              <img :src="guestData.photoURL || '../../assets/images/guest.png'" :alt="i18n.global.t('organization.chart.guestAlt')" />
             </div>
           </div>
           <div class="node-info">
             <div class="name">{{ guestData.name }} {{ guestData.surname }}</div>
-            <div class="title">{{ $t('organization.chart.guestTitle') }}</div>
+            <div class="title">{{ i18n.global.t('organization.chart.guestTitle') }}</div>
           </div>
         </div>
 
@@ -37,7 +37,7 @@
             </div>
           </div>
           <div class="node-info">
-            <div class="name">{{ $t('common.loading') }}</div>
+            <div class="name">{{ i18n.global.t('common.loading') }}</div>
             <div class="title">...</div>
           </div>
         </div>
@@ -45,12 +45,12 @@
         <div class="node" v-else>
           <div class="avatar-container">
             <div class="avatar">
-              <img src="../../assets/images/default-user.png" :alt="$t('organization.chart.defaultAlt')" />
+              <img src="../../assets/images/default-user.png" :alt="i18n.global.t('organization.chart.defaultAlt')" />
             </div>
           </div>
           <div class="node-info">
-            <div class="name">{{ $t('common.error') }}</div>
-            <div class="title">{{ $t('organization.chart.guestTitle') }}</div>
+            <div class="name">{{ i18n.global.t('common.error') }}</div>
+            <div class="title">{{ i18n.global.t('organization.chart.guestTitle') }}</div>
           </div>
         </div>
       </div>
@@ -67,24 +67,24 @@
           <div class="node">
             <div class="avatar-container">
               <div class="avatar">
-                <img src="../../assets/images/admin.png" :alt="$t('organization.chart.adminAlt')" />
+                <img src="../../assets/images/admin.png" :alt="i18n.global.t('organization.chart.adminAlt')" />
               </div>
             </div>
             <div class="node-info">
               <div class="name">Mauricio Rojas</div>
-              <div class="title">{{ $t('organization.chart.adminTitle') }}</div>
+              <div class="title">{{ i18n.global.t('organization.chart.adminTitle') }}</div>
             </div>
           </div>
 
           <div class="node">
             <div class="avatar-container">
               <div class="avatar">
-                <img src="../../assets/images/admin.png" :alt="$t('organization.chart.adminAlt')" />
+                <img src="../../assets/images/admin.png" :alt="i18n.global.t('organization.chart.adminAlt')" />
               </div>
             </div>
             <div class="node-info">
               <div class="name">Arian Rodriguez</div>
-              <div class="title">{{ $t('organization.chart.adminTitle') }}</div>
+              <div class="title">{{ i18n.global.t('organization.chart.adminTitle') }}</div>
             </div>
           </div>
         </div>
@@ -106,17 +106,17 @@
           </div>
 
           <div class="modal-header">
-            <h3>{{ $t('organization.modal.title') }}</h3>
+            <h3>{{ i18n.global.t('organization.modal.title') }}</h3>
           </div>
 
           <div class="modal-body">
             <div class="input-group">
-              <label for="email">{{ $t('organization.modal.emailLabel') }}</label>
+              <label for="email">{{ i18n.global.t('organization.modal.emailLabel') }}</label>
               <input
                   type="email"
                   id="email"
                   v-model="email"
-                  :placeholder="$t('organization.modal.emailPlaceholder')"
+                  :placeholder="i18n.global.t('organization.modal.emailPlaceholder')"
                   class="form-input"
               />
             </div>
@@ -124,7 +124,7 @@
 
           <form @submit.prevent="saveUser" class="modal-footer">
             <button-component
-                :text="$t('organization.modal.submitButton')"
+                :text="i18n.global.t('organization.modal.submitButton')"
                 state="primary"
                 :width="100"
             />
@@ -146,9 +146,15 @@ import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
 import { OrganizationApiService } from "../services/organization-api.service.js";
+import i18n from "../../i18n.js";
 
 export default {
   name: "OrganizationPage",
+  computed: {
+    i18n() {
+      return i18n
+    }
+  },
   components: {
     MainPageNavigation,
     ButtonComponent,
