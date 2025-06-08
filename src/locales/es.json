@@ -348,7 +348,8 @@
     "inactiveStatus": "NO ACTIVA",
     "cancelButton": "Cancelar",
     "cancelConfirmation": "¿Estás seguro de cancelar tu reserva en {hotelName}?",
-    "cancelSuccess": "Reserva cancelada para {hotelName}"
+    "cancelSuccess": "Reserva cancelada para {hotelName}",
+    "cancelledStatus": "CANCELADA"
   }
 }
 
