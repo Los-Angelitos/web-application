@@ -14,10 +14,16 @@ export class BookingApiService {
         return http.get(`/booking/get-booking-by-customer-id?customerId=${customerId}`);
     }
 
+    // Método corregido para cancelar reservas según la API
     updateBooking(bookingId, state) {
-        return http.post('/booking/update-booking-state', {
+        return http.put('/booking/update-booking-state', {
             id: bookingId,
             state: state
         });
+    }
+
+    // Método corregido para obtener información del hotel usando la API correcta
+    getHotelById(hotelId) {
+        return http.get(`/hotels/${hotelId}`);
     }
 }
