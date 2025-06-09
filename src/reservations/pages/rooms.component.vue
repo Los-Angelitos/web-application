@@ -5,10 +5,9 @@
   <div class="hotel-management">
     <!-- Header Section -->
     <header>
-      <h1>Royal Decameron Punta Sal</h1>
+      <h1>{{ hotelName || 'Cargando hotel...' }}</h1>
       <p>{{ $t('rooms.title') }}</p>
       <div class="header-buttons">
-
         <ButtonComponent
             :text="$t('rooms.headerComponent.addButton')"
             state="primary"
@@ -38,7 +37,7 @@
       <BasicCardComponent
           v-for="room in rooms"
           :key="room.id"
-          :title="`${$t('rooms.roomLabel')} ${room.number}`"
+          :title="`${$t('rooms.roomLabel') || 'Room'} ${room.number || room.id}`"
           class="room-card"
       >
         <template #image>
@@ -47,23 +46,26 @@
           </div>
         </template>
         <template #header-content>
-          <div class="room-guest">{{ room.guest || $t('rooms.roomCardComponent.guestFallback') }}</div>
+          <div class="room-guest">{{ room.guest || $t('rooms.roomCardComponent.guestFallback') || '-' }}</div>
         </template>
-        <div class="room-dates">
-          <div>{{ $t('rooms.from') }}: {{ room.checkIn || $t('rooms.roomCardComponent.dateFallback') }}</div>
-          <div>{{ $t('rooms.to') }}: {{ room.checkOut || $t('rooms.roomCardComponent.dateFallback') }}</div>
-          <div class="room-state">{{ $t('rooms.state') || 'Estado' }}: {{ room.state }}</div>
+        <div class="room-details">
+          <div class="room-type">{{ getRoomTypeName(room.typeRoomId) }}</div>
+          <div class="room-dates">
+            <div>{{ $t('rooms.from') || 'From' }}: {{ formatDate(room.checkIn) || $t('rooms.roomCardComponent.dateFallback') || '--/--/--' }}</div>
+            <div>{{ $t('rooms.to') || 'To' }}: {{ formatDate(room.checkOut) || $t('rooms.roomCardComponent.dateFallback') || '--/--/--' }}</div>
+            <div class="room-state">{{ $t('rooms.state') || 'Estado' }}: {{ room.state }}</div>
+          </div>
         </div>
         <div class="room-actions">
           <ButtonComponent
-              :text="room.available ? $t('rooms.available') : $t('rooms.notAvailable')"
+              :text="room.available ? ($t('rooms.available') || 'AVAILABLE') : ($t('rooms.notAvailable') || 'NOT AVAILABLE')"
               :state="room.available ? 'basic' : 'primary'"
               fullWidth
               :class="{ 'available': room.available, 'not-available': !room.available }"
               :disabled="true"
           />
           <ButtonComponent
-              :text="$t('rooms.changeState') || 'Cambiar Estado'"
+              :text="$t('rooms.changeState') || 'Change state'"
               state="secondary"
               fullWidth
               @click="openStateModal(room)"
@@ -81,7 +83,7 @@
             <div class="door"></div>
           </div>
           <h2>{{ $t('rooms.stateModalComponent.header') || 'Cambiar Estado de Habitación' }}</h2>
-          <p>{{ $t('rooms.stateModalComponent.body') || `Habitación ${selectedRoom?.number}` }}</p>
+          <p>{{ $t('rooms.stateModalComponent.body') || `Habitación ${selectedRoom?.number || selectedRoom?.id}` }}</p>
         </div>
         <div class="form-group">
           <label>{{ $t('rooms.stateModalComponent.stateLabel') || 'Nuevo Estado' }}</label>
@@ -117,23 +119,25 @@
           <div class="room-icon blue">
             <div class="door"></div>
           </div>
-          <h2>{{ $t('rooms.roomModalComponent.header') }}</h2>
-          <p>{{ $t('rooms.roomModalComponent.body') }}</p>
+          <h2>{{ $t('rooms.roomModalComponent.header') || 'Agregar Nueva Habitación' }}</h2>
+          <p>{{ $t('rooms.roomModalComponent.body') || 'Complete los datos de la habitación' }}</p>
         </div>
         <div class="form-group">
-          <label>{{ $t('rooms.roomModalComponent.roomNameLabel') }}</label>
+          <label>{{ $t('rooms.roomModalComponent.roomNameLabel') || 'Número de Habitación' }}</label>
           <input
               type="text"
               v-model="newRoom.number"
-              :placeholder="$t('rooms.roomModalComponent.roomNamePlaceholder')"
+              :placeholder="$t('rooms.roomModalComponent.roomNamePlaceholder') || 'Ej: 101, 102, etc.'"
           />
         </div>
         <div class="form-group">
-          <label>{{ $t('rooms.roomModalComponent.roomTypeLabel') }}</label>
-          <select v-model="newRoom.typeRoomId" class="form-select">
-            <option value="0">{{ $t('rooms.roomModalComponent.roomTypePlaceholder') }}</option>
+          <label>{{ $t('rooms.roomModalComponent.roomTypeLabel') || 'Tipo de Habitación' }}</label>
+          <select v-model="newRoom.typeRoomId" class="form-select" :disabled="loadingRoomTypes">
+            <option value="0">
+              {{ loadingRoomTypes ? 'Cargando tipos...' : ($t('rooms.roomModalComponent.roomTypePlaceholder') || 'Seleccione un tipo') }}
+            </option>
             <option v-for="type in roomTypes" :key="type.id" :value="type.id">
-              {{ type.name }}
+              {{ type.description || type.name }}
             </option>
           </select>
         </div>
@@ -148,16 +152,16 @@
         </div>
         <div class="modal-buttons">
           <ButtonComponent
-              :text="$t('rooms.roomModalComponent.cancelButton')"
+              :text="$t('rooms.roomModalComponent.cancelButton') || 'Cancelar'"
               state="basic"
               @click="closeAddRoomModal"
               :disabled="addingRoom"
           />
           <ButtonComponent
-              :text="addingRoom ? ($t('rooms.adding') || 'Agregando...') : $t('rooms.roomModalComponent.addButton')"
+              :text="addingRoom ? ($t('rooms.adding') || 'Agregando...') : ($t('rooms.roomModalComponent.addButton') || 'Agregar')"
               state="primary"
               @click="addRoom"
-              :disabled="addingRoom"
+              :disabled="addingRoom || loadingRoomTypes"
           />
         </div>
       </div>
@@ -178,7 +182,6 @@ import OrganizationIcon from "../../assets/organizational-management/organizatio
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
 import RoomService from '.././services/room.service.js';
 
-// rooms.component.vue - SCRIPT SECTION CORREGIDO
 export default {
   name: 'RoomsComponent',
   components: {
@@ -191,12 +194,15 @@ export default {
       showModal: false,
       showStateModal: false,
       loading: false,
+      loadingRoomTypes: false,
       error: null,
       addingRoom: false,
       updatingState: false,
       selectedRoom: null,
       newState: '',
-      authError: false, // Nuevo: para errores de autenticación
+      authError: false,
+      hotelName: '', // Nueva propiedad para el nombre del hotel
+      hotelInfo: null, // Nueva propiedad para la información completa del hotel
       navigationItems: [
         { id: "overview", label: "Overview", path: "/home/hotel/1/overview", icon: OverviewIcon, isActive: false },
         { id: "analytics", label: "Analytics", path: "/home/hotel/1/analytics", icon: AnalyticsIcon, isActive: false },
@@ -212,23 +218,203 @@ export default {
         state: 'Disponible'
       },
       rooms: [],
-      roomTypes: [
-        { id: 1, name: 'Individual' },
-        { id: 2, name: 'Doble' },
-        { id: 3, name: 'Suite' },
-        { id: 4, name: 'Familiar' }
-      ]
+      roomTypes: [],
+      bookings: []
     };
   },
   async mounted() {
     console.log('🚀 Componente Rooms montado');
-
-    // Ejecutar diagnóstico completo
     RoomService.debugAuth();
-
-    await this.loadRooms();
+    await this.loadInitialData();
   },
   methods: {
+    async loadInitialData() {
+      await Promise.all([
+        this.loadHotelInfo(), // Nueva función para cargar información del hotel
+        this.loadRooms(),
+        this.loadRoomTypes(),
+        this.loadBookings()
+      ]);
+    },
+
+    // NUEVA FUNCIÓN: Cargar información del hotel
+    async loadHotelInfo() {
+      try {
+        console.log('🏨 Cargando información del hotel...');
+        this.hotelInfo = await RoomService.getHotelById();
+
+        // Extraer el nombre del hotel de la respuesta
+        this.hotelName = this.hotelInfo?.name || this.hotelInfo?.hotelName || 'Hotel sin nombre';
+
+        console.log('🏨 Información del hotel cargada:', this.hotelInfo);
+        console.log('🏨 Nombre del hotel:', this.hotelName);
+
+      } catch (error) {
+        console.error('❌ Error cargando información del hotel:', error);
+        // Mantener un nombre fallback si no se puede cargar
+        this.hotelName = 'Hotel';
+      }
+    },
+
+    async loadBookings() {
+      try {
+        console.log('📅 Cargando reservas...');
+        const response = await RoomService.getAllBookings();
+
+        if (Array.isArray(response)) {
+          this.bookings = response;
+        } else if (response && response.data && Array.isArray(response.data)) {
+          this.bookings = response.data;
+        } else {
+          console.warn('⚠️ Respuesta inesperada de reservas:', response);
+          this.bookings = [];
+        }
+
+        console.log('📅 Reservas cargadas:', this.bookings);
+        this.updateRoomsWithBookingData();
+
+      } catch (error) {
+        console.error('❌ Error cargando reservas:', error);
+        this.bookings = [];
+      }
+    },
+
+    updateRoomsWithBookingData() {
+      console.log('🔄 Actualizando habitaciones con datos de reservas...');
+
+      const activeBookingsMap = new Map();
+      const now = new Date();
+
+      this.bookings.forEach(booking => {
+        if (booking.state === 'ACTIVE' && booking.roomId && booking.startDate && booking.finalDate) {
+          const startDate = new Date(booking.startDate);
+          const endDate = new Date(booking.finalDate);
+
+          // Verificar si la reserva está actualmente activa (dentro del rango de fechas)
+          const isCurrentlyActive = startDate <= now && endDate >= now;
+
+          console.log(`📅 Verificando reserva ${booking.id} para habitación ${booking.roomId}:`, {
+            startDate: startDate.toISOString(),
+            endDate: endDate.toISOString(),
+            now: now.toISOString(),
+            isCurrentlyActive,
+            state: booking.state
+          });
+
+          if (isCurrentlyActive) {
+            activeBookingsMap.set(booking.roomId, {
+              id: booking.id,
+              checkIn: booking.startDate,
+              checkOut: booking.finalDate,
+              guest: booking.paymentCustomer || booking.customer || 'Cliente',
+              state: booking.state,
+              description: booking.description || ''
+            });
+          }
+        }
+      });
+
+      console.log('📋 Reservas activas mapeadas:', activeBookingsMap.size);
+
+      this.rooms = this.rooms.map(room => {
+        const booking = activeBookingsMap.get(room.id);
+        const hasActiveBooking = !!booking;
+
+        console.log(`🏠 Habitación ${room.id}:`, {
+          roomState: room.state,
+          hasActiveBooking,
+          booking: booking
+        });
+
+        if (hasActiveBooking) {
+          // Habitación CON reserva activa -> NOT AVAILABLE (rojo)
+          return {
+            ...room,
+            hasActiveBooking: true,
+            bookingInfo: booking,
+            guest: booking.guest,
+            checkIn: booking.checkIn,
+            checkOut: booking.checkOut,
+            available: false // FALSE = rojo (not available) - está ocupada
+          };
+        } else {
+          // Habitación SIN reserva activa -> AVAILABLE (azul)
+          return {
+            ...room,
+            hasActiveBooking: false,
+            bookingInfo: null,
+            guest: room.guest || '', // Mantener guest original si no hay reserva
+            checkIn: room.checkIn || '',
+            checkOut: room.checkOut || '',
+            available: true // TRUE = azul (available) - está libre
+          };
+        }
+      });
+
+      console.log('✅ Habitaciones actualizadas con información de reservas');
+    },
+
+    formatDate(dateString) {
+      if (!dateString) return '';
+
+      try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+
+        return `${day}/${month}/${year}`;
+      } catch (error) {
+        console.warn('Error formateando fecha:', dateString, error);
+        return dateString;
+      }
+    },
+
+    async loadRoomTypes() {
+      this.loadingRoomTypes = true;
+      try {
+        console.log('🏷️ Cargando tipos de habitación...');
+        const response = await RoomService.getRoomTypes();
+
+        if (Array.isArray(response)) {
+          this.roomTypes = response;
+        } else if (response && response.data && Array.isArray(response.data)) {
+          this.roomTypes = response.data;
+        } else {
+          console.warn('⚠️ Respuesta inesperada de tipos de habitación:', response);
+          this.roomTypes = [];
+        }
+
+        console.log('🏷️ Tipos de habitación cargados:', this.roomTypes);
+
+        if (this.roomTypes.length === 0) {
+          console.log('⚠️ No se encontraron tipos de habitación, usando fallback');
+          this.roomTypes = [
+            { id: 1, name: 'Estándar', description: 'Estándar' },
+            { id: 2, name: 'Deluxe', description: 'Deluxe' },
+            { id: 3, name: 'Suite', description: 'Suite' }
+          ];
+        }
+
+      } catch (error) {
+        console.error('❌ Error cargando tipos de habitación:', error);
+        this.roomTypes = [
+          { id: 1, name: 'Estándar', description: 'Estándar' },
+          { id: 2, name: 'Deluxe', description: 'Deluxe' },
+          { id: 3, name: 'Suite', description: 'Suite' }
+        ];
+      } finally {
+        this.loadingRoomTypes = false;
+      }
+    },
+
+    getRoomTypeName(typeRoomId) {
+      const type = this.roomTypes.find(t => t.id === typeRoomId);
+      return type ? (type.name || type.description) : 'Tipo desconocido';
+    },
+
     async loadRooms() {
       this.loading = true;
       this.error = null;
@@ -237,7 +423,6 @@ export default {
       try {
         console.log('📥 Iniciando carga de habitaciones...');
 
-        // Verificar autenticación antes de hacer la solicitud
         const token = RoomService.getValidToken();
         if (!token) {
           throw new Error('No se encontró token de autenticación válido');
@@ -253,7 +438,6 @@ export default {
         const response = await RoomService.getRoomsByHotel();
         console.log('✅ Respuesta de la API:', response);
 
-        // Verificar si la respuesta es un array
         if (Array.isArray(response)) {
           this.rooms = this.mapApiDataToComponent(response);
         } else if (response && response.data && Array.isArray(response.data)) {
@@ -269,10 +453,14 @@ export default {
           this.error = 'No se encontraron habitaciones para este hotel';
         }
 
+        // Actualizar con información de reservas si ya están cargadas
+        if (this.bookings.length > 0) {
+          this.updateRoomsWithBookingData();
+        }
+
       } catch (error) {
         console.error('❌ Error cargando habitaciones:', error);
 
-        // Manejo específico de errores
         if (error.message.includes('token') || error.message.includes('autenticación')) {
           this.authError = true;
           this.error = 'Problema de autenticación. Por favor, inicia sesión nuevamente.';
@@ -299,42 +487,42 @@ export default {
         return [];
       }
 
-      return apiRooms.map((room, index) => {
+      return apiRooms.map((room) => {
         console.log('🏠 Habitación de la API:', room);
 
         return {
-          id: room.id || room.roomId || Math.random(), // Fallback si no hay ID
-          number: `Habitación ${index + 1}`, // Generar número incremental
+          id: room.id || room.roomId || Math.random(),
+          number: room.roomNumber || room.number || room.name || room.id || 'Sin número',
           guest: room.guestName || room.guest || '',
           checkIn: room.checkInDate || room.checkIn || '',
           checkOut: room.checkOutDate || room.checkOut || '',
           available: room.state === 'Disponible' || room.state === 'Available' || room.available,
           typeRoomId: room.typeRoomId || room.roomTypeId || 0,
-          state: room.state || room.status || 'Desconocido'
+          state: room.state || room.status || 'Desconocido',
+          hasActiveBooking: false,
+          bookingInfo: null
         };
       });
     },
 
-    // Método para reintento manual
     async retryLoadRooms() {
       if (this.authError) {
-        // Si es error de autenticación, mostrar mensaje especial
         alert('Problema de autenticación detectado. Por favor, recarga la página e inicia sesión nuevamente.');
         return;
       }
-
-      await this.loadRooms();
+      await this.loadInitialData();
     },
 
-    // Método para debugging manual
     debugAuthentication() {
       console.log('🔧 Iniciando debug manual...');
       RoomService.debugAuth();
     },
 
-    // Resto de métodos sin cambios...
-    openAddRoomModal() {
+    async openAddRoomModal() {
       this.showModal = true;
+      if (this.roomTypes.length === 0) {
+        await this.loadRoomTypes();
+      }
     },
 
     closeAddRoomModal() {
@@ -362,11 +550,13 @@ export default {
       try {
         await RoomService.updateRoomState(this.selectedRoom.id, this.newState);
 
-        // Actualizar el estado local
         const roomIndex = this.rooms.findIndex(r => r.id === this.selectedRoom.id);
         if (roomIndex !== -1) {
           this.rooms[roomIndex].state = this.newState;
-          this.rooms[roomIndex].available = this.newState === 'Disponible';
+
+          // Mantener la lógica: con reserva = NOT available (rojo), sin reserva = available (azul)
+          const hasActiveBooking = this.rooms[roomIndex].hasActiveBooking;
+          this.rooms[roomIndex].available = !hasActiveBooking; // FALSE si tiene reserva, TRUE si no tiene
         }
 
         this.closeStateModal();
@@ -390,11 +580,8 @@ export default {
 
     async addRoom(event) {
       if (event) event.preventDefault();
-
-      // Prevenir ejecución duplicada
       if (this.addingRoom) return;
 
-      // Validaciones
       if (!this.newRoom.number || this.newRoom.number.trim() === '') {
         alert('El número de habitación es requerido');
         return;
@@ -405,10 +592,8 @@ export default {
         return;
       }
 
-      // Verificar si ya existe la habitación
       const existingRoom = this.rooms.find(r =>
-          r.number === this.newRoom.number.trim() ||
-          r.number === `Habitación ${this.newRoom.number.trim()}`
+          r.number === this.newRoom.number.trim()
       );
       if (existingRoom) {
         alert(`La habitación ${this.newRoom.number} ya existe`);
@@ -418,51 +603,23 @@ export default {
       this.addingRoom = true;
 
       try {
-        // Probar diferentes formatos de datos que podría esperar la API
-        const roomDataOptions = [
-          {
-            roomNumber: this.newRoom.number.trim(),
-            typeRoomId: this.newRoom.typeRoomId,
-            state: this.newRoom.state
-          },
-          {
-            number: this.newRoom.number.trim(),
-            typeRoomId: this.newRoom.typeRoomId,
-            state: this.newRoom.state
-          },
-          {
-            name: this.newRoom.number.trim(),
-            typeRoomId: this.newRoom.typeRoomId,
-            state: this.newRoom.state
-          }
-        ];
+        const roomData = {
+          roomNumber: this.newRoom.number.trim(),
+          typeRoomId: this.newRoom.typeRoomId,
+          state: this.newRoom.state
+        };
 
-        console.log('📤 Enviando datos de habitación:', roomDataOptions[0]);
+        console.log('📤 Enviando datos de habitación:', roomData);
 
-        // Intentar con el primer formato (roomNumber)
-        let response;
-        try {
-          response = await RoomService.createRoom(roomDataOptions[0]);
-        } catch (error) {
-          console.log('❌ Falló con roomNumber, probando con number...');
-          try {
-            response = await RoomService.createRoom(roomDataOptions[1]);
-          } catch (error2) {
-            console.log('❌ Falló con number, probando con name...');
-            response = await RoomService.createRoom(roomDataOptions[2]);
-          }
-        }
-
+        const response = await RoomService.createRoom(roomData);
         console.log('✅ Respuesta de creación:', response);
 
-        // Recargar las habitaciones para ver la nueva
-        await this.loadRooms();
+        await this.loadInitialData();
         this.closeAddRoomModal();
         alert('Habitación creada exitosamente');
 
       } catch (error) {
         console.error('❌ Error creating room:', error);
-        console.error('📋 Detalles del error:', error.response?.data);
         alert(error.response?.data?.message || 'Error al crear la habitación');
       } finally {
         this.addingRoom = false;
@@ -507,7 +664,6 @@ header p {
   gap: 10px;
 }
 
-/* Loading Spinner */
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -531,7 +687,6 @@ header p {
   100% { transform: rotate(360deg); }
 }
 
-/* Error Message */
 .error-message {
   display: flex;
   flex-direction: column;
@@ -593,6 +748,18 @@ header p {
   width: 100%;
 }
 
+.room-details {
+  width: 100%;
+  text-align: center;
+}
+
+.room-type {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0066cc;
+  margin-bottom: 8px;
+}
+
 .room-dates {
   display: flex;
   flex-direction: column;
@@ -600,7 +767,6 @@ header p {
   font-size: 0.8rem;
   color: #666;
   margin: 5px 0;
-  text-align: center;
 }
 
 .room-state {
@@ -631,7 +797,6 @@ header p {
   background-color: #ff6b6b !important;
 }
 
-/* Modal styles */
 .modal {
   position: fixed;
   top: 0;
@@ -696,11 +861,25 @@ header p {
   cursor: pointer;
 }
 
+.form-select:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
 .modal-buttons {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
   gap: 10px;
+}
+
+.booking-info {
+  margin-top: 5px;
+}
+
+.booking-status {
+  color: #ff6b6b;
+  font-weight: bold;
 }
 
 @media (max-width: 768px) {

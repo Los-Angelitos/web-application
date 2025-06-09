@@ -349,6 +349,7 @@
     "inactiveStatus": "NO ACTIVE",
     "cancelButton": "Cancel",
     "cancelConfirmation": "Are you sure you want to cancel your reservation at {hotelName}?",
-    "cancelSuccess": "Reservation canceled for {hotelName}"
+    "cancelSuccess": "Reservation canceled for {hotelName}",
+    "cancelledStatus": "CANCELLED"
   }
 }
