@@ -16,6 +16,10 @@ import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
 import i18n from "../../i18n.js";
+import {useAuthenticationStore} from "../../iam/services/authentication.store.js";
+
+const userId = useAuthenticationStore.state.userId;
+
 
 export default {
   name: "ProvidersPage",
@@ -28,8 +32,17 @@ export default {
   },
   data() {
     return {
-      hotelId: 11,
-      hotel: null,
+      hotelId: null,
+      userId: userId,
+      hotel: {
+        id: null,
+        name: "",
+        address: "",
+        description: "",
+        email: "",
+        phone: "",
+        ownerId: userId
+      },
       hotelApi: new HotelsApiService(),
       providers: [],
       providerApi: new ProviderApiService(),
@@ -49,24 +62,6 @@ export default {
       providerToDeleteId: null
     };
   },
-  async created() {
-    try {
-      const res = await this.providerApi.getProviders();
-      console.log(res);
-      this.providers = res.data
-          .filter(p => p.state === "active")
-          .map(p => Provider.fromDisplayableProvider(p));
-    } catch (error) {
-      console.error("Error al obtener los proveedores:", error);
-    }
-
-    try {
-      const res = await this.hotelApi.getHotelsById(this.hotelId);
-      this.hotel = Hotel.fromDisplayableHotel(res);
-    } catch (error) {
-      console.error("Error al obtener hotel:", error);
-    }
-  },
   computed: {
     i18n() {
       return i18n
@@ -75,7 +70,34 @@ export default {
       return this.hotel?.name ?? "Hotel Name Not Found";
     }
   },
+  async mounted() {
+    await this.fetchData();
+  },
   methods: {
+    async fetchData(){
+    try {
+        console.log("User ID:", this.userId);
+
+        this.hotel = await HotelsApiService.getHotelByOwnerId(this.userId);
+
+        if (!this.hotel || !this.hotel.id) {
+          console.error("Hotel not found or missing ID");
+          return;
+        }
+
+          this.hotel.ownerId = this.userId;
+          console.log("Hotel details fetched successfully:", this.hotel);
+
+      this.providers  = await this.providerApi.getProviders(this.hotel.id);
+        if (!this.providers || this.providers.length === 0) {
+          console.warn("No providers found for this hotel.");
+        } else {
+          console.log("Providers fetched successfully:", this.providers);
+        }
+        } catch (error) {
+          console.error("Error fetching hotel details:", error);
+        }
+    },
     openDeleteModal(providerId) {
       this.providerToDeleteId = providerId;
       this.showDeleteModal = true;
@@ -96,7 +118,7 @@ export default {
 
     viewDetails(provider, index) {
       this.selectedProviderId = provider.id;
-      this.selectedAvatar = `https://i.pravatar.cc/150?img=${index + 1}`;
+      this.selectedAvatar = `https://www.esan.edu.pe/images/blog/2021/12/17/1500x844-requisitos-proveedores-17-12-2021.jpg`;
     }
   }
 };
@@ -107,7 +129,7 @@ export default {
       :navigationItems="navigationItems"
   />
   <div class="providers-page">
-    <h1 class="hotel-title">{{ hotelName }}</h1>
+    <h1 class="hotel-title">{{this.hotel.name}}</h1>
     <h2 class="section-title">{{ i18n.global.t('providers.title')}}</h2>
 
     <div class="provider-grid">
@@ -118,7 +140,7 @@ export default {
       >
         <template #image>
           <img
-              :src="`https://i.pravatar.cc/150?img=${index + 1}`"
+              :src="`https://www.esan.edu.pe/images/blog/2021/12/17/1500x844-requisitos-proveedores-17-12-2021.jpg`"
               alt="Avatar"
               class="provider-image"
           />
@@ -126,7 +148,10 @@ export default {
 
         <template #header-content>
           <p>{{ provider.email }}</p>
+          <p>{{ provider.state }}</p>
         </template>
+
+
 
         <template #default>
           <div class="button-row">
@@ -150,7 +175,7 @@ export default {
       v-if="selectedProviderId !== null"
       :providerId="selectedProviderId"
       :image="selectedAvatar"
-      @close="selectedProviderId = null"
+      @close="() => { selectedProviderId = null; selectedAvatar = ''; }"
   />
 
   <ProviderDeleteConfirmComponent

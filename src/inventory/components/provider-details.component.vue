@@ -24,11 +24,8 @@ export default {
   },
   async created() {
     try {
-      //const res = await this.providerApi.getProviderById(this.providerId);
-      const res = await this.providerApi.getProviders();
-      const data = res.data.filter((p) => p.id === this.providerId);
-      
-      this.provider = Provider.fromDisplayableProvider(data[0]);
+      const res = await this.providerApi.getProviderById(this.providerId);
+      this.provider = res.data;
     } catch (error) {
       console.error("Error fetching provider:", error);
     }
@@ -47,7 +44,7 @@ export default {
 </script>
 
 <template>
-  <div class="modal-overlay" @click.self="close">
+  <div class="modal-overlay" >
     <div class="modal-card" v-if="provider">
       <img
           :src="image"
@@ -74,7 +71,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  z-index: 9999;
 }
 
 .modal-card {

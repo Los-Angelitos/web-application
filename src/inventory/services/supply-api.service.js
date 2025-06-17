@@ -19,10 +19,15 @@ export class SupplierApiService {
      */
     getSupplies(hotelId) {
         //return suppliesMock; // For testing purposes, replace with the line below when ready for production
-        return http.get(`/supply/get-all-supplies?hotelId=${hotelId}`);
+        return http.get(`/supply/get-all-supplies?hotelId=${hotelId}`)
+    .then(response => response.data) // Assuming the response contains the main multimedia
+            .catch(error => {
+                console.error("Error fetching supplies by hotel ID:", error);
+                throw error;
+            });
     }
 
     updateSupply(supplyId, supply) {
-        return http.post(`/supply/${supplyId}`, Supply.toDisplayableSupply(supply));
+        return http.put(`/supply/${supplyId}`, Supply.toDisplayableSupply(supply));
     }
 }
