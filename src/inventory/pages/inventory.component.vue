@@ -65,7 +65,9 @@ export default {
         return;
       }
       // Fetch supplies
-      this.supplies = await this.supplierApi.getSupplies(this.hotelId);
+      let nofilteredsupplies = await this.supplierApi.getSupplies(this.hotelId);
+      this.supplies = nofilteredsupplies.filter(supply => supply.state === "ACTIVE");
+
       console.log("Supplies loaded successfully.");
 
       // Fetch providers
@@ -110,10 +112,10 @@ export default {
         this.showDeleteModal = false;
       }
     },
-    async handleCreated({ name, price, stock }) {
+    async handleCreated({ name, price, stock, providerId }) {
       const supply = new Supply(
           0,
-          this.providers[0]?.id ?? 1,
+          providerId,
           this.hotelId,
           name,
           price,
@@ -196,7 +198,7 @@ export default {
             <span
                 :class="['stock-btn', supply.stock === 0 ? 'yes' : 'no']"
             >
-              {{ supply.stock === 0 ? 'Yes' : 'No' }}
+              {{ supply.stock === 0 ? 'No' : 'Yes' }}
             </span>
         </td>
         <td>{{ getProviderName(supply.providerId) }}</td>
@@ -211,7 +213,6 @@ export default {
     <SupplyAddComponent
         v-if="showCreateModal"
         :hotelId="hotelId"
-        :providerId="providers[0]?.id ?? 1"
     @close="showCreateModal = false"
     @created="handleCreated"
     />

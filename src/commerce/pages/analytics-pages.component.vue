@@ -5,7 +5,7 @@
   <div class="analytics-page">
     <div class="content-container">
       <div class="page-header">
-        <h1>Pepis Hotel</h1>
+        <h1>{{this.hotelName}}</h1>
         <p class="subtitle">{{ i18n.global.t('analytics.overview')}}</p>
 
         <div class="tabs">
@@ -195,28 +195,26 @@ export default {
 
   async created() {
     try {
-      let hotel = await this.HotelsApiService.getHotelByOwnerId(this.userId);
-      if (hotel || hotel.id) {
-        console.error("Hotel not found or missing ID");
-        return;
-      }
+      const hotel = await HotelsApiService.getHotelByOwnerId(this.userId);
+
       this.hotelName = hotel.name;
       this.hotelId = hotel.id;
+
+      try {
+        const res = await this.dashboardApi.getWeeklyData(this.hotelId);
+        this.dashboard = res.data.map(entry =>
+            Dashboard.fromDisplayableDashboard(entry)
+        );
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        this.dashboard = [];
+      }
 
     } catch (error) {
       console.error("Error fetching hotel:", error);
       this.hotelName = "Hotel Not Found";
     }
 
-    try {
-      const res = await this.dashboardApi.getWeeklyData(this.hotelId);
-      this.dashboard = res.data.map(entry =>
-          Dashboard.fromDisplayableDashboard(entry)
-      );
-    } catch (error) {
-      console.error("Error fetching dashboard data:", error);
-      this.dashboard = [];
-    }
   }
 };
 </script>

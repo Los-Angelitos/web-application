@@ -88,7 +88,7 @@ export default {
           this.hotel.ownerId = this.userId;
           console.log("Hotel details fetched successfully:", this.hotel);
 
-        this.providers = await this.providerApi.getProviders(this.hotel.id);
+      this.providers  = await this.providerApi.getProviders(this.hotel.id);
         if (!this.providers || this.providers.length === 0) {
           console.warn("No providers found for this hotel.");
         } else {
@@ -118,7 +118,7 @@ export default {
 
     viewDetails(provider, index) {
       this.selectedProviderId = provider.id;
-      this.selectedAvatar = `https://i.pravatar.cc/150?img=${index + 1}`;
+      this.selectedAvatar = `https://www.esan.edu.pe/images/blog/2021/12/17/1500x844-requisitos-proveedores-17-12-2021.jpg`;
     }
   }
 };
@@ -140,7 +140,7 @@ export default {
       >
         <template #image>
           <img
-              :src="`https://i.pravatar.cc/150?img=${index + 1}`"
+              :src="`https://www.esan.edu.pe/images/blog/2021/12/17/1500x844-requisitos-proveedores-17-12-2021.jpg`"
               alt="Avatar"
               class="provider-image"
           />

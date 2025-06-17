@@ -28,6 +28,6 @@ export class SupplierApiService {
     }
 
     updateSupply(supplyId, supply) {
-        return http.post(`/supply/${supplyId}`, Supply.toDisplayableSupply(supply));
+        return http.put(`/supply/${supplyId}`, Supply.toDisplayableSupply(supply));
     }
 }
