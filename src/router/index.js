@@ -22,6 +22,7 @@ import MyReservationsPage from "../reservations/pages/user-reservations.componen
 import SignInPage from "../iam/pages/sign-in.component.vue"
 import SignUpPage from "../iam/pages/sign-up.component.vue"
 import SignUpRolePage from "../iam/pages/sign-up-role.component.vue"
+import HotelIoTConfigurationPage from "../organizational-management/pages/hotel-iot-configuration.component.vue";
 
 const routes = [
     {
@@ -52,6 +53,11 @@ const routes = [
         path: '/home/hotel/:id/organization',
         name: 'Hotel Organization',
         component: OrganizationPage
+    },
+    {
+        path: '/home/hotel/:id/configuration',
+        name: 'Hotel IoT Configuration',
+        component: HotelIoTConfigurationPage
     },
     {
         path: '/home/hotel/:id/providers',

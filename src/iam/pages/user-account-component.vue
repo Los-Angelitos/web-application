@@ -43,6 +43,12 @@ export default {
           labelES: 'Mis Reservas',
           icon: reservationsIcon
         },
+        {
+          id: 'hotel-configuration',
+          label: 'Hotel Configuration',
+          labelES: 'Configuración del Hotel',
+          icon: preferencesIcon
+        },
         { 
           id: 'logout', 
           label: 'Logout',
@@ -78,6 +84,8 @@ export default {
         case 'logout':
           this.$router.push('/home/logout');
           break;
+        case 'hotel-configuration':
+          this.$router.push('/home/hotel/' + this.user.hotelId + '/configuration');
         default:
           console.error('Unknown route:', routeName);
       }
@@ -129,7 +137,25 @@ export default {
     },
     knowLanguage(item) {
       return this.$i18n.locale === 'en' ? item.label : item.labelES;
+    },
+    shouldDisplayItem(item) {
+      if (!this.user) return false;
+
+      const roleId = this.user.roleId;
+
+      // Oculta 'preferences' y 'reservations' si NO es Guest (3)
+      if ((item.id === 'preferences' || item.id === 'reservations') && roleId !== 3) {
+        return false;
+      }
+
+      // 'hotel-configuration' solo visible para Owner (1)
+      if (item.id === 'hotel-configuration' && roleId !== 1) {
+        return false;
+      }
+
+      return true; // Mostrar todo lo demás
     }
+
   }
 }
 </script>
@@ -162,12 +188,12 @@ export default {
     <!-- Navigation Menu -->
     <nav class="profile-menu">
       <button 
-        v-for="item in menuItems" 
-        :key="item.id"
-        class="menu-item"
-        :class="{ 'active': activeTab === item.id, 'logout': item.id === 'logout' }"
-        @click="activeTab = item.id, navigateTo(item.id)"
-      >
+      v-for="item in menuItems.filter(shouldDisplayItem)" 
+      :key="item.id"
+      class="menu-item"
+      :class="{ 'active': activeTab === item.id, 'logout': item.id === 'logout' }"
+      @click="activeTab = item.id; navigateTo(item.id)"
+    >
         <div class="menu-item-content">
           <img 
             v-if="item.icon" 
