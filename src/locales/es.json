@@ -142,8 +142,17 @@
   },
   "providers": {
     "title": "Proveedores",
+    "add": "Agregar proveedor",
     "delete": "Eliminar",
     "details": "Detalles",
+    "addButton": {
+        "title": "Nuevo Proveedor",
+        "name": "Nombre",
+        "email": "Correo electrónico",
+        "phone": "Teléfono",
+        "cancel": "Cancelar",
+        "add": "Agregar"
+    },
     "detailsButton": {
       "close": "Cerrar",
       "details": "Detalles",

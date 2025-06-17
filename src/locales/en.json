@@ -143,8 +143,17 @@
   },
   "providers": {
     "title": "Providers",
+    "add": "Add Provider",
     "delete": "Delete",
     "details": "Details",
+    "addButton": {
+        "title": "New Provider",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone number",
+        "cancel": "Cancel",
+        "add": "Add"
+    },
     "detailsButton": {
       "close": "Close",
       "details": "Details",

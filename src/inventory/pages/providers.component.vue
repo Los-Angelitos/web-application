@@ -15,6 +15,7 @@ import InventoryIcon from "../../assets/organizational-management/inventory-icon
 import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
+import ProviderAddModalComponent from "../components/provider-add.component.vue";
 import i18n from "../../i18n.js";
 
 export default {
@@ -24,11 +25,12 @@ export default {
     BasicCardComponent,
     ButtonComponent,
     ProviderDetailsComponent,
-    ProviderDeleteConfirmComponent
+    ProviderDeleteConfirmComponent,
+    ProviderAddModalComponent,
   },
   data() {
     return {
-      hotelId: 11,
+      hotelId: 1,
       hotel: null,
       hotelApi: new HotelsApiService(),
       providers: [],
@@ -45,6 +47,7 @@ export default {
         {id: "devices", label: "Devices", path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: false}
       ],
       selectedProviderId: null,
+      showAddModal: false,
       showDeleteModal: false,
       providerToDeleteId: null
     };
@@ -76,6 +79,19 @@ export default {
     }
   },
   methods: {
+    async addProvider(newProvider) {
+      try {
+        const res = await this.providerApi.createProvider(newProvider);
+        const created = Provider.fromDisplayableProvider(res);
+        this.providers.push(created);
+      } catch (err) {
+        console.error("Error al crear proveedor:", err);
+        alert("No se pudo crear el proveedor.");
+      } finally {
+        this.showAddModal = false;
+      }
+    },
+
     openDeleteModal(providerId) {
       this.providerToDeleteId = providerId;
       this.showDeleteModal = true;
@@ -109,7 +125,13 @@ export default {
   <div class="providers-page">
     <h1 class="hotel-title">{{ hotelName }}</h1>
     <h2 class="section-title">{{ i18n.global.t('providers.title')}}</h2>
-
+    <div class="providers-header">
+      <ButtonComponent
+          :text="'Agregar proveedor'"
+          state="primary"
+          :onClick="() => { showAddModal = true }"
+      />
+    </div>
     <div class="provider-grid">
       <BasicCardComponent
           v-for="(provider, index) in providers"
@@ -158,6 +180,13 @@ export default {
       :providerId="providerToDeleteId"
       @confirm="confirmDelete"
       @close="() => { showDeleteModal = false; providerToDeleteId = null; }"
+  />
+
+  <ProviderAddModalComponent
+      v-if="showAddModal"
+      :hotel-id="this.hotelId"
+      @added="addProvider"
+      @close="() => { showAddModal = false }"
   />
 </template>
 
