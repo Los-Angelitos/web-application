@@ -50,6 +50,13 @@ export default {
     };
   },
   async created() {
+    this.hotelId = await this.getHotelIdFromToken();
+
+    if (!this.hotelId) {
+      alert("No se pudo obtener el hotelId del token.");
+      return;
+    }
+
     try {
       const res = await this.supplierApi.getSupplies(this.hotelId);
       this.supplies = res.data.map(s => Supply.fromDisplayableSupply(s));
@@ -73,6 +80,57 @@ export default {
 
   },
   methods: {
+    async getHotelIdFromToken() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No token found');
+        }
+
+        console.log('Token found:', token.substring(0, 20) + '...');
+
+        const parts = token.split('.');
+        if (parts.length !== 3) {
+          throw new Error('Invalid JWT format');
+        }
+
+        let base64Payload = parts[1];
+
+        // Agrega padding si es necesario
+        while (base64Payload.length % 4 !== 0) {
+          base64Payload += '=';
+        }
+
+        const decodedPayload = JSON.parse(atob(base64Payload));
+        console.log('Token payload:', decodedPayload);
+
+        const possibleClaims = [
+          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/locality",
+          "locality",
+          "hotelId"
+        ];
+
+        let hotelId = null;
+        for (const claim of possibleClaims) {
+          if (decodedPayload[claim]) {
+            hotelId = decodedPayload[claim].toString();
+            console.log(`Found hotel ID in claim "${claim}":`, hotelId);
+            break;
+          }
+        }
+
+        if (!hotelId) {
+          console.log("Available claims in token:", Object.keys(decodedPayload));
+          throw new Error('Hotel ID not found in token');
+        }
+
+        return hotelId;
+
+      } catch (e) {
+        console.error('Error getting hotel ID from token:', e.message);
+        return null;
+      }
+    },
     getProviderName(providerId) {
       const provider = this.providers.find(p => p.id === providerId);
       return provider ? provider.name : "Unknown";
