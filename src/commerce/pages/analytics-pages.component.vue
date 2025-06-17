@@ -5,7 +5,7 @@
   <div class="analytics-page">
     <div class="content-container">
       <div class="page-header">
-        <h1>{{ hotelName }}</h1>
+        <h1>{{this.hotelName}}</h1>
         <p class="subtitle">{{ i18n.global.t('analytics.overview')}}</p>
 
         <div class="tabs">
@@ -49,14 +49,16 @@ import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
 import i18n from "../../i18n.js";
-
+import { useAuthenticationStore } from '/src/iam/services/authentication.store.js';
+const userId = useAuthenticationStore.state.userId;
 export default {
   name: "AnalyticsPage",
   components: {MainPageNavigation, LineChart },
   data() {
     return {
       hotelName: '',
-      hotelId: 11,
+      hotelId: null,
+      userId: userId,
       dashboardApi: new DashboardApiService(),
       hotelApi: new HotelsApiService(),
       dashboard: [],
@@ -193,25 +195,26 @@ export default {
 
   async created() {
     try {
-      const displayableHotel = await this.hotelApi.getHotelsById(this.hotelId);
+      const hotel = await HotelsApiService.getHotelByOwnerId(this.userId);
 
-      this.hotel = Hotel.fromDisplayableHotel(displayableHotel);
-      this.hotelName = this.hotel.getHotelName();
+      this.hotelName = hotel.name;
+      this.hotelId = hotel.id;
+
+      try {
+        const res = await this.dashboardApi.getWeeklyData(this.hotelId);
+        this.dashboard = res.data.map(entry =>
+            Dashboard.fromDisplayableDashboard(entry)
+        );
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        this.dashboard = [];
+      }
 
     } catch (error) {
       console.error("Error fetching hotel:", error);
       this.hotelName = "Hotel Not Found";
     }
 
-    try {
-      const res = await this.dashboardApi.getWeeklyData(this.hotelId);
-      this.dashboard = res.data.map(entry =>
-          Dashboard.fromDisplayableDashboard(entry)
-      );
-    } catch (error) {
-      console.error("Error fetching dashboard data:", error);
-      this.dashboard = [];
-    }
   }
 };
 </script>

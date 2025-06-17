@@ -17,6 +17,9 @@ import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
 import i18n from "../../i18n.js";
+import { useAuthenticationStore } from '/src/iam/services/authentication.store.js';
+const userId = useAuthenticationStore.state.userId;
+
 
 export default {
   name: "InventoryPage",
@@ -33,7 +36,6 @@ export default {
       providers: [],
       supplierApi: new SupplierApiService(),
       providerApi: new ProviderApiService(),
-      hotel: null,
       hotelApi: new HotelsApiService(),
       selectedSupplies: [],
       showDeleteModal: false,
@@ -51,26 +53,28 @@ export default {
   },
   async created() {
     try {
-      const res = await this.supplierApi.getSupplies(this.hotelId);
-      this.supplies = res.data.map(s => Supply.fromDisplayableSupply(s));
-    } catch (error) {
-      console.error("Error al obtener supplies:", error);
-    }
+      // Fetch hotel by owner ID
+      const hotel = await HotelsApiService.getHotelByOwnerId(this.userId);
+      if (hotel && hotel.id) {
+        this.hotelId = hotel.id;
+        this.hotelName = hotel.name;
+      } else {
+        console.error("No hotel found for the user or missing hotel ID.");
+        return;
+      }
+      // Fetch supplies
+      let nofilteredsupplies = await this.supplierApi.getSupplies(this.hotelId);
+      this.supplies = nofilteredsupplies.filter(supply => supply.state === "ACTIVE");
 
-    try {
-      const res = await this.providerApi.getProviders();
-      this.providers = res.data.map(p => Provider.fromDisplayableProvider(p));
-    } catch (error) {
-      console.error("Error al obtener proveedores:", error);
-    }
+      console.log("Supplies loaded successfully.");
 
-    try {
-      const res = await this.hotelApi.getHotelsById(this.hotelId);
-      this.hotel = Hotel.fromDisplayableHotel(res);
-    } catch (error) {
-      console.error("Error al obtener hotel:", error);
-    }
+      // Fetch providers
+      this.providers = await this.providerApi.getProviders(this.hotelId);
+      console.log("Providers loaded successfully.");
 
+    } catch (error) {
+      console.error("Error during initialization:", error);
+    }
   },
   methods: {
     getProviderName(providerId) {
@@ -106,10 +110,10 @@ export default {
         this.showDeleteModal = false;
       }
     },
-    async handleCreated({ name, price, stock }) {
+    async handleCreated({ name, price, stock, providerId }) {
       const supply = new Supply(
           0,
-          this.providers[0]?.id ?? 1,
+          providerId,
           this.hotelId,
           name,
           price,
@@ -143,7 +147,7 @@ export default {
       :navigationItems="navigationItems"
   />
   <div class="inventory-page">
-    <h1 class="hotel-title">{{ hotel?.name ?? 'Hotel Name Not Found' }}</h1>
+    <h1 class="hotel-title">{{this.hotelName}}</h1>
     <h2 class="section-title">{{ i18n.global.t('inventory.title')}}</h2>
     <div class="inventory-actions">
       <ButtonComponent
@@ -192,7 +196,7 @@ export default {
             <span
                 :class="['stock-btn', supply.stock === 0 ? 'yes' : 'no']"
             >
-              {{ supply.stock === 0 ? 'Yes' : 'No' }}
+              {{ supply.stock === 0 ? 'No' : 'Yes' }}
             </span>
         </td>
         <td>{{ getProviderName(supply.providerId) }}</td>
@@ -207,7 +211,6 @@ export default {
     <SupplyAddComponent
         v-if="showCreateModal"
         :hotelId="hotelId"
-        :providerId="providers[0]?.id ?? 1"
     @close="showCreateModal = false"
     @created="handleCreated"
     />

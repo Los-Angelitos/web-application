@@ -7,8 +7,18 @@ export class ProviderApiService {
         return http.post('/providers', Provider.toDisplayableProvider(provider));
     }
 
-    getProviders() {
-        return http.get('/providers');
+    getProviders(hotelId) {
+        try {
+            return http.get(`/providers/hotel/${hotelId}`)
+                .then(response => response.data) // Assuming the response contains the main multimedia
+                        .catch(error => {
+                            console.error("Error fetching providers by hotel ID:", error);
+                            throw error;
+                        });
+        } catch (error) {
+            console.error("Error fetching providers:", error);
+            throw error;
+        }
     }
 
     getProviderById(id) {
@@ -16,6 +26,14 @@ export class ProviderApiService {
     }
 
     deleteProvider(providerId) {
-        return http.delete(`/providers/${providerId}`);
+        try {
+            console.log(`Attempting to delete provider with ID: ${providerId}...`);
+            const response = http.delete(`/providers/${providerId}`);
+            console.log(`Provider with ID: ${providerId} deleted successfully.`);
+            return response;
+        } catch (error) {
+            console.error(`Error deleting provider with ID: ${providerId}`, error);
+            throw error;
+        }
     }
 }

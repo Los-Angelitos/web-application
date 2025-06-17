@@ -17,8 +17,9 @@ import OrganizationIcon from "../../assets/organizational-management/organizatio
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
 import ProviderAddModalComponent from "../components/provider-add.component.vue";
 import i18n from "../../i18n.js";
-import {Booking} from "../../reservations/model/booking.entity.js";
-import {Supply} from "../model/supply.entity.js";
+import {useAuthenticationStore} from "../../iam/services/authentication.store.js";
+
+const userId = useAuthenticationStore.state.userId;
 
 export default {
   name: "ProvidersPage",
@@ -54,24 +55,6 @@ export default {
       providerToDeleteId: null
     };
   },
-  async created() {
-    try {
-      const res = await this.providerApi.getProviders();
-      console.log(res);
-      this.providers = res.data
-          .filter(p => p.state === "active")
-          .map(p => Provider.fromDisplayableProvider(p));
-    } catch (error) {
-      console.error("Error al obtener los proveedores:", error);
-    }
-
-    try {
-      const res = await this.hotelApi.getHotelsById(this.hotelId);
-      this.hotel = Hotel.fromDisplayableHotel(res);
-    } catch (error) {
-      console.error("Error al obtener hotel:", error);
-    }
-  },
   computed: {
     i18n() {
       return i18n
@@ -79,6 +62,9 @@ export default {
     hotelName() {
       return this.hotel?.name ?? "Hotel Name Not Found";
     }
+  },
+  async mounted() {
+    await this.fetchData();
   },
   methods: {
     async addProvider({ name, email, phone, state, hotelId }) {
@@ -99,7 +85,6 @@ export default {
         console.error("Error al crear provider:", error);
       }
     },
-
     openDeleteModal(providerId) {
       this.providerToDeleteId = providerId;
       this.showDeleteModal = true;
@@ -120,7 +105,7 @@ export default {
 
     viewDetails(provider, index) {
       this.selectedProviderId = provider.id;
-      this.selectedAvatar = `https://i.pravatar.cc/150?img=${index + 1}`;
+      this.selectedAvatar = `https://www.esan.edu.pe/images/blog/2021/12/17/1500x844-requisitos-proveedores-17-12-2021.jpg`;
     }
   }
 };
@@ -131,7 +116,7 @@ export default {
       :navigationItems="navigationItems"
   />
   <div class="providers-page">
-    <h1 class="hotel-title">{{ hotelName }}</h1>
+    <h1 class="hotel-title">{{this.hotel.name}}</h1>
     <h2 class="section-title">{{ i18n.global.t('providers.title')}}</h2>
     <div class="providers-header">
       <ButtonComponent
@@ -148,7 +133,7 @@ export default {
       >
         <template #image>
           <img
-              :src="`https://i.pravatar.cc/150?img=${index + 1}`"
+              :src="`https://www.esan.edu.pe/images/blog/2021/12/17/1500x844-requisitos-proveedores-17-12-2021.jpg`"
               alt="Avatar"
               class="provider-image"
           />
@@ -156,7 +141,10 @@ export default {
 
         <template #header-content>
           <p>{{ provider.email }}</p>
+          <p>{{ provider.state }}</p>
         </template>
+
+
 
         <template #default>
           <div class="button-row">
@@ -180,7 +168,7 @@ export default {
       v-if="selectedProviderId !== null"
       :providerId="selectedProviderId"
       :image="selectedAvatar"
-      @close="selectedProviderId = null"
+      @close="() => { selectedProviderId = null; selectedAvatar = ''; }"
   />
 
   <ProviderDeleteConfirmComponent
