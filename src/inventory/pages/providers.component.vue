@@ -131,9 +131,11 @@ export default {
       :navigationItems="navigationItems"
   />
   <div class="providers-page">
-    <h1 class="hotel-title">{{ hotelName }}</h1>
-    <h2 class="section-title">{{ i18n.global.t('providers.title')}}</h2>
     <div class="providers-header">
+      <div>
+        <h1 class="hotel-title">{{ hotelName }}</h1>
+        <h2 class="section-title">{{ i18n.global.t('providers.title')}}</h2>
+      </div>
       <ButtonComponent
           :text="'Agregar proveedor'"
           state="primary"
@@ -141,6 +143,9 @@ export default {
       />
     </div>
     <div class="provider-grid">
+      <p v-if="providers.length === 0" class="no-providers-text">
+        {{ i18n.global.t('providers.message')}}
+      </p>
       <BasicCardComponent
           v-for="(provider, index) in providers"
           :key="provider.id"
@@ -263,5 +268,18 @@ export default {
   margin-top: 1rem;
 }
 
+.no-providers-text {
+  text-align: center;
+  font-size: 1rem;
+  color: #888;
+  margin-top: 2rem;
+}
+
+.providers-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
 
 </style>

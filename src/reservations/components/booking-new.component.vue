@@ -66,27 +66,30 @@ export default {
     async submitBooking() {
       try {
         const priceRoom = 100;
-        const nightCount = this.calculateNights(this.form.from, this.form.to);
+        const fromDate = new Date(this.form.from);
+        const toDate = new Date(this.form.to);
+        const nightCount = this.calculateNights(fromDate, toDate);
         const amount = priceRoom * nightCount;
 
         const booking = new Booking(
             null,
-            1,
-            3,
+            3, // paymentCustomerId (parametrizarlo luego)
+            3, // roomId (parametrizarlo luego)
             `${this.form.name} - ${this.form.dni}`,
-            this.form.from,
-            this.form.to,
+            fromDate.toISOString(),
+            toDate.toISOString(),
             priceRoom,
             nightCount,
             amount,
             "ACTIVE",
-            3
+            3 // (parametrizarlo luego)
         );
 
         console.log("Payload enviado al backend:", Booking.toDisplayableBooking(booking));
         await bookingService.createBooking(booking);
 
         console.log("Booking created:", booking);
+        this.$emit("bookingCreated");
         this.$emit("close");
       } catch (error) {
         console.error("Error creating booking:", error.response?.data || error.message);

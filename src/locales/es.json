@@ -145,6 +145,7 @@
     "add": "Agregar proveedor",
     "delete": "Eliminar",
     "details": "Detalles",
+    "message": "Aún no hay proveedores registrados.",
     "addButton": {
         "title": "Nuevo Proveedor",
         "name": "Nombre",
@@ -300,7 +301,11 @@
   },
   "reservations": {
     "title": "Reservas",
-    "newBooking": "Nueva Reserva"
+    "newBooking": "Nueva Reserva",
+    "bookingCard": {
+      "night": "Noches",
+      "amount": "Monto total"
+    }
   },
   "rooms": {
     "title": "Habitaciones",

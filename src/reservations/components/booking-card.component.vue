@@ -2,8 +2,8 @@
   <div class="reservation-card">
     <img class="avatar" :src="guest.image || 'https://i.pravatar.cc/150?img=1'" alt="Guest" />
     <p class="guest-name">{{ guest.description }}</p>
-    <p class="guest-email">{{ guest.nightCount }}</p>
-    <p class="guest-phone">{{ guest.amount }}</p>
+    <p class="guest-email">{{ i18n.global.t('reservations.bookingCard.night')}}: {{ guest.nightCount }}</p>
+    <p class="guest-phone">{{ i18n.global.t('reservations.bookingCard.amount')}}: {{ guest.amount }}</p>
     <p class="reservation-dates">
       {{ formatDate(guest.startDate) }} - {{ formatDate(guest.finalDate) }}
     </p>
@@ -17,6 +17,8 @@
 </template>
 
 <script>
+import i18n from "../../i18n.js";
+
 export default {
   name: "BookingCard",
   props: {
@@ -28,6 +30,9 @@ export default {
   computed: {
     isCheckin() {
       return !this.guest.checkedIn;
+    },
+    i18n() {
+      return i18n
     }
   },
   methods: {

@@ -48,9 +48,7 @@ export default {
     try {
       const res = await this.hotelApi.getHotelsById(this.hotelId);
       this.hotel = Hotel.fromDisplayableHotel(res);
-
-      const bookingsRes = await this.bookingsApi.getBookings(this.hotelId);
-      this.reservations = bookingsRes.data;
+      await this.fetchBookings(); // usa el nuevo método
     } catch (error) {
       console.error("Error al obtener datos:", error);
     }
@@ -64,6 +62,14 @@ export default {
     }
   },
   methods: {
+    async fetchBookings() {
+      try {
+        const bookingsRes = await this.bookingsApi.getBookings(this.hotelId);
+        this.reservations = bookingsRes.data;
+      } catch (error) {
+        console.error("Error al actualizar reservas:", error);
+      }
+    },
     openConfirmModal(guest) {
       this.selectedGuest = guest;
       this.showBookingConfirmModal = true;
@@ -104,6 +110,7 @@ export default {
     <NewBookingFormComponent
         v-if="showNewBookingModal"
         @close="showNewBookingModal = false"
+        @bookingCreated="fetchBookings"
     />
     <BookingConfirmCheckInComponent
         v-if="showBookingConfirmModal"

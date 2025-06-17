@@ -146,6 +146,7 @@
     "add": "Add Provider",
     "delete": "Delete",
     "details": "Details",
+    "message": "There are no registered providers yet.",
     "addButton": {
         "title": "New Provider",
         "name": "Name",
@@ -300,7 +301,11 @@
   },
   "reservations": {
     "title": "Reservations",
-    "newBooking": "New Booking"
+    "newBooking": "New Booking",
+    "bookingCard": {
+      "night": "Nights",
+      "amount": "Total amount"
+    }
   },
   "rooms": {
 
