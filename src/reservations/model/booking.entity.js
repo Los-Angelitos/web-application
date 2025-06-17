@@ -31,7 +31,6 @@ export class Booking {
 
     static toDisplayableBooking(booking) {
         return {
-            id: booking.id,
             paymentCustomerId: booking.paymentCustomerId,
             roomId: booking.roomId,
             description: booking.description,

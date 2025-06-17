@@ -15,11 +15,10 @@ import InventoryIcon from "../../assets/organizational-management/inventory-icon
 import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
+import ProviderAddModalComponent from "../components/provider-add.component.vue";
 import i18n from "../../i18n.js";
-import {useAuthenticationStore} from "../../iam/services/authentication.store.js";
-
-const userId = useAuthenticationStore.state.userId;
-
+import {Booking} from "../../reservations/model/booking.entity.js";
+import {Supply} from "../model/supply.entity.js";
 
 export default {
   name: "ProvidersPage",
@@ -28,21 +27,13 @@ export default {
     BasicCardComponent,
     ButtonComponent,
     ProviderDetailsComponent,
-    ProviderDeleteConfirmComponent
+    ProviderDeleteConfirmComponent,
+    ProviderAddModalComponent,
   },
   data() {
     return {
-      hotelId: null,
-      userId: userId,
-      hotel: {
-        id: null,
-        name: "",
-        address: "",
-        description: "",
-        email: "",
-        phone: "",
-        ownerId: userId
-      },
+      hotelId: 1,
+      hotel: null,
       hotelApi: new HotelsApiService(),
       providers: [],
       providerApi: new ProviderApiService(),
@@ -58,9 +49,28 @@ export default {
         {id: "devices", label: "Devices", path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: false}
       ],
       selectedProviderId: null,
+      showAddModal: false,
       showDeleteModal: false,
       providerToDeleteId: null
     };
+  },
+  async created() {
+    try {
+      const res = await this.providerApi.getProviders();
+      console.log(res);
+      this.providers = res.data
+          .filter(p => p.state === "active")
+          .map(p => Provider.fromDisplayableProvider(p));
+    } catch (error) {
+      console.error("Error al obtener los proveedores:", error);
+    }
+
+    try {
+      const res = await this.hotelApi.getHotelsById(this.hotelId);
+      this.hotel = Hotel.fromDisplayableHotel(res);
+    } catch (error) {
+      console.error("Error al obtener hotel:", error);
+    }
   },
   computed: {
     i18n() {
@@ -70,34 +80,26 @@ export default {
       return this.hotel?.name ?? "Hotel Name Not Found";
     }
   },
-  async mounted() {
-    await this.fetchData();
-  },
   methods: {
-    async fetchData(){
-    try {
-        console.log("User ID:", this.userId);
+    async addProvider({ name, email, phone, state, hotelId }) {
+      const provider = new Provider(
+          null,
+          name,
+          email,
+          phone,
+          state,
+          hotelId
+      );
 
-        this.hotel = await HotelsApiService.getHotelByOwnerId(this.userId);
-
-        if (!this.hotel || !this.hotel.id) {
-          console.error("Hotel not found or missing ID");
-          return;
-        }
-
-          this.hotel.ownerId = this.userId;
-          console.log("Hotel details fetched successfully:", this.hotel);
-
-      this.providers  = await this.providerApi.getProviders(this.hotel.id);
-        if (!this.providers || this.providers.length === 0) {
-          console.warn("No providers found for this hotel.");
-        } else {
-          console.log("Providers fetched successfully:", this.providers);
-        }
-        } catch (error) {
-          console.error("Error fetching hotel details:", error);
-        }
+      try {
+        await this.providerApi.createProvider(provider);
+        this.providers.push(provider);
+        this.showCreateModal = false;
+      } catch (error) {
+        console.error("Error al crear provider:", error);
+      }
     },
+
     openDeleteModal(providerId) {
       this.providerToDeleteId = providerId;
       this.showDeleteModal = true;
@@ -118,7 +120,7 @@ export default {
 
     viewDetails(provider, index) {
       this.selectedProviderId = provider.id;
-      this.selectedAvatar = `https://www.esan.edu.pe/images/blog/2021/12/17/1500x844-requisitos-proveedores-17-12-2021.jpg`;
+      this.selectedAvatar = `https://i.pravatar.cc/150?img=${index + 1}`;
     }
   }
 };
@@ -129,10 +131,21 @@ export default {
       :navigationItems="navigationItems"
   />
   <div class="providers-page">
-    <h1 class="hotel-title">{{this.hotel.name}}</h1>
-    <h2 class="section-title">{{ i18n.global.t('providers.title')}}</h2>
-
+    <div class="providers-header">
+      <div>
+        <h1 class="hotel-title">{{ hotelName }}</h1>
+        <h2 class="section-title">{{ i18n.global.t('providers.title')}}</h2>
+      </div>
+      <ButtonComponent
+          :text="'Agregar proveedor'"
+          state="primary"
+          :onClick="() => { showAddModal = true }"
+      />
+    </div>
     <div class="provider-grid">
+      <p v-if="providers.length === 0" class="no-providers-text">
+        {{ i18n.global.t('providers.message')}}
+      </p>
       <BasicCardComponent
           v-for="(provider, index) in providers"
           :key="provider.id"
@@ -140,7 +153,7 @@ export default {
       >
         <template #image>
           <img
-              :src="`https://www.esan.edu.pe/images/blog/2021/12/17/1500x844-requisitos-proveedores-17-12-2021.jpg`"
+              :src="`https://i.pravatar.cc/150?img=${index + 1}`"
               alt="Avatar"
               class="provider-image"
           />
@@ -148,10 +161,7 @@ export default {
 
         <template #header-content>
           <p>{{ provider.email }}</p>
-          <p>{{ provider.state }}</p>
         </template>
-
-
 
         <template #default>
           <div class="button-row">
@@ -175,7 +185,7 @@ export default {
       v-if="selectedProviderId !== null"
       :providerId="selectedProviderId"
       :image="selectedAvatar"
-      @close="() => { selectedProviderId = null; selectedAvatar = ''; }"
+      @close="selectedProviderId = null"
   />
 
   <ProviderDeleteConfirmComponent
@@ -183,6 +193,13 @@ export default {
       :providerId="providerToDeleteId"
       @confirm="confirmDelete"
       @close="() => { showDeleteModal = false; providerToDeleteId = null; }"
+  />
+
+  <ProviderAddModalComponent
+      v-if="showAddModal"
+      :hotel-id="this.hotelId"
+      @added="addProvider"
+      @close="() => { showAddModal = false }"
   />
 </template>
 
@@ -251,5 +268,18 @@ export default {
   margin-top: 1rem;
 }
 
+.no-providers-text {
+  text-align: center;
+  font-size: 1rem;
+  color: #888;
+  margin-top: 2rem;
+}
+
+.providers-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
 
 </style>

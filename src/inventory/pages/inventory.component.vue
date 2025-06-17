@@ -31,9 +31,7 @@ export default {
   },
   data() {
     return {
-      hotelId: null,
-      hotelName: null,
-      userId: userId,
+      hotelId: 1,
       supplies: [],
       providers: [],
       supplierApi: new SupplierApiService(),

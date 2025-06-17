@@ -4,14 +4,14 @@
       <img class="guest-avatar" :src="guest.image" alt="Guest" />
       <h3 class="modal-title">Confirm State</h3>
 
-      <h4 class="guest-name">{{ guest.name }}</h4>
-      <p class="guest-email">{{ guest.email }}</p>
-      <p class="guest-phone">{{ guest.phone }}</p>
+      <h4 class="guest-name">{{ guest.description }}</h4>
+      <p class="guest-email">{{ guest.nightCount }}</p>
+      <p class="guest-phone">{{ guest.amount }}</p>
 
       <div class="date-info">
         <i class="fa-regular fa-calendar"></i>
-        From: {{ guest.from }}<br />
-        To: {{ guest.to }}
+        From: {{ guest.startDate }}<br />
+        To: {{ guest.finalDate }}
       </div>
 
       <div class="form-group">

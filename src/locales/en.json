@@ -146,8 +146,18 @@
   },
   "providers": {
     "title": "Providers",
+    "add": "Add Provider",
     "delete": "Delete",
     "details": "Details",
+    "message": "There are no registered providers yet.",
+    "addButton": {
+        "title": "New Provider",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone number",
+        "cancel": "Cancel",
+        "add": "Add"
+    },
     "detailsButton": {
       "close": "Close",
       "details": "Details",
@@ -293,7 +303,12 @@
     }
   },
   "reservations": {
-
+    "title": "Reservations",
+    "newBooking": "New Booking",
+    "bookingCard": {
+      "night": "Nights",
+      "amount": "Total amount"
+    }
   },
   "rooms": {
 

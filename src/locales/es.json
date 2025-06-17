@@ -146,8 +146,18 @@
   },
   "providers": {
     "title": "Proveedores",
+    "add": "Agregar proveedor",
     "delete": "Eliminar",
     "details": "Detalles",
+    "message": "Aún no hay proveedores registrados.",
+    "addButton": {
+        "title": "Nuevo Proveedor",
+        "name": "Nombre",
+        "email": "Correo electrónico",
+        "phone": "Teléfono",
+        "cancel": "Cancelar",
+        "add": "Agregar"
+    },
     "detailsButton": {
       "close": "Cerrar",
       "details": "Detalles",
@@ -294,7 +304,12 @@
     }
   },
   "reservations": {
-
+    "title": "Reservas",
+    "newBooking": "Nueva Reserva",
+    "bookingCard": {
+      "night": "Noches",
+      "amount": "Monto total"
+    }
   },
   "rooms": {
     "title": "Habitaciones",
