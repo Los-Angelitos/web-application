@@ -48,6 +48,9 @@ export default {
     i18n() {
       return i18n;
     },
+    canCreate() {
+      return this.name && this.email && this.phone;
+    }
   },
   data() {
     return {
@@ -59,22 +62,15 @@ export default {
     };
   },
   methods: {
-    async submit() {
-      if (!this.form.name || !this.form.email || !this.form.phone) {
-        alert(this.i18n.global.t('providers.form.requiredFields'));
-        return;
-      }
-
-      const newProvider = {
-        name: this.form.name,
-        email: this.form.email,
-        phone: this.form.phone,
-        state: "active",
-        hotelId: this.hotelId
-      };
-
+    submit() {
       try {
-        this.$emit("added", newProvider);
+        this.$emit("added", {
+          name: this.form.name,
+          email: this.form.email,
+          phone: this.form.phone,
+          state: "active",
+          hotelId: this.hotelId
+        });
       } catch (e) {
         console.error("Error al agregar proveedor:", e);
         alert(this.i18n.global.t('providers.addButton.error'));

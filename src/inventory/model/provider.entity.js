@@ -10,7 +10,7 @@ export class Provider {
 
     static fromDisplayableProvider(displayableProvider) {
         return new Provider(
-            displayableProvider.id,
+            //displayableProvider.id,
             displayableProvider.name,
             displayableProvider.email,
             displayableProvider.phone,

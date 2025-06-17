@@ -17,6 +17,8 @@ import OrganizationIcon from "../../assets/organizational-management/organizatio
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
 import ProviderAddModalComponent from "../components/provider-add.component.vue";
 import i18n from "../../i18n.js";
+import {Booking} from "../../reservations/model/booking.entity.js";
+import {Supply} from "../model/supply.entity.js";
 
 export default {
   name: "ProvidersPage",
@@ -79,16 +81,22 @@ export default {
     }
   },
   methods: {
-    async addProvider(newProvider) {
+    async addProvider({ name, email, phone, state, hotelId }) {
+      const provider = new Provider(
+          null,
+          name,
+          email,
+          phone,
+          state,
+          hotelId
+      );
+
       try {
-        const res = await this.providerApi.createProvider(newProvider);
-        const created = Provider.fromDisplayableProvider(res);
-        this.providers.push(created);
-      } catch (err) {
-        console.error("Error al crear proveedor:", err);
-        alert("No se pudo crear el proveedor.");
-      } finally {
-        this.showAddModal = false;
+        await this.providerApi.createProvider(provider);
+        this.providers.push(provider);
+        this.showCreateModal = false;
+      } catch (error) {
+        console.error("Error al crear provider:", error);
       }
     },
 
