@@ -6,12 +6,12 @@
 
       <div class="form-group">
         <label>Name</label>
-        <input v-model="form.name" type="text" placeholder="Fabio Herrera" />
+        <input v-model="form.name" type="text" placeholder="Name" />
       </div>
 
       <div class="form-group">
         <label>DNI</label>
-        <input v-model="form.dni" type="text" placeholder="71855849" />
+        <input v-model="form.dni" type="text" placeholder="DNI" />
       </div>
 
       <div class="form-dates">
@@ -43,6 +43,11 @@
 </template>
 
 <script>
+import { Booking } from "../model/booking.entity.js";
+import { BookingApiService } from "../services/booking-api.service.js";
+
+const bookingService = new BookingApiService();
+
 export default {
   name: "NewBookingComponent",
   emits: ["close"],
@@ -58,9 +63,41 @@ export default {
     };
   },
   methods: {
-    submitBooking() {
-      console.log("Booking created:", this.form);
-      this.$emit("close"); // Cierra el modal
+    async submitBooking() {
+      try {
+        const priceRoom = 100;
+        const nightCount = this.calculateNights(this.form.from, this.form.to);
+        const amount = priceRoom * nightCount;
+
+        const booking = new Booking(
+            null,
+            1,
+            3,
+            `${this.form.name} - ${this.form.dni}`,
+            this.form.from,
+            this.form.to,
+            priceRoom,
+            nightCount,
+            amount,
+            "ACTIVE",
+            3
+        );
+
+        console.log("Payload enviado al backend:", Booking.toDisplayableBooking(booking));
+        await bookingService.createBooking(booking);
+
+        console.log("Booking created:", booking);
+        this.$emit("close");
+      } catch (error) {
+        console.error("Error creating booking:", error.response?.data || error.message);
+      }
+    },
+    calculateNights(from, to) {
+      const start = new Date(from);
+      const end = new Date(to);
+      const diffTime = Math.abs(end - start);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays;
     }
   }
 };
