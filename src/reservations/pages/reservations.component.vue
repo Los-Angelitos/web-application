@@ -1,79 +1,126 @@
 <script>
 import NewBookingFormComponent from "../components/booking-new.component.vue";
 import BookingConfirmCheckInComponent from "../components/booking-confirm-check-in.component.vue";
+import {HotelsApiService} from "../../shared/services/hotels-api.service.js";
+import {BookingApiService} from "../services/booking-api.service.js";
+import OverviewIcon from "../../assets/organizational-management/overview-icon.svg";
+import AnalyticsIcon from "../../assets/organizational-management/analytics-icon.svg";
+import ProvidersIcon from "../../assets/organizational-management/providers-icon.svg";
+import InventoryIcon from "../../assets/organizational-management/inventory-icon.svg";
+import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
+import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
+import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
+import {Hotel} from "../../shared/model/hotel.entity.js";
+import MainPageNavigation from "../../organizational-management/components/main-page-navigation.component.vue";
+import BookingCard from "../components/booking-card.component.vue";
+import i18n from "../../i18n.js";
 
 export default {
   name: "ReservationsPage",
   components: {
+    MainPageNavigation,
     NewBookingFormComponent,
-    BookingConfirmCheckInComponent
+    BookingConfirmCheckInComponent,
+    BookingCard
   },
   data() {
     return {
-      hotelName: "Royal Decameron Punta Sal",
+      hotelId: 1,
+      reservations: [],
+      bookingsApi: new BookingApiService(),
+      hotel: null,
+      hotelApi: new HotelsApiService(),
       showNewBookingModal: false,
       showBookingConfirmModal: false,
+      navigationItems: [
+        {id: "overview", label: "Overview", path: "/home/hotel/1/overview", icon: OverviewIcon, isActive: false},
+        {id: "analytics", label: "Analytics", path: "/home/hotel/1/analytics", icon: AnalyticsIcon, isActive: false},
+        {id: "providers", label: "Providers", path: "/home/hotel/1/providers", icon: ProvidersIcon, isActive: false},
+        {id: "inventory", label: "Inventory", path: "/home/hotel/1/inventory", icon: InventoryIcon, isActive: true},
+        {id: "rooms", label: "Rooms", path: "/home/hotel/1/rooms", icon: RoomsIcon, isActive: false},
+        {id: "organization", label: "Organization", path: "/home/hotel/1/organization", icon: OrganizationIcon, isActive: false},
+        {id: "devices", label: "Devices", path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: false}
+      ],
       selectedGuest: null
     };
+  },
+  async created() {
+    try {
+      const res = await this.hotelApi.getHotelsById(this.hotelId);
+      this.hotel = Hotel.fromDisplayableHotel(res);
+
+      const bookingsRes = await this.bookingsApi.getBookings(this.hotelId);
+      this.reservations = bookingsRes.data;
+    } catch (error) {
+      console.error("Error al obtener datos:", error);
+    }
+  },
+  computed: {
+    i18n() {
+      return i18n
+    },
+    hotelName() {
+      return this.hotel?.name ?? "Hotel Name Not Found";
+    }
   },
   methods: {
     openConfirmModal(guest) {
       this.selectedGuest = guest;
       this.showBookingConfirmModal = true;
+    },
+    formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString("es-PE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit"
+      });
     }
   }
 };
 </script>
 
 <template>
+  <MainPageNavigation :navigationItems="navigationItems" />
   <div class="reservations-page">
-    <h1 class="hotel-title">{{ hotelName }}</h1>
-    <h2 class="section-title">Reservations</h2>
+    <div class="title-section">
+      <h1 class="hotel-title">{{ hotel?.name || "Hotel" }}</h1>
+      <h2 class="section-title">{{ i18n.global.t('reservations.title')}}</h2>
+    </div>
 
     <div class="top-bar">
-      <button class="btn-primary" @click="showNewBookingModal = true">
-        New Booking
-      </button>
+      <button class="btn-primary" @click="showNewBookingModal = true">{{ i18n.global.t('reservations.newBooking')}}</button>
     </div>
 
     <div class="card-container">
-      <div class="reservation-card">
-        <img class="avatar" src="https://i.pravatar.cc/150?img=10" alt="Guest" />
-        <h3 class="guest-name">Arian Rodriguez</h3>
-        <p class="guest-email">arian@mono.com</p>
-        <p class="guest-phone">+51 999 888 487</p>
-        <p class="reservation-dates">14/05/25 - 24/05/25</p>
-        <button
-            class="btn-checkin"
-            @click="openConfirmModal({
-              name: 'Arian Rodriguez',
-              email: 'arian@mono.com',
-              phone: '+51 999 888 487',
-              from: '14/05/25',
-              to: '24/05/25',
-              image: 'https://i.pravatar.cc/150?img=1'
-            })">
-          Check-in
-        </button>
-      </div>
+      <BookingCard
+          v-for="reservation in reservations"
+          :key="reservation.id"
+          :guest="reservation"
+          @checkin="openConfirmModal"
+      />
     </div>
-  </div>
-  <NewBookingFormComponent
-      v-if="showNewBookingModal"
-      @close="showNewBookingModal = false"
-  />
-  <BookingConfirmCheckInComponent
-      v-if="showBookingConfirmModal"
-      :guest="selectedGuest"
-      @close="showBookingConfirmModal = false"
-  />
 
+    <NewBookingFormComponent
+        v-if="showNewBookingModal"
+        @close="showNewBookingModal = false"
+    />
+    <BookingConfirmCheckInComponent
+        v-if="showBookingConfirmModal"
+        :guest="selectedGuest"
+        @close="showBookingConfirmModal = false"
+    />
+  </div>
 </template>
 
 <style scoped>
 .reservations-page {
-  padding: 2rem;
+  padding: 2.5rem 3rem;
   font-family: 'Segoe UI', sans-serif;
+}
+
+.title-section {
+  margin-bottom: 1.5rem;
 }
 
 .hotel-title {
@@ -83,8 +130,8 @@ export default {
 }
 
 .section-title {
-  font-size: 1.2rem;
-  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  color: #666;
 }
 
 .top-bar {
@@ -110,47 +157,20 @@ export default {
   flex-wrap: wrap;
 }
 
-.reservation-card {
-  background-color: white;
-  border: 1px solid #eee;
-  border-radius: 12px;
-  padding: 1.5rem;
-  text-align: center;
-  width: 200px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+.title-section {
+  margin: 2rem 0 0.5rem 0;
+  padding-left: 2rem;
 }
 
-.avatar {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 1rem;
-}
-
-.guest-name {
-  font-size: 1rem;
-  font-weight: 600;
+.hotel-title {
+  font-size: 1.5rem;
+  font-weight: bold;
   margin-bottom: 0.25rem;
 }
 
-.guest-email,
-.guest-phone,
-.reservation-dates {
-  font-size: 0.85rem;
-  color: #555;
-  margin-bottom: 0.25rem;
+.section-title {
+  font-size: 1.1rem;
+  color: #666;
 }
 
-.btn-checkin {
-  margin-top: 0.75rem;
-  padding: 6px 12px;
-  font-size: 0.8rem;
-  background-color: #0066cc;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
-}
 </style>

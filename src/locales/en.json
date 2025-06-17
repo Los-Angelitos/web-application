@@ -299,7 +299,8 @@
     }
   },
   "reservations": {
-
+    "title": "Reservations",
+    "newBooking": "New Booking"
   },
   "rooms": {
 
