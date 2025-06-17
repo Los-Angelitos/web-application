@@ -5,7 +5,7 @@
   <div class="analytics-page">
     <div class="content-container">
       <div class="page-header">
-        <h1>{{ hotelName }}</h1>
+        <h1>Pepis Hotel</h1>
         <p class="subtitle">{{ i18n.global.t('analytics.overview')}}</p>
 
         <div class="tabs">
@@ -49,14 +49,16 @@ import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
 import i18n from "../../i18n.js";
-
+import { useAuthenticationStore } from '/src/iam/services/authentication.store.js';
+const userId = useAuthenticationStore.state.userId;
 export default {
   name: "AnalyticsPage",
   components: {MainPageNavigation, LineChart },
   data() {
     return {
       hotelName: '',
-      hotelId: 11,
+      hotelId: null,
+      userId: userId,
       dashboardApi: new DashboardApiService(),
       hotelApi: new HotelsApiService(),
       dashboard: [],
@@ -193,10 +195,13 @@ export default {
 
   async created() {
     try {
-      const displayableHotel = await this.hotelApi.getHotelsById(this.hotelId);
-
-      this.hotel = Hotel.fromDisplayableHotel(displayableHotel);
-      this.hotelName = this.hotel.getHotelName();
+      let hotel = await this.HotelsApiService.getHotelByOwnerId(this.userId);
+      if (hotel || hotel.id) {
+        console.error("Hotel not found or missing ID");
+        return;
+      }
+      this.hotelName = hotel.name;
+      this.hotelId = hotel.id;
 
     } catch (error) {
       console.error("Error fetching hotel:", error);

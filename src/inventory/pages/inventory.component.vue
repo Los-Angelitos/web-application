@@ -17,6 +17,9 @@ import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
 import i18n from "../../i18n.js";
+import { useAuthenticationStore } from '/src/iam/services/authentication.store.js';
+const userId = useAuthenticationStore.state.userId;
+
 
 export default {
   name: "InventoryPage",
@@ -28,12 +31,13 @@ export default {
   },
   data() {
     return {
-      hotelId: 11,
+      hotelId: null,
+      hotelName: null,
+      userId: userId,
       supplies: [],
       providers: [],
       supplierApi: new SupplierApiService(),
       providerApi: new ProviderApiService(),
-      hotel: null,
       hotelApi: new HotelsApiService(),
       selectedSupplies: [],
       showDeleteModal: false,
@@ -51,26 +55,26 @@ export default {
   },
   async created() {
     try {
-      const res = await this.supplierApi.getSupplies(this.hotelId);
-      this.supplies = res.data.map(s => Supply.fromDisplayableSupply(s));
-    } catch (error) {
-      console.error("Error al obtener supplies:", error);
-    }
+      // Fetch hotel by owner ID
+      const hotel = await HotelsApiService.getHotelByOwnerId(this.userId);
+      if (hotel && hotel.id) {
+        this.hotelId = hotel.id;
+        this.hotelName = hotel.name;
+      } else {
+        console.error("No hotel found for the user or missing hotel ID.");
+        return;
+      }
+      // Fetch supplies
+      this.supplies = await this.supplierApi.getSupplies(this.hotelId);
+      console.log("Supplies loaded successfully.");
 
-    try {
-      const res = await this.providerApi.getProviders();
-      this.providers = res.data.map(p => Provider.fromDisplayableProvider(p));
-    } catch (error) {
-      console.error("Error al obtener proveedores:", error);
-    }
+      // Fetch providers
+      this.providers = await this.providerApi.getProviders(this.hotelId);
+      console.log("Providers loaded successfully.");
 
-    try {
-      const res = await this.hotelApi.getHotelsById(this.hotelId);
-      this.hotel = Hotel.fromDisplayableHotel(res);
     } catch (error) {
-      console.error("Error al obtener hotel:", error);
+      console.error("Error during initialization:", error);
     }
-
   },
   methods: {
     getProviderName(providerId) {
@@ -143,7 +147,7 @@ export default {
       :navigationItems="navigationItems"
   />
   <div class="inventory-page">
-    <h1 class="hotel-title">{{ hotel?.name ?? 'Hotel Name Not Found' }}</h1>
+    <h1 class="hotel-title">{{this.hotelName}}</h1>
     <h2 class="section-title">{{ i18n.global.t('inventory.title')}}</h2>
     <div class="inventory-actions">
       <ButtonComponent

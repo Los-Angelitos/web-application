@@ -4,7 +4,7 @@
   />
   <div class="organization-container">
     <div class="org-header">
-      <h1>Royal Decameron Punta Sal</h1>
+      <h1>Pepis Hotel</h1>
       <span class="subtitle">{{ i18n.global.t('organization.title') }}</span>
       <button-component
           :text="i18n.global.t('organization.header.addButton')"
