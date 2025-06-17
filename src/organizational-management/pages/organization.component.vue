@@ -4,7 +4,7 @@
   />
   <div class="organization-container">
     <div class="org-header">
-      <h1>Royal Decameron Punta Sal</h1>
+      <h1>Pepis Hotel</h1>
       <span class="subtitle">{{ i18n.global.t('organization.title') }}</span>
       <button-component
           :text="i18n.global.t('organization.header.addButton')"
@@ -147,6 +147,8 @@ import OrganizationIcon from "../../assets/organizational-management/organizatio
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
 import { OrganizationApiService } from "../services/organization-api.service.js";
 import i18n from "../../i18n.js";
+import {HotelsApiService} from "../../shared/services/hotels-api.service.js";
+import {UserProfileService} from "../../iam/services/user-profile.service.js";
 
 export default {
   name: "OrganizationPage",
@@ -165,6 +167,7 @@ export default {
       email: '',
       closeOnOverlayClick: true,
       guestData: null,
+      adminData: null,
       isLoading: true,
       navigationItems: [
         {id: "overview", label: "Overview", path: "/home/hotel/1/overview", icon: OverviewIcon, isActive: false},
@@ -196,9 +199,13 @@ export default {
 
         console.log('Loading guest data for ID:', guestId);
         const response = await this.organizationService.getOwnerById(guestId);
+        const hotel = await HotelsApiService.getHotelByOwnerId(guestId);
+        this.adminData = await UserProfileService.getAdminByHotelI
+        d(hotel.id);
 
         if (response && response.data) {
           this.guestData = response.data;
+
           console.log('Guest data loaded successfully:', this.guestData);
         } else {
           console.warn('No data received from API');

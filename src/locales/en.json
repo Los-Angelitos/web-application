@@ -112,7 +112,10 @@
     "enter": "Enter",
     "edit": "Edit",
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "hotelconfig": "Hotel Configuration",
+    "hotelconfig-description": "Configure your server hotel and forget about the rest, SweetManager will take care of the rest!",
+    "hotelconfig-button": "Configure"
   },
   "inventory": {
     "title": "Inventory",

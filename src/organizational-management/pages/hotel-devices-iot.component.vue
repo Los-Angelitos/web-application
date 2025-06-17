@@ -5,7 +5,7 @@
   <div class="hotel-devices-container">
     <div class="hotel-header">
       <div class="hotel-title-section">
-        <h1 class="hotel-title">Royal Decameron Punta Sal</h1>
+        <h1 class="hotel-title">Pepis Hotel</h1>
         <p class="hotel-subtitle">Devices IoT</p>
       </div>
       <div class="new-device-section">

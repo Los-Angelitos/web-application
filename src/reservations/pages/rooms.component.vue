@@ -19,14 +19,14 @@
     <!-- Loading Spinner -->
     <div v-if="loading" class="loading-container">
       <div class="spinner"></div>
-      <p>{{ $t('rooms.loading') || 'Cargando habitaciones...' }}</p>
+      <p>{{ $t('Loading') || 'Cargando habitaciones...' }}</p>
     </div>
 
     <!-- Error Message -->
     <div v-if="error" class="error-message">
       <p>{{ error }}</p>
       <ButtonComponent
-          :text="$t('rooms.retry') || 'Reintentar'"
+          :text="$t('Retry') || 'Reintentar'"
           state="primary"
           @click="loadRooms"
       />
