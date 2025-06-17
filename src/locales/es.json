@@ -111,7 +111,11 @@
     "enter": "Ingresar",
     "edit": "Editar",
     "cancel": "Cancelar",
-    "save": "Guardar"
+    "save": "Guardar",
+    "hotelconfig": "Configuración del hotel",
+    "hotelconfig-description": "Configura el servidor de tu Hotel y olvídate de la indisponibilidad, SweetManager se encargará de todo!",
+    "hotelconfig-button": "Configurar"
+
   },
   "inventory": {
     "title": "Inventario",

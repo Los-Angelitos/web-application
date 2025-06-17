@@ -324,6 +324,10 @@ export default {
       this.$router.push(`/home/profile/${this.userData.id}/reservations`);
     },
 
+    goToHotelConfiguration() {
+      this.$router.push('/home/hotel/' + this.userData.hotelId + '/configuration');
+    },
+
     contactSupport() {
       this.$router.push('/support');
     },
@@ -495,10 +499,16 @@ export default {
           <button class="btn btn-outline" @click="goToHotel">{{ i18n.global.t('user-profile.enter') }}</button>
         </div>
 
-        <div class="card sidebar-card">
+        <div class="card sidebar-card" v-if="userData.type === 'guest'">
           <h3 class="sidebar-title">{{ i18n.global.t('user-profile.reservations') }}</h3>
           <p class="sidebar-text">{{ i18n.global.t('user-profile.reservations-description') }}</p>
           <button class="btn btn-outline" @click="goToReservations">{{ i18n.global.t('user-profile.history') }}</button>
+        </div>
+
+        <div class="card sidebar-card" v-else>
+          <h3 class="sidebar-title">{{ i18n.global.t('user-profile.hotelconfig') }}</h3>
+          <p class="sidebar-text">{{ i18n.global.t('user-profile.hotelconfig-description') }}</p>
+          <button class="btn btn-outline" @click="goToHotelConfiguration">{{ i18n.global.t('user-profile.hotelconfig-button') }}</button>
         </div>
 
         <div class="card sidebar-card">
