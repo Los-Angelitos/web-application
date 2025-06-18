@@ -233,7 +233,16 @@ export default {
 
   async created() {
     try {
-      const hotel = await HotelsApiService.getHotelByOwnerId(this.userId);
+      const roleId = localStorage.getItem("roleId") || null;
+      const hotelId = this.$route.params.id || null;
+      let hotel  = null;
+      if(roleId == 3) {
+        hotel = await HotelsApiService.getHotelByOwnerId(this.userId);
+      }else if(roleId == 2) {
+        hotel = await HotelsApiService.getHotelsById(hotelId);
+      }
+
+      console.log("Hotel fetched:", hotel);
 
       this.hotelName = hotel.name;
       this.hotelId = hotelId;
