@@ -1,9 +1,6 @@
 <template>
   <div class="no-hotel-container">
     <div class="content-wrapper">
-      <div class="icon-container">
-        <i class="material-icons warning-icon">hotel_off</i>
-      </div>
       
       <h1 class="page-title">No Hotel Assigned</h1>
       
@@ -96,7 +93,7 @@ export default {
 
 .warning-icon {
   font-size: 100px;
-  color: #fb8c00;
+  color: #fb8c00; 
 }
 
 .page-title {

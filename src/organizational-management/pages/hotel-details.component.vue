@@ -71,7 +71,7 @@
           <div class="price-info">
             <h3>{{ i18n.global.t('hotel-details.hotel-details-card-component.from') }} <span class="price">S/ {{ hotel.price }}</span> {{ i18n.global.t('hotel-details.hotel-details-card-component.per-night') }}</h3>
           </div>
-          <button class="book-button" @click="newReservationHotel">{{ i18n.global.t('hotel-details.hotel-details-card-component.quote') }}</button>
+          <button class="book-button" @click="newReservationHotel" v-if="canBooking">{{ messageBooking }}</button>
         </div>
       </div>
     </div>
@@ -167,9 +167,25 @@ export default {
       requestMessage: '',
       isRequestingAccess: false,
       ownerRequest: false,
+      canBooking: true,
+      messageBooking: 'Quote your next booking',
     };
   },
   async created() {
+    const roleId = localStorage.getItem('roleId');
+    if(roleId == 2) {
+      this.canBooking = true;
+      this.messageBooking = 'Request admin access to join this hotel';
+    } else if(roleId == 1) {
+      this.canBooking = false;
+      this.messageBooking = '';
+    }else if(roleId == 3) {
+      this.canBooking = true;
+      this.messageBooking = 'Quote your next booking';
+    }
+
+
+    
     // llamada a la API
     await this.fetchHotelData();
   },
