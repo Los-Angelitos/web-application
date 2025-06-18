@@ -14,7 +14,7 @@
           :height="28"
           @click="showModal = true"
       />
-    </div>
+    </div> 
 
     <div class="org-chart">
       <div class="level level-1">
