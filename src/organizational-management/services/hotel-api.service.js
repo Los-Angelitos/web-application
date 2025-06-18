@@ -48,6 +48,18 @@ export class HotelApiService {
     async createHotel(hotel){
         return http.post("/hotels", hotel);
     }
+    
+    async createFogServer(data) {
+        return http.post("/fog-servers", data);
+    }
+
+    async getFogServerByHotel(hotelId) {
+        return http.get(`/fog-servers?hotelId=${hotelId}`);
+    }
+
+    async updateFogServer(fogServerId, data) {
+        return http.put(`/fog-servers/${fogServerId}`, data);
+    }
 
     updateHotel(hotel) {
         return http.put(`/hotels/${hotel.hotelId}`, hotel)

@@ -5,58 +5,65 @@
       <h1 class="title">{{ getHotelName() }}</h1>
       <p class="subtitle">Hotel's IoT configuration</p>
       
-      <div class="form-container">
-        <p class="form-title">Complete the next form after you had booked our IoT services</p>
-        
-        <form @submit.prevent="handleSubmit">
-          <div class="form-group">
-            <label class="form-label">Name</label>
-            <input 
-              type="text" 
-              class="form-input" 
-              v-model="form.name"
-              required
-            >
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">Server IP Address</label>
-            <input 
-              type="text" 
-              class="form-input" 
-              v-model="form.serverIp"
-              pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
-              required
-            >
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">Subnet Mask</label>
-            <input 
-              type="text" 
-              class="form-input" 
-              v-model="form.subnetMask"
-              pattern="^([0-9]|[1-2][0-9]|3[0-2])$"
-              required
-            >
-          </div>
-          
-          <button 
-            type="submit" 
-            class="submit-btn" 
-            :disabled="loading"
-          >
-            <div v-if="loading" class="spinner"></div>
-            {{ loading ? 'Saving...' : 'Save' }}
-          </button>
-          
-          <div v-if="showSuccess" class="success-message">
-            <span>✓</span>
-            Configuration saved successfully!
-          </div>
-        </form>
-      </div>
+      <!-- Show Form if there's no card or user is editing -->
+<div class="form-container" v-if="!showCardCompleted || editingMode">
+  <p class="form-title">{{ editingMode ? 'Edit Configuration' : 'Complete the next form after you had booked our IoT services' }}</p>
+  
+  <form @submit.prevent="handleSubmit">
+    <div class="form-group" v-if="hotel">
+      <label class="form-label">Name</label>
+      <input type="text" class="form-input" v-model="hotel.name" required readonly style="background-color: #f8f9fa; color: #6c757d;">
     </div>
+    <div class="form-group">
+      <label class="form-label">Server IP Address</label>
+      <input type="text" class="form-input" v-model="form.serverIp"
+             pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$" required>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Subnet Mask</label>
+      <input type="text" class="form-input" v-model="form.subnetMask"
+             pattern="^([0-9]|[1-2][0-9]|3[0-2])$" required>
+    </div>
+
+    <button type="submit" class="submit-btn" :disabled="loading">
+      <div v-if="loading" class="spinner"></div>
+      {{ loading ? 'Saving...' : (editingMode ? 'Update' : 'Save') }}
+    </button>
+
+    <div v-if="showSuccess" class="success-message">
+      <span>✓</span>
+      Configuration {{ editingMode ? 'updated' : 'saved' }} successfully!
+    </div>
+  </form>
+</div>
+
+<!-- Show current config if exists -->
+<div class="form-container" v-if="hotel && showCardCompleted && !editingMode">
+  <p class="form-title">Current Configuration</p>
+  <div class="form-group">
+    <label class="form-label">Name</label>
+    <input type="text" class="form-input" v-model="hotel.name" readonly style="background-color: #f8f9fa; color: #6c757d;">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Server IP Address</label>
+    <input type="text" class="form-input" v-model="hotel.fogServerIp" readonly>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Subnet Mask</label>
+    <input type="text" class="form-input" v-model="hotel.fogServerSubnetMask" readonly>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Fog Server Status</label>
+    <input type="text" class="form-input" v-model="hotel.fogServerStatus" readonly>
+  </div>
+  <button class="submit-btn" @click="enableEdit">
+    Edit Configuration
+  </button>
+</div>
+    </div>
+
+    
+
     
     <!-- Right Section - Illustration -->
     <div class="right-section">
@@ -190,16 +197,45 @@ export default {
       },
       loading: false,
       showSuccess: false,
-      hotelService: new HotelApiService()
+      hotelService: new HotelApiService(),
+      showCardCompleted: false,
+      editingMode: false,
     }
   },
   async mounted() {
     await this.getHotel();
+    await this.getFogServerByHotel();
   },
   methods: {
     getHotelName() {
         return this.hotel ? this.hotel.name : 'Unknown Hotel';
     },
+    async getFogServerByHotel() {
+  try {
+    let hotelId = localStorage.getItem("hotelId") || this.$route.params.id;
+
+    const response = await this.hotelService.getFogServerByHotel(hotelId);
+    if (response.status === 200 && response.data) {
+      const fogServer = response.data;
+      this.hotel.fogId = fogServer.id;
+      this.hotel.fogServerIp = fogServer.ipAddress;
+      this.hotel.fogServerSubnetMask = fogServer.subnetMask;
+      this.hotel.fogServerStatus = fogServer.status || 'Active'; // Default if not provided
+      this.showCardCompleted = true;
+    } else {
+      this.showCardCompleted = false;
+    }
+  } catch (error) {
+    console.error('Error fetching Fog Server data:', error);
+    this.showCardCompleted = false;
+  }
+},
+enableEdit() {
+  this.editingMode = true;
+  this.form.name = this.hotel.name;
+  this.form.serverIp = this.hotel.fogServerIp;
+  this.form.subnetMask = this.hotel.fogServerSubnetMask;
+},
     async getHotel() {
         try {
             let hotelId = localStorage.getItem("hotelId");
@@ -222,29 +258,52 @@ export default {
         }
     },
     async handleSubmit() {
+      if( !this.form.serverIp || !this.form.subnetMask) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
       this.loading = true;
       this.showSuccess = false;
-      
+
+      let response = null
       try {
-        // Simulate API request
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Log form data (simulate sending to backend)
-        console.log('Sending IoT configuration:', this.form);
-        
-        // Show success message
-        this.showSuccess = true;
-        
-        // Hide success message after 4 seconds
-        setTimeout(() => {
-          this.showSuccess = false;
-        }, 4000);
-        
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Error saving configuration. Please try again.');
+        if( this.editingMode) {
+          // Update existing configuration
+           response = await this.hotelService.updateFogServer(this.hotel.fogId, {
+            ipAddress: this.form.serverIp,
+            subnetMask: this.form.subnetMask,
+          });
+        } else {
+          // Create new configuration
+         response = await this.hotelService.createFogServer({
+          hotelId: this.hotel.id,
+          ipAddress: this.form.serverIp,
+          subnetMask: this.form.subnetMask,
+        });
+      }
+        if (response.status === 201 || response.status === 200) {
+          console.log('Configuration saved successfully:', response.data);
+
+          this.hotel.fogServerIp = this.form.serverIp;
+          this.hotel.fogServerSubnetMask = this.form.subnetMask;
+          this.hotel.fogServerStatus = 'Active'; // Assuming the server is active after creation
+
+          this.showSuccess = true;
+          this.form = { name: '', serverIp: '', subnetMask: '' }; // Reset form
+        } else {
+          console.error('Failed to save configuration:', response.status, response.statusText);
+          alert('Failed to save configuration. Please try again.');
+        }
+      }catch(e) {
+        console.error('Error saving configuration:', e);
+        alert('An error occurred while saving the configuration. Please try again.');
       } finally {
         this.loading = false;
+        this.showSuccess = true;
+        this.editingMode = false;
+        this.showCardCompleted = true;
+
       }
     }
   }
@@ -252,6 +311,7 @@ export default {
 </script>
 
 <style scoped>
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
