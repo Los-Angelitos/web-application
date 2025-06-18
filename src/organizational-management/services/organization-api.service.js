@@ -35,4 +35,8 @@ export class OrganizationApiService {
     updateAdmin(adminId, adminData) {
         return http.put(`/user/admins/${adminId}`, adminData);
     }
+
+    async requestAdminAccessToHotel(requestData) {
+        return http.post('/mail/admin-request', requestData);
+    }
 }

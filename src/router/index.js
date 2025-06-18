@@ -25,7 +25,7 @@ import SignUpRolePage from "../iam/pages/sign-up-role.component.vue"
 import HotelIoTConfigurationPage from "../organizational-management/pages/hotel-iot-configuration.component.vue";
 import HotelBookingSystem from "../organizational-management/pages/hotel-booking.component.vue";
 import GuestReservations    from "../reservations/pages/guest-reservations.component.vue";
-
+import NoHotelAssigned  from "../organizational-management/pages/hotel-not-found.component.vue";
 const routes = [
     {
         path: '/',
@@ -155,6 +155,11 @@ const routes = [
         path: '/home/hotel/:id/bookings/:userId',
         name: 'Hotel Bookings',
         component: HotelBookingSystem
+    },
+    {
+        path: '/home/hotel/not-found',
+        name: 'Hotel Not Found',
+        component: NoHotelAssigned
     }
 ];
 

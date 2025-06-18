@@ -114,6 +114,7 @@
 
 <script>
 import LanguageSwitcher from "./language-switcher.component.vue";
+import {jwtDecode} from "jwt-decode";
 
 export default {
   name: 'TopBarComponent',
@@ -126,14 +127,36 @@ export default {
     };
   },
   methods: {
+    // Using jwt-decode library
+    getLocality() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        return null;
+      }
+      
+      try {
+        const decodedToken = jwtDecode(token);
+        return decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/locality'];
+      } catch (error) {
+        console.error('Error decoding JWT token:', error);
+        return null;
+      }
+    },
     goToPreferences() {
       const userId = localStorage.getItem('userId');
       this.$router.push(`/home/profile/${userId}/preferences`);
       this.closeMobileMenu();
     },
     goToHotel() {
-      const hotelId = localStorage.getItem('hotelId');
-      this.$router.push('/home/hotel/1/overview');
+      const hotelId = this.getLocality();
+
+      console.log('Navigating to hotel with ID:', hotelId);
+      if(hotelId == 0 || hotelId === null) {
+        this.$router.push('/home/hotel/not-found');
+      }else {
+        this.$router.push(`/home/hotel/${hotelId}/overview`);
+      }
+
       this.closeMobileMenu();
     },
     goToProfile() {

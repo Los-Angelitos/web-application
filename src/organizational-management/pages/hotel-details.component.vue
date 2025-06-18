@@ -75,13 +75,81 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal overlay for requesting admin access to join hotel -->
+  <div class="modal-overlay" v-if="ownerRequest" @click.self="closeModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">Request Admin Access</h2>
+        <button class="close-button" @click="closeModal">
+          <span>&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="hotel-info">
+          <div class="hotel-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48">
+              <path d="M19 19V4h-4V3H5v16H3v2h18v-2h-2zm-6-6h-4v-3h4v3z" fill="#1976d2"/>
+            </svg>
+          </div>
+          <div>
+            <h3>{{ hotel.name }}</h3>
+            <p class="location"><span class="location-icon">📍</span> {{ hotel.address }}</p>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="owner-info">
+          <h4>Hotel Owner Contact</h4>
+          <div class="contact-details">
+            <div class="contact-item">
+              <span class="contact-label">Email:</span>
+              <span class="contact-value">{{ hotel.email }}</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-label">Phone:</span>
+              <span class="contact-value">{{ hotel.phone }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="message-area">
+          <label for="request-message">Your message to the owner:</label>
+          <textarea 
+            id="request-message"
+            v-model="requestMessage" 
+            placeholder="Explain why you'd like admin access to this hotel..."
+            rows="4"
+          ></textarea>
+          <p class="hint-text">The owner will review your request and contact you.</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="cancel-button" @click="closeModal">Cancel</button>
+        <button 
+          class="request-button" 
+          @click="requestAccessHotel" 
+          :disabled="isRequestingAccess || !requestMessage.trim()"
+        >
+          <span v-if="isRequestingAccess" class="spinner"></span>
+          <span v-else>Send Request</span>
+        </button>
+      </div>
+    </div>
   </div>
+  </div>
+
+  <Toast ref="toast" position="top-right" />
 </template>
 
 
 <script>
 import i18n from "../../i18n.js";
 import { HotelApiService } from "../services/hotel-api.service.js";
+import { OrganizationApiService } from "../services/organization-api.service.js";
 
 export default {
   name: 'HotelDetailPage',
@@ -92,9 +160,13 @@ export default {
   },
   data() {
     return {
+      organizationService: new OrganizationApiService(),
       hotelApiService: new HotelApiService(),
       currentImageIndex: 0,
-      hotel: null
+      hotel: null,
+      requestMessage: '',
+      isRequestingAccess: false,
+      ownerRequest: false,
     };
   },
   async created() {
@@ -102,6 +174,42 @@ export default {
     await this.fetchHotelData();
   },
   methods: {
+    closeModal() {
+      this.ownerRequest = false;
+      this.requestMessage = '';
+    },
+    async requestAccessHotel() {
+      if (!this.requestMessage.trim()) {
+        return;
+      }
+
+      this.isRequestingAccess = true;
+
+      try {
+        // Create request payload
+        const requestPayload = {
+          adminId: JSON.parse(localStorage.getItem('user'))?.id,
+          hotelId: this.hotel.id,
+          additionalMessage: this.requestMessage.trim()
+        };
+
+        // Simulate endpoint call
+        console.log('Sending admin access request:', requestPayload);
+        
+        const response = await this.organizationService.requestAdminAccessToHotel(requestPayload);
+
+        // Show success message
+        alert('Your request for admin access has been sent successfully! The hotel owner will review it and contact you soon.');
+        console.log('Admin access request sent successfully:', response.data);
+
+        // Close the modal
+        this.closeModal();
+      } catch (error) {
+        console.error('Error sending admin access request:', error);
+      } finally {
+        this.isRequestingAccess = false;
+      }
+    },
     newReservationHotel() {
       console.log("New reservation for hotel:", this.hotel.id);
       const userId = JSON.parse(localStorage.getItem('user'))?.id;
@@ -112,10 +220,18 @@ export default {
         return;
       }
 
-      this.$router.push({
-        name: 'Hotel Bookings',
-        params: { hotelId: this.hotel.id, userId: userId }
-      });
+      const roleId = localStorage.getItem('roleId');
+      console.log("User role ID:", roleId); 
+      if(roleId == 3) {
+        this.$router.push({
+          name: 'Hotel Bookings',
+          params: { hotelId: this.hotel.id, userId: userId }
+        });
+      }else if(roleId == 2) {
+        // REQUEST WITH A MODAL FOR THE OWNER 
+        this.ownerRequest = true;
+      }
+
     },
     async getHotelDetailsImages(hotelId) {
       try {
@@ -212,6 +328,264 @@ export default {
 </script>
 
 <style scoped>
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3500;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.modal-container {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modal-appear 0.3s ease-out forwards;
+}
+
+@keyframes modal-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #777;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.close-button:hover {
+  background-color: #f0f0f0;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.hotel-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.hotel-icon {
+  flex-shrink: 0;
+  background-color: #e3f2fd;
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hotel-info h3 {
+  margin: 0 0 6px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.location-icon {
+  font-size: 14px;
+}
+
+.divider {
+  height: 1px;
+  background-color: #eaeaea;
+  margin: 20px 0;
+}
+
+.owner-info h4 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: #444;
+}
+
+.contact-details {
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  padding: 12px 16px;
+}
+
+.contact-item {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.contact-item:last-child {
+  margin-bottom: 0;
+}
+
+.contact-label {
+  font-weight: 500;
+  width: 80px;
+  flex-shrink: 0;
+}
+
+.contact-value {
+  color: #555;
+}
+
+.message-area {
+  margin-top: 20px;
+}
+
+.message-area label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #444;
+}
+
+textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+textarea:focus {
+  border-color: #1976d2;
+  outline: none;
+}
+
+.hint-text {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #777;
+  font-style: italic;
+}
+
+.modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #eaeaea;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancel-button {
+  background-color: transparent;
+  border: 1px solid #ddd;
+  color: #555;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.cancel-button:hover {
+  background-color: #f5f5f5;
+}
+
+.request-button {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+}
+
+.request-button:hover {
+  background-color: #1565c0;
+}
+
+.request-button:disabled {
+  background-color: #bbdefb;
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 600px) {
+  .modal-container {
+    max-width: 100%;
+    margin: 0 10px;
+  }
+  
+  .modal-header {
+    padding: 12px 16px;
+  }
+  
+  .modal-body, .modal-footer {
+    padding: 16px;
+  }
+}
 .hotel-detail-container {
   max-width: 1200px;
   margin: 0 auto;
