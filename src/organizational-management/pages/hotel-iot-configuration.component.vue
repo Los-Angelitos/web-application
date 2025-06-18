@@ -193,6 +193,9 @@ export default {
       hotelService: new HotelApiService()
     }
   },
+  async mounted() {
+    await this.getHotel();
+  },
   methods: {
     getHotelName() {
         return this.hotel ? this.hotel.name : 'Unknown Hotel';
@@ -202,8 +205,7 @@ export default {
             let hotelId = localStorage.getItem("hotelId");
 
             if (!hotelId) {
-                console.error('Hotel ID not found in localStorage');
-                return;
+                hotelId = this.$route.params.id;
             }
 
             const response = await this.hotelService.getHotelById(hotelId);

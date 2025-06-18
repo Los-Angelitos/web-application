@@ -5,7 +5,7 @@
   <div class="hotel-devices-container">
     <div class="hotel-header">
       <div class="hotel-title-section">
-        <h1 class="hotel-title">Hotel</h1>
+        <h1 class="hotel-title">{{ hotelName }}</h1>
         <p class="hotel-subtitle">Devices IoT</p>
       </div>
       <div class="new-device-section">
@@ -80,6 +80,7 @@ import OrganizationIcon from "../../assets/organizational-management/organizatio
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
 import ReservationsIcon from "../../assets/organizational-management/reservations-icon.svg";
 import MainPageNavigation from "../components/main-page-navigation.component.vue";
+import { HotelApiService } from "../services/hotel-api.service";
 
 
 export default {
@@ -107,19 +108,37 @@ export default {
       ],
       error: null,
       devices: [],
-      hotelName: 'Royal Decameron Punta Sal',
-        showModal: false,
+      hotelName: '',
+      showModal: false,
+      hotelApiService: new HotelApiService()
     };
   },
-  mounted() {
+  async mounted() {
      this.hotelId = this.$route.params.id || null;
-    this.roleId = localStorage.getItem("roleId") || null;
-    console.log("Hotel ID from route:", this.hotelId);
+      this.roleId = localStorage.getItem("roleId") || null;
+      console.log("Hotel ID from route:", this.hotelId);
 
     this.loadNavigationItems();
     this.fetchDevices();
+    this.fetchHotelName();
   },
   methods: {
+    async fetchHotelName() {
+      try {
+        if (!this.hotelId) {
+          console.error("Hotel ID is not set.");
+          return;
+        }
+        const response = await this.hotelApiService.getHotelById(this.hotelId);
+        if (response && response.data && response.data.name) {
+          this.hotelName = response.data.name;
+        } else {
+          console.error("Hotel name not found in response:", response);
+        }
+      }catch(e) {
+        console.error("Error fetching hotel name:", e);
+      }
+    },
     loadNavigationItems() {
       // update the path with the hotel ID
 

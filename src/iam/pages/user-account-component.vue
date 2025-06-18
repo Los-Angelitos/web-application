@@ -9,7 +9,7 @@ import i18n from "../../i18n.js";
 import { UserProfileService } from "../services/user-profile.service.js";
 import {User} from "../model/user.entity.js";
 import { HttpStatusCode } from "axios";
-
+import {jwtDecode} from "jwt-decode";
 
 export default {
   name: 'ProfileView',
@@ -69,6 +69,20 @@ export default {
     }
   },
   methods: {
+    getLocality() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        return null;
+      }
+      
+      try {
+        const decodedToken = jwtDecode(token);
+        return decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/locality'];
+      } catch (error) {
+        console.error('Error decoding JWT token:', error);
+        return null;
+      }
+    },
     navigateTo(routeName) {
       console.log('Navigating to:', routeName);
       switch(routeName) {
@@ -85,7 +99,12 @@ export default {
           this.$router.push('/home/logout');
           break;
         case 'hotel-configuration':
-          this.$router.push('/home/hotel/' + this.user.hotelId + '/configuration');
+          let hotelId = localStorage.getItem('hotelId');
+          if(!hotelId) {
+            hotelId = this.getLocality();
+          }
+          this.$router.push('/home/hotel/' + hotelId + '/configuration');
+          break;
         default:
           console.error('Unknown route:', routeName);
       }

@@ -9,6 +9,7 @@ import { User } from '../model/user.entity.js';
 import { HttpStatusCode } from 'axios';
 import UserEditRequest from '../model/user-edit.request.js';
 import Cloudinary from '../../shared/services/external/cloudinary.js';
+import {jwtDecode} from 'jwt-decode';
 
 export default {
   name: 'UserProfile',
@@ -311,7 +312,20 @@ export default {
       };
       reader.readAsDataURL(file);
     },
-
+    getLocality() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        return null;
+      }
+      
+      try {
+        const decodedToken = jwtDecode(token);
+        return decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/locality'];
+      } catch (error) {
+        console.error('Error decoding JWT token:', error);
+        return null;
+      }
+    },
     goToPreferences() {
       this.$router.push('/home/profile/' + this.userData.id + '/preferences');
     },
@@ -325,7 +339,11 @@ export default {
     },
 
     goToHotelConfiguration() {
-      this.$router.push('/home/hotel/' + this.userData.hotelId + '/configuration');
+      let hotelId = localStorage.getItem('hotelId');
+      if (!hotelId) {
+        hotelId = this.getLocality();
+      }
+      this.$router.push('/home/hotel/' + hotelId + '/configuration');
     },
 
     contactSupport() {
