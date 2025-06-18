@@ -276,7 +276,7 @@ export default {
     async loadHotelInfo() {
       try {
         console.log('🏨 Cargando información del hotel...');
-        this.hotelInfo = await RoomService.getHotelById();
+        this.hotelInfo = await RoomService.getHotelById(this.hotelId);
 
         // Extraer el nombre del hotel de la respuesta
         this.hotelName = this.hotelInfo?.name || this.hotelInfo?.hotelName || 'Hotel sin nombre';
@@ -599,7 +599,6 @@ export default {
 
       } catch (error) {
         console.error('Error updating room state:', error);
-        alert(error.response?.data?.message || 'Error al actualizar el estado de la habitación');
       } finally {
         this.updatingState = false;
       }

@@ -45,20 +45,8 @@ export class HotelApiService {
         return http.get(`/room/get-room-by-id?id=${roomId}`);
     } 
 
-    createHotel(hotel){
-        return http.post("/hotels", hotel)
-            .then(response => {
-                if(response.status === 201) {
-                    return response.data;
-                }
-                else {
-                    return null;
-                }
-            })
-            .catch(error => {
-                console.error("Error creating hotel:", error);
-                throw error;
-            });
+    async createHotel(hotel){
+        return http.post("/hotels", hotel);
     }
 
     updateHotel(hotel) {

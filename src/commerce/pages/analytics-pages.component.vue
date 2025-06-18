@@ -21,15 +21,33 @@
 
       </div>
 
-      <div class="chart-container" v-if="activeDashboard.length">
-        <LineChart
-            :incomes="activeDashboard.map(e => e.totalIncome)"
-            :expenses="activeDashboard.map(e => e.totalExpense)"
-            :labels="formattedLabels"
-            :t="i18n.global.t"
-        />
+      <div class="chart-container">
+        <div v-if="activeDashboard.length">
+          <LineChart
+              :incomes="activeDashboard.map(e => e.totalIncome)"
+              :expenses="activeDashboard.map(e => e.totalExpense)"
+              :labels="formattedLabels"
+              :t="i18n.global.t"
+          />
+        </div>
+        <div v-else-if="isLoading" class="loading">
+          {{ i18n.global.t('analytics.loading')}}
+        </div>
+        <div v-else class="no-data-placeholder">
+          <div class="no-data-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M3 3v18h18"/>
+              <path d="M18.7 8a4 4 0 0 0-7.4 0"/>
+              <path d="M7 12v4h4"/>
+              <path d="M7 8h.01"/>
+            </svg>
+          </div>
+          <h3 class="no-data-title">{{ 'There aren\'t data for show it' }}</h3>
+          <p class="no-data-message">
+            {{ 'No existen datos por el momento para poder mostrar las analíticas. Estos se empezarán a mostrar cuando hayan reservas para el hotel.' }}
+          </p>
+        </div>
       </div>
-      <div v-else class="loading">{{ i18n.global.t('analytics.loading')}}</div>
     </div>
   </div>
 </template>
@@ -66,6 +84,7 @@ export default {
       hotelApi: new HotelsApiService(),
       dashboard: [],
       monthlyDashboard: [],
+      isLoading: false,
       navigationItems: [
         {id: "overview", label: "Overview", path: "", icon: OverviewIcon, isActive: true},
         {id: "analytics", label: "Analytics", path: "", icon: AnalyticsIcon, isActive: false},
@@ -197,6 +216,7 @@ export default {
     },
     async fetchWeeklyData() {
       try {
+        this.isLoading = true;
         const res = await this.dashboardApi.getWeeklyData(this.hotelId);
         console.log("Respuesta del dashboard:", res.data);
 
@@ -206,11 +226,14 @@ export default {
       } catch (error) {
         console.error("Error fetching weekly dashboard data:", error);
         this.dashboard = [];
+      } finally {
+        this.isLoading = false;
       }
     },
 
     async fetchMonthlyData() {
       try {
+        this.isLoading = true;
         const res = await this.dashboardApi.getMonthlyData(this.hotelId);
         console.log("Respuesta del dashboard:", res.data);
 
@@ -220,6 +243,8 @@ export default {
       } catch (error) {
         console.error("Error fetching monthly dashboard data:", error);
         this.monthlyDashboard = [];
+      } finally {
+        this.isLoading = false;
       }
     },
 
@@ -233,6 +258,7 @@ export default {
 
   async created() {
     try {
+      this.isLoading = true;
       const roleId = localStorage.getItem("roleId") || null;
       const hotelId = this.$route.params.id || null;
       const userId = localStorage.getItem("userId") || null;
@@ -268,6 +294,8 @@ export default {
     } catch (error) {
       console.error("Error fetching hotel:", error);
       this.hotelName = "Hotel Not Found";
+    } finally {
+      this.isLoading = false;
     }
 
   }
@@ -436,6 +464,42 @@ h1 {
 
 .error {
   color: #cc0000;
+}
+
+/* No Data Placeholder Styles */
+.no-data-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #666;
+  height: 100%;
+}
+
+.no-data-icon {
+  margin-bottom: 1.5rem;
+  opacity: 0.6;
+}
+
+.no-data-icon svg {
+  color: #999;
+}
+
+.no-data-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 1rem 0;
+}
+
+.no-data-message {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #666;
+  max-width: 500px;
+  margin: 0;
 }
 
 .data-table {

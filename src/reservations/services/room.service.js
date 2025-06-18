@@ -136,6 +136,9 @@ class RoomService {
                 const hotelId = parseInt(payload[hotelIdClaim]);
                 if (!isNaN(hotelId)) {
                     console.log('🏨 Hotel ID encontrado:', hotelId);
+                    if(!hotelId) {
+                        return localStorage.getItem('hotelId') || null;
+                    }
                     return hotelId;
                 }
             }

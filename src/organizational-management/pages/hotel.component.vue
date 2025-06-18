@@ -1,3 +1,99 @@
+<template>
+  <MainPageNavigation
+      :navigationItems="navigationItems"
+  />
+  
+  <!-- Loading Spinner -->
+  <div v-if="isLoading" class="loading-container">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p class="loading-text">Cargando información del hotel...</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div v-else class="hotel-container">
+     <!-- Izquierda: Título, dirección e imágenes -->
+     <div class="hotel-left">
+       <h2 class="hotel-title">{{hotel.name}}</h2>
+       <p class="hotel-address">{{hotel.address}}</p>
+
+       <div>
+         <div>
+           <div class="image-gallery">
+             <img
+                 v-for="(image, index) in filteredImages"
+                 :key="index"
+                 :src="image.src"
+                 :alt="image.alt || 'Hotel Image'"
+                 :class="{ 'full-width-image': image.type === 'MAIN' }"
+             />
+           </div>
+         </div>
+       </div>
+     </div>
+
+     <!-- Derecha: Descripción, servicios, contacto -->
+     <div class="hotel-right">
+       <h2 class="section-title">Find out how others see your hotel!</h2>
+
+       <div class="section">
+         <div class="section-header">
+           <div>Descripción</div>
+           <span class="edit-icon" @click="enableEdit('description')">Edit</span>
+         </div>
+
+         <div v-if="editing.description">
+           <textarea ref="description" v-model="editable.description" class="edit-area"></textarea>
+           <button class="save-button" @click="saveEdit('description')">Save changes</button>
+         </div>
+         <p v-else class="description" style="white-space: pre-line">
+           {{ hotel.description }}
+         </p>
+
+       </div>
+
+       <hr style="margin-bottom:0.5rem"/>
+       <div class="section">
+         <div class="section-header">
+           <div>Email Address</div>
+           <span class="edit-icon" @click="enableEdit('email')">Edit</span>
+         </div>
+
+         <div v-if="editing.email">
+           <input
+               ref="email"
+               v-model="editable.email"
+               class="edit-input"
+           />
+           <button class="save-button" @click="saveEdit('email')">Save changes</button>
+         </div>
+         <p v-else class="contact">{{ hotel.email }}</p>
+
+       </div>
+
+       <hr style="margin-bottom:0.5rem"/>
+       <div class="section">
+         <div class="section-header">
+           <div>Phone</div>
+           <span class="edit-icon" @click="enableEdit('phone')">Edit</span>
+         </div>
+
+         <div v-if="editing.phone">
+           <input
+               ref="phone"
+               v-model="editable.phone"
+               class="edit-input"
+           />
+           <button class="save-button" @click="saveEdit('phone')">Save changes</button>
+         </div>
+         <p v-else class="contact">{{ hotel.phone }}</p>
+
+       </div>
+     </div>
+   </div>
+</template>
+
 <script>
 import SearchBar from "../../shared/components/search-bar.component.vue";
 import TopBarComponent from "../../shared/components/top-bar.component.vue";
@@ -24,6 +120,7 @@ export default {
 
   data() {
     return {
+      isLoading: true, // Loading state
       hotelId: null,
       detailImages: [],
       filteredImages: [],
@@ -68,9 +165,14 @@ export default {
     this.userId = localStorage.getItem("userId");
     console.log("Hotel ID from route:", this.hotel.id);
 
-    await this.loadNavigationItems();
-
-    await this.loadHotelMockData();
+    try {
+      await this.loadNavigationItems();
+      await this.loadHotelMockData();
+    } catch (error) {
+      console.error("Error during page initialization:", error);
+    } finally {
+      this.isLoading = false; // Stop loading regardless of success or error
+    }
   },
 
   methods: {
@@ -132,12 +234,20 @@ export default {
         console.log("All images loaded:", allImages);
 
         this.allImages = allImages.length >= 3 ? allImages.slice(2) : [];
-        this.filteredImages = allImages.map(img => ({
-          src: img.url,
-          alt: img.type,
-          type: img.type
-        }));
 
+        if(!this.allImages.length) {
+          this.filteredImages = [
+            { src: 'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg', alt: 'Placeholder Image 1', type: 'MAIN' },
+            { src: 'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg', alt: 'Placeholder Image 2', type: 'DETAIL' },
+            { src: 'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg', alt: 'Placeholder Image 3', type: 'DETAIL' }
+          ];
+        }else  {
+          this.filteredImages = allImages.map(img => ({
+            src: img.url,
+            alt: img.type,
+            type: img.type
+          }));
+        }
 
         this.editable = this.hotel;
 
@@ -165,96 +275,44 @@ export default {
 };
 </script>
 
-
-<template>
-  <MainPageNavigation
-      :navigationItems="navigationItems"
-  />
-  <div class="hotel-container">
-     <!-- Izquierda: Título, dirección e imágenes -->
-     <div class="hotel-left">
-       <h2 class="hotel-title">{{hotel.name}}</h2>
-       <p class="hotel-address">{{hotel.address}}</p>
-
-       <div>
-         <div v-if="filteredImages.length > 0">
-           <div class="image-gallery">
-             <img
-                 v-for="(image, index) in filteredImages"
-                 :key="index"
-                 :src="image.src || 'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg'"
-                 :alt="image.alt || 'Hotel Image'"
-                 :class="{ 'full-width-image': image.type === 'MAIN' }"
-             />
-           </div>
-         </div>
-         <p v-else>No images available to display.</p>
-       </div>
-     </div>
-
-     <!-- Derecha: Descripción, servicios, contacto -->
-     <div class="hotel-right">
-       <h2 class="section-title">Find out how others see your hotel!</h2>
-
-       <div class="section">
-         <div class="section-header">
-           <div>Descripción</div>
-           <span class="edit-icon" @click="enableEdit('description')">✎ Edit</span>
-         </div>
-
-         <div v-if="editing.description">
-           <textarea ref="description" v-model="editable.description" class="edit-area"></textarea>
-           <button class="save-button" @click="saveEdit('description')">Save changes</button>
-         </div>
-         <p v-else class="description" style="white-space: pre-line">
-           {{ hotel.description }}
-         </p>
-
-       </div>
-
-       <hr style="margin-bottom:0.5rem"/>
-       <div class="section">
-         <div class="section-header">
-           <div>Email Address</div>
-           <span class="edit-icon" @click="enableEdit('email')">✎ Edit</span>
-         </div>
-
-         <div v-if="editing.email">
-           <input
-               ref="email"
-               v-model="editable.email"
-               class="edit-input"
-           />
-           <button class="save-button" @click="saveEdit('email')">Save changes</button>
-         </div>
-         <p v-else class="contact">{{ hotel.email }}</p>
-
-       </div>
-
-       <hr style="margin-bottom:0.5rem"/>
-       <div class="section">
-         <div class="section-header">
-           <div>Phone</div>
-           <span class="edit-icon" @click="enableEdit('phone')">✎ Edit</span>
-         </div>
-
-         <div v-if="editing.phone">
-           <input
-               ref="phone"
-               v-model="editable.phone"
-               class="edit-input"
-           />
-           <button class="save-button" @click="saveEdit('phone')">Save changes</button>
-         </div>
-         <p v-else class="contact">{{ hotel.phone }}</p>
-
-
-       </div>
-     </div>
-   </div>
-</template>
-
 <style scoped>
+/* Loading Styles */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 80px); /* Adjust based on your navigation height */
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #e0e0e0;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: #666;
+  font-size: 1rem;
+  margin: 0;
+  text-align: center;
+}
+
+/* Existing Styles */
 .hotel-container {
   display: flex;
   gap: 1.5rem;
@@ -302,7 +360,6 @@ export default {
   border: 1px solid #ccc;
   border-radius: 0.5rem;
 }
-
 
 .image-gallery {
   display: grid;
@@ -358,7 +415,7 @@ export default {
 
 .edit-icon {
   font-size: 0.875rem; /* 14px */
-  color: #333;
+  color: #007bff;
   cursor: pointer;
 }
 
@@ -383,5 +440,22 @@ export default {
 .contact {
   font-size: 0.875rem;
   color: #444;
+}
+
+/* Responsive Loading */
+@media (max-width: 768px) {
+  .loading-container {
+    padding: 1rem;
+  }
+  
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border-width: 3px;
+  }
+  
+  .loading-text {
+    font-size: 0.875rem;
+  }
 }
 </style>
