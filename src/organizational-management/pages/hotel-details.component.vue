@@ -71,7 +71,7 @@
           <div class="price-info">
             <h3>{{ i18n.global.t('hotel-details.hotel-details-card-component.from') }} <span class="price">S/ {{ hotel.price }}</span> {{ i18n.global.t('hotel-details.hotel-details-card-component.per-night') }}</h3>
           </div>
-          <button class="book-button">{{ i18n.global.t('hotel-details.hotel-details-card-component.quote') }}</button>
+          <button class="book-button" @click="newReservationHotel">{{ i18n.global.t('hotel-details.hotel-details-card-component.quote') }}</button>
         </div>
       </div>
     </div>
@@ -102,6 +102,21 @@ export default {
     await this.fetchHotelData();
   },
   methods: {
+    newReservationHotel() {
+      console.log("New reservation for hotel:", this.hotel.id);
+      const userId = JSON.parse(localStorage.getItem('user'))?.id;
+
+      if(!userId) {
+        console.error("User ID not found in localStorage");
+        this.$router.push('/auth/sign-in'); // Redirigir al login si no hay usuario
+        return;
+      }
+
+      this.$router.push({
+        name: 'Hotel Bookings',
+        params: { hotelId: this.hotel.id, userId: userId }
+      });
+    },
     async getHotelDetailsImages(hotelId) {
       try {
         const response = await this.hotelApiService.getHotelDetailMultimedia(hotelId);
@@ -143,10 +158,19 @@ export default {
         return 'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg'; // Fallback image URL
       }
     },
+    async getHotelPrice(hotelId) {
+      try {
+        const response = await this.hotelApiService.getHotelPrice(hotelId);
+        console.log("Hotel price response:", response);
+        return response.data.minimumPrice || 49.9; // Fallback price
+      } catch (error) {
+        console.error("Error fetching hotel price:", error);
+        return 49.9; // Fallback price
+      }
+    },
     async fetchHotelData() {
       // Simulación de una llamada a la API para obtener los datos del hotel
       const hotelId = this.$route.params.id; // Obtener el ID del hotel de la ruta
-      console.log("Hotel ID meneme:", hotelId);
 
       try {
         const hotel = await this.hotelApiService.getHotelById(hotelId);
@@ -156,7 +180,10 @@ export default {
           return;
         }
 
+        // Obtener el precio del hotel
+        const price = await this.getHotelPrice(hotelId);
         this.hotel = hotel.data; // Asignar los datos del hotel
+        this.hotel.price = price; // Asignar el precio al hotel
         this.hotel.images = await this.getHotelDetailsImages(hotelId); // Obtener las imágenes del hotel
         this.hotel.logoUrl = await this.getLogoHotelImage(hotelId); // Obtener la imagen del logo
         this.hotel.mainImageUrl = await this.getMainHotelImage(hotelId); // Obtener la imagen principal

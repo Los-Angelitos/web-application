@@ -125,7 +125,7 @@ Use:
   justify-content: center;
   align-items: center;
   background-color: rgba(0, 0, 0, .5);
-  z-index: 1000;
+  z-index: 8000;
   overflow-x: hidden;
   overflow-y: auto;
   padding: 20px;

@@ -634,7 +634,7 @@ export default {
   background-color: #ffffff;
   border-radius: 15px;
   box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
-  z-index: 3000;
+  z-index: 8000;
   overflow: hidden;
 }
 
@@ -645,7 +645,7 @@ export default {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.3);
-  z-index: 2000;
+  z-index: 3500;
 }
 
 .filters-header {

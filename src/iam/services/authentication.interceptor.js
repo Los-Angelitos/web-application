@@ -6,10 +6,10 @@ export function authenticationInterceptor(config) {
 
     if (isAuthenticated && token) {
         config.headers['Authorization'] = `Bearer ${token}`;
-        console.log("🔐 Interceptor: token agregado:", token);
+        //console.log("🔐 Interceptor: token agregado:", token);
     } else {
         delete config.headers['Authorization'];
-        console.log("🔐 Interceptor: sin token");
+        //console.log("🔐 Interceptor: sin token");
     }
 
     return config;
