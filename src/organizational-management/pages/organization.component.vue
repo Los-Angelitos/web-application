@@ -45,7 +45,7 @@
         <div class="node" v-else>
           <div class="avatar-container">
             <div class="avatar">
-              <img src="../../assets/images/default-user.png" :alt="i18n.global.t('organization.chart.defaultAlt')" />
+              <img src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg" :alt="i18n.global.t('organization.chart.defaultAlt')" />
             </div>
           </div>
           <div class="node-info">
