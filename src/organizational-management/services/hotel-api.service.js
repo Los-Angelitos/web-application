@@ -29,6 +29,18 @@ export class HotelApiService {
         return http.get(`/type-room/get-minimum-price-type-room-by-hotel-id?hotelId=${hotelId}`);
     }
 
+    async getHotelAllRooms(hotelId) {
+        return http.get(`/room/get-all-rooms?hotelId=${hotelId}`);
+    }
+
+    async processPayment(paymentData) {
+        return http.post(`/payment-customer`, paymentData);
+    }
+
+    async createBooking(bookingData) {
+        return http.post(`/booking/create-booking`, bookingData);
+    }
+
     createHotel(hotel){
         return http.post("/hotels", hotel)
             .then(response => {

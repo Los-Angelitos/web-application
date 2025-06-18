@@ -115,26 +115,29 @@
             </button>
           </div>
 
-          <h2 class="section-title">Completa tu reserva</h2>
+          <h2 class="section-title">Complete your booking</h2>
+          <p class="section-description">
+            Please fill in your details to complete the booking. Ensure all information is correct before proceeding with the payment.
+            </p>
 
           <!-- Booking Summary -->
           <div class="reservation-summary">
-            <h3 class="summary-title">Resumen de la reserva</h3>
+            <h3 class="summary-title">Summary of your booking</h3>
             <div class="summary-details">
               <div class="summary-row">
-                <span>Habitación:</span>
+                <span>Room: </span>
                 <span>{{ selectedRoom.name }}</span>
               </div>
               <div class="summary-row">
-                <span>Fecha de entrada:</span>
+                <span>Check-in date: </span>
                 <span>{{ formatDate(booking.checkIn) }}</span>
               </div>
               <div class="summary-row">
-                <span>Fecha de salida:</span>
+                <span>Check-out date: </span>
                 <span>{{ formatDate(booking.checkOut) }}</span>
               </div>
               <div class="summary-row">
-                <span>Noches:</span>
+                <span>Nights: </span>
                 <span>{{ nightsCount }}</span>
               </div>
               <hr class="summary-divider">
@@ -146,9 +149,10 @@
           </div>
 
           <!-- Payment Form -->
+           <img src="https://proveedores.niubiz.com.pe/assets/media/logos/logo.png" alt="Niubiz Logo" class="niubiz-logo" width="120" height="30" style="margin-top: 1rem;">
           <form @submit.prevent="processPayment" class="payment-form">
             <div class="form-group">
-              <label class="form-label">Nombre completo</label>
+              <label class="form-label">Full name</label>
               <input 
                 type="text" 
                 v-model="payment.fullName" 
@@ -170,7 +174,7 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label">Teléfono</label>
+              <label class="form-label">Phone</label>
               <input 
                 type="tel" 
                 v-model="payment.phone" 
@@ -181,7 +185,7 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label">Número de tarjeta</label>
+              <label class="form-label">Card number</label>
               <input 
                 type="text" 
                 v-model="payment.cardNumber" 
@@ -195,7 +199,7 @@
 
             <div class="form-row">
               <div class="form-group">
-                <label class="form-label">Fecha de expiración</label>
+                <label class="form-label">Expiration date</label>
                 <input 
                   type="text" 
                   v-model="payment.expiryDate" 
@@ -233,11 +237,13 @@
       <!-- Step 4: Confirmation -->
       <div v-if="currentStep === 'confirmation'" class="confirmation-section">
         <div class="confirmation-container">
-          <div class="success-icon">
-            <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
-          </div>
+            <div class="success-icon-container">
+                <div class="success-icon">
+                  <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                  </svg>
+                </div>
+            </div>
           <h2 class="confirmation-title">¡Reserva confirmada!</h2>
           <p class="confirmation-message">Tu reserva ha sido procesada exitosamente</p>
           
@@ -280,12 +286,15 @@
 </template>
 
 <script>
+import { HttpStatusCode } from 'axios';
+import { UserProfileService } from '../../iam/services/user-profile.service.js';
 import { HotelApiService } from '../services/hotel-api.service.js';
 export default {
   name: 'HotelBookingSystem',
   data() {
     return {
     hotelApi: new HotelApiService(),
+    userApi: new UserProfileService(),
       currentStep: 'rooms', // rooms, dates, payment, confirmation
       hotelId: null,
       isProcessing: false,
@@ -324,6 +333,7 @@ export default {
           image: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?w=400&h=300&fit=crop'
         }
       ],
+      roomsAvailable: [],
       selectedRoom: null,
       booking: {
         checkIn: '',
@@ -357,9 +367,24 @@ export default {
   async mounted() {
     // Simular obtención del hotelId desde la URL
     this.hotelId = this.$route?.params?.id || '1';
+    this.userId = this.$route?.params?.userId || '1';
     await this.loadHotelData();
+    await this.recoverAllHotelRooms();
   },
   methods: {
+    async recoverAllHotelRooms() {
+        try {
+            const response = await this.hotelApi.getHotelAllRooms(this.hotelId);
+            this.roomsAvailable = response.data.map(room => ({
+                id: room.id,
+                typeRoomId: room.typeRoomId,
+                hotelId: room.hotelId,
+                state: room.state
+            }));
+        }catch(e) {
+            console.error('Error al recuperar las habitaciones del hotel:', e);
+        }
+    },
     async loadHotelData() {
         try {
             const hotel = await this.hotelApi.getHotelById(this.hotelId)
@@ -376,9 +401,22 @@ export default {
         }
     },
     selectRoom(room) {
-      this.selectedRoom = room;
-      this.booking.roomId = room.id;
-      this.currentStep = 'dates';
+        
+        // search for the selected room in the available rooms
+        const availableRoom = this.roomsAvailable.find(r => r.state === 'ACTIVE');
+        if(!availableRoom) {
+            alert('No hay habitaciones disponibles en este momento.');
+            return;
+        }
+
+        console.log('Available room:', availableRoom);
+        
+        this.selectedRoom = room;
+        this.currentStep = 'dates';
+        this.booking.roomId = availableRoom.id;
+
+        console.log('Selected room:', room);
+        console.log('Booking data:', this.booking);
     },
     proceedToPayment() {
       if (this.nightsCount <= 0) {
@@ -391,34 +429,49 @@ export default {
       this.isProcessing = true;
       
       try {
+        const responsePayment = await this.hotelApi.processPayment({
+            guestId: this.userId,
+            finalAmount: this.totalPrice,
+        });
+
+        const paymentCustomerId = responsePayment.data?.id;
+
+        // know if the customer has preferences
+        let preferenceId = null, responsePreferences = null;
+        try {
+            responsePreferences = await this.userApi.getPreferences(this.userId);
+        }catch(e) {
+            console.error('Error al recuperar las preferencias del usuario:', e);
+        }
+
+        if(!responsePreferences) {
+            preferenceId = await this.userApi.setPreferences(parseInt(this.userId, 10), 22).data?.id; // setting preferences to 22 by default
+        }else {
+            preferenceId = responsePreferences.data?.id;
+        }
+
         // Preparar datos para enviar al backend
         const bookingData = {
-          hotelId: this.hotelId,
-          roomId: this.booking.roomId,
-          checkIn: this.booking.checkIn,
-          checkOut: this.booking.checkOut,
-          nights: this.nightsCount,
-          totalPrice: this.totalPrice,
-          guestInfo: {
-            fullName: this.payment.fullName,
-            email: this.payment.email,
-            phone: this.payment.phone
-          },
-          paymentInfo: {
-            cardNumber: this.payment.cardNumber.replace(/\s/g, ''),
-            expiryDate: this.payment.expiryDate,
-            cvv: this.payment.cvv
-          }
+            paymentCustomerId,
+            roomId: this.booking.roomId,
+            description: this.selectedRoom.name,
+            startDate: this.booking.checkIn,
+            finalDate: this.booking.checkOut,
+            priceRoom: this.selectedRoom.price,
+            nightCount: this.nightsCount,
+            amount: this.totalPrice,
+            state: 'ACTIVE',
+            preferenceId,
         };
 
         // Simular llamada al backend
-        const response = await this.submitBooking(bookingData);
+        const responseBooking = await this.hotelApi.createBooking(bookingData);
         
-        if (response.success) {
-          this.bookingId = response.bookingId;
+        if (responseBooking.status === HttpStatusCode.Ok || responseBooking.status === HttpStatusCode.Created) {
+          this.bookingId = responseBooking.bookingId;
           this.currentStep = 'confirmation';
         } else {
-          throw new Error(response.message || 'Error al procesar el pago');
+          throw new Error(responseBooking.message || 'Error al procesar el pago');
         }
       } catch (error) {
         alert('Error al procesar el pago: ' + error.message);
@@ -426,39 +479,6 @@ export default {
       } finally {
         this.isProcessing = false;
       }
-    },
-    async submitBooking(bookingData) {
-      // Simular llamada al backend - reemplaza con tu endpoint real
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          // Simular respuesta exitosa
-          resolve({
-            success: true,
-            bookingId: 'BK' + Date.now().toString().substr(-6)
-          });
-        }, 2000);
-      });
-      
-      // Código real para el backend:
-      /*
-      try {
-        const response = await fetch('/api/bookings', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(bookingData)
-        });
-        
-        if (!response.ok) {
-          throw new Error('Error en la respuesta del servidor');
-        }
-        
-        return await response.json();
-      } catch (error) {
-        throw error;
-      }
-      */
     },
     goBack() {
       if (this.currentStep === 'dates') {
@@ -791,6 +811,12 @@ export default {
   margin-bottom: 24px;
 }
 
+.success-icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .confirmation-title {
   font-size: 24px;
   font-weight: 600;
@@ -983,7 +1009,7 @@ export default {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 24px;
     gap: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 24px;    
 }
 
 .room-summary img {
@@ -995,5 +1021,43 @@ export default {
 
 .section-title {
     padding-bottom: 1rem;
+}
+
+.reservation-summary {
+    background-color: #f3f4f6;
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 24px;
+}
+
+.summary-row {
+    margin-bottom: 4px;
+}
+
+.summary-row.total-row {
+    margin-top: 6px;
+}
+
+.payment-form {
+    margin: 1rem 0;
+}
+
+.pay-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-top: 2rem;
+}
+
+.pay-button:disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
 }
 </style>
