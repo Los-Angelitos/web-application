@@ -112,7 +112,7 @@ const routes = [
         component: HotelSetupReviewPage
     },
     {
-        path: '/home/hotel/:id/set-up/devices',
+        path: '/home/hotel/:id/devices',
         name: 'Hotel Set up devices',
         component: HotelDevicesIoTPage
     },

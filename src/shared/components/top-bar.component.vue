@@ -149,12 +149,18 @@ export default {
     },
     goToHotel() {
       const hotelId = this.getLocality();
-
+      const hotelIdTemp = localStorage.getItem('hotelId');
+      const roleId = localStorage.getItem('roleId');
       console.log('Navigating to hotel with ID:', hotelId);
-      if(hotelId == 0 || hotelId === null) {
-        this.$router.push('/home/hotel/not-found');
+      if(hotelIdTemp) {
+        this.$router.push(`/home/hotel/${hotelIdTemp}/overview`);
       }else {
-        this.$router.push(`/home/hotel/${hotelId}/overview`);
+        if(hotelId == 0 || hotelId === null) {
+          if(roleId == 2) this.$router.push('/home/hotel/not-found');
+          else this.$router.push('/home/hotel/set-up');
+        }else {
+          this.$router.push(`/home/hotel/${hotelId}/overview`);
+        }
       }
 
       this.closeMobileMenu();

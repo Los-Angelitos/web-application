@@ -238,7 +238,7 @@ export default {
     loadNavigationItems() {
       // update the path with the hotel ID
 
-      if(this.roleId == 3) {
+      if(this.roleId == 1) {
         // reactive navigation items for roleId 3
         console.log("Role ID is 3, setting navigation paths accordingly");
         this.navigationItems.forEach(item => {
@@ -842,7 +842,7 @@ header p {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  z-index: 3500;
 }
 
 .modal-content {

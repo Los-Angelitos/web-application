@@ -54,7 +54,11 @@ export default {
   },
   async created() {
     try {
-      const res = await this.hotelApi.getHotelsById(this.hotelId);
+      this.hotelId = this.$route.params.id || null;
+      this.roleId = localStorage.getItem("roleId") || null;
+      console.log("Hotel ID from route in created:", this.hotelId);
+
+      const res = await HotelsApiService.getHotelsById(this.hotelId);
       this.hotel = Hotel.fromDisplayableHotel(res);
       await this.fetchBookings(); // usa el nuevo método
     } catch (error) {
@@ -73,7 +77,7 @@ export default {
     loadNavigationItems() {
       // update the path with the hotel ID
 
-      if(this.roleId == 3) {
+      if(this.roleId == 1) {
         // reactive navigation items for roleId 3
         console.log("Role ID is 3, setting navigation paths accordingly");
         this.navigationItems.forEach(item => {
@@ -102,6 +106,8 @@ export default {
       try {
         const bookingsRes = await this.bookingsApi.getBookings(this.hotelId);
         this.reservations = bookingsRes.data;
+
+        console.log("Bookings fetched:", this.reservations);
       } catch (error) {
         console.error("Error al actualizar reservas:", error);
       }
