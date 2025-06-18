@@ -41,6 +41,10 @@ export class HotelApiService {
         return http.post(`/booking/create-booking`, bookingData);
     }
 
+    async getRoomById(roomId) {
+        return http.get(`/room/get-room-by-id?id=${roomId}`);
+    } 
+
     createHotel(hotel){
         return http.post("/hotels", hotel)
             .then(response => {

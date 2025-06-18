@@ -1,512 +1,278 @@
 <template>
-  <div class="booking-page">
-    <!-- Main content -->
-    <div class="main-content">
-      <!-- Hotel Title -->
-      <h1 class="hotel-title">{{ $t('guest-reservations.hotelName') }}</h1>
-      <p class="hotel-address">{{ $t('guest-reservations.hotelAddress') }}</p>
-
-      <div class="content-container">
-        <!-- Left Column -->
-        <div class="booking-column">
-          <!-- Hotel Card -->
-          <div class="hotel-card">
-            <div class="hotel-info-card">
-              <img src="../../assets/images/hotel-image-4.png" :alt="$t('guest-reservations.hotelLogoAlt')" class="hotel-logo" />
-              <div class="hotel-details">
-                <h2>{{ $t('guest-reservations.hotelChain') }}</h2>
-                <p class="phone"><span class="phone-icon">📞</span> {{ $t('guest-reservations.hotelPhone') }}</p>
+  <div class="reservations-container">
+    <div v-if="loading" class="loading">
+      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+      <p>Loading your reservations...</p>
+    </div>
+    
+    <div v-else-if="error" class="error-message">
+      <p>{{ error }}</p>
+      <v-btn @click="fetchReservations">Retry</v-btn>
+    </div>
+    
+    <div v-else-if="!reservations.length" class="no-reservations">
+      <p>You don't have any reservations yet</p>
+    </div>
+    
+    <div v-else class="reservation-cards">
+      <v-card
+        v-for="reservation in reservations"
+        :key="reservation.id"
+        class="mb-4 reservation-card"
+        elevation="2"
+      >
+        <div class="d-flex">
+          <v-img
+            v-if="hotelImages[reservation.roomId]"
+            :src="hotelImages[reservation.roomId]"
+            height="200"
+            width="300"
+            cover
+            class="rounded-l"
+          ></v-img>
+          
+          <div class="pa-4 flex-grow-1">
+            <div class="d-flex justify-space-between align-center">
+              <div>
+                <h3 class="text-h5">{{ hotelNames[reservation.roomId] || 'Loading...' }}</h3>
+                <p class="text-subtitle-1">Room: {{ roomTypes[reservation.roomId] || 'Loading...' }}</p>
               </div>
+              <v-chip :color="getStatusColor(reservation.status)" text-color="white">
+                {{ reservation.status }}
+              </v-chip>
             </div>
-          </div>
-
-          <!-- Price -->
-          <div class="price-container">
-            <h2 class="price">{{ $t('guest-reservations.price') }}</h2>
-            <span class="per-night">{{ $t('guest-reservations.perNight') }}</span>
-          </div>
-
-          <!-- Preferences Checkbox -->
-          <div class="preferences">
-            <label class="checkbox-wrapper">
-              <input type="checkbox" v-model="includePreferences" class="checkbox-input" />
-              <span class="checkbox-label">{{ $t('guest-reservations.includePreferences') }}</span>
-            </label>
-          </div>
-
-          <!-- Dates -->
-          <div class="date-selection">
-            <div class="date-card">
-              <label>{{ $t('guest-reservations.from') }}</label>
-              <div class="date-input">
-                <input type="text" :value="$t('guest-reservations.sampleDate')" readonly />
-                <span class="calendar-icon">📅</span>
-              </div>
+            
+            <div class="mt-3">
+              <p><v-icon>mdi-calendar</v-icon> {{ formatDate(reservation.checkIn) }} - {{ formatDate(reservation.checkOut) }}</p>
+              <p><v-icon>mdi-account</v-icon> {{ reservation.guests }} guests</p>
+              <p><v-icon>mdi-cash</v-icon> ${{ reservation.totalPrice }}</p>
             </div>
-            <div class="date-card">
-              <label>{{ $t('guest-reservations.to') }}</label>
-              <div class="date-input">
-                <input type="text" :value="$t('guest-reservations.sampleDateEnd')" readonly />
-                <span class="calendar-icon">📅</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Room Selection -->
-          <div class="room-selection">
-            <p class="room-title">{{ $t('guest-reservations.roomType') }}</p>
-            <div class="room-options">
-              <div class="room-options-row">
-                <label class="room-option" v-for="room in roomTypes.slice(0, 2)" :key="room.value">
-                  <input type="radio" name="roomType" :value="room.value" v-model="selectedRoom" />
-                  <span class="room-label">{{ $t(`guest-reservations.roomTypes.${room.value}`) }}</span>
-                </label>
-              </div>
-              <div class="room-options-row">
-                <label class="room-option" v-for="room in roomTypes.slice(2)" :key="room.value">
-                  <input type="radio" name="roomType" :value="room.value" v-model="selectedRoom" />
-                  <span class="room-label">{{ $t(`guest-reservations.roomTypes.${room.value}`) }}</span>
-                </label>
-              </div>
+            
+            <div class="d-flex justify-end mt-2">
+              <v-btn variant="text" color="primary" :to="`/reservations/${reservation.id}`">
+                View Details
+              </v-btn>
+              <v-btn 
+                v-if="reservation.status !== 'CANCELLED'" 
+                variant="text" 
+                color="error" 
+                @click="cancelReservation(reservation.id)"
+              >
+                Cancel
+              </v-btn>
             </div>
           </div>
         </div>
-
-        <!-- Right Column -->
-        <div class="description-column">
-          <div class="description-container">
-            <div class="text-description">
-              <p v-for="(paragraph, index) in $t('guest-reservations.description').split('\n')" :key="index">{{ paragraph }}</p>
-
-              <div class="amenities">
-                <div class="amenity" v-for="(amenity, index) in $t('guest-reservations.amenities')" :key="index">
-                  <span class="amenity-icon" :class="amenity.color">{{ amenity.icon }}</span> {{ amenity.text }}
-                </div>
-              </div>
-            </div>
-
-            <div class="hotel-images">
-              <div class="image-row">
-                <img src="../../assets/images/hotel-image-1.png" :alt="$t('guest-reservations.imageAlts.aerial')" class="hotel-main-img" />
-                <img src="../../assets/images/hotel-image-2.png" :alt="$t('guest-reservations.imageAlts.room')" class="hotel-small-img" />
-              </div>
-              <div class="image-row-bottom">
-                <img src="../../assets/images/hotel-image-3.png" :alt="$t('guest-reservations.imageAlts.beach')" class="hotel-bottom-img" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Buttons -->
-      <div class="button-container">
-        <div class="buttons-row">
-          <ButtonComponent
-              :text="$t('guest-reservations.buttons.back')"
-              state="basic"
-              class="btn-back"
-          />
-          <ButtonComponent
-              :text="$t('guest-reservations.buttons.reserve')"
-              state="primary"
-              class="btn-reserve"
-              @click="handleReservation"
-          />
-        </div>
-      </div>
+      </v-card>
     </div>
   </div>
 </template>
 
 <script>
-import ButtonComponent from "../../shared/components/button.component.vue";
+import { format } from 'date-fns';
+import { UserProfileService } from '../../iam/services/user-profile.service.js';
+import { HotelApiService } from '../../organizational-management/services/hotel-api.service.js';
 
 export default {
-  name: "GuestReservationsPage",
-  components: {
-    ButtonComponent
-  },
+  name: 'GuestReservations',
   data() {
     return {
-      includePreferences: false,
-      selectedRoom: null,
-      roomTypes: [
-        { value: "simple" },
-        { value: "matrimonial" },
-        { value: "doble" },
-        { value: "balcon" },
-      ],
+      userService: new UserProfileService(),
+      hotelService: new HotelApiService(),
+      userId: null,
+      loading: true,
+      error: null,
+      reservations: [],
+      reservationDetails: {},
+      roomDetails: {},
+      hotelDetails: {},
+      hotelImages: {},
+      hotelNames: {},
+      roomTypes: {},
     };
   },
-  methods: {
-    handleReservation() {
-      if (!this.selectedRoom) {
-        alert(this.$t('guest-reservations.validation.roomRequired'));
-        return;
-      }
-
-      const message = this.includePreferences
-          ? this.$t('guest-reservations.success.withPreferences')
-          : this.$t('guest-reservations.success.withoutPreferences');
-
-      alert(message);
-    },
+  
+  async created() {
+    this.userId = this.$route.params.id;
+    console.log(`Fetching reservations for user ID: ${this.userId}`);
+    await this.fetchReservations();
   },
+  
+  methods: {
+    async fetchReservations() {
+      this.loading = true;
+      this.error = null;
+      
+      try {
+        // 1. Get all reservations
+        const response = await this.userService.getReservationsByUserId(this.userId);
+        console.log('Fetched reservations:', response);
+        
+        this.reservations = response.data;
+        console.log('Reservations:', this.reservations);
+        
+        // 2. Fetch details for all reservations in parallel
+        await Promise.all(this.reservations.map(reservation => this.fetchReservationDetails(reservation.id)));
+        
+      } catch (error) {
+        console.error('Error fetching reservations:', error);
+        this.error = 'Unable to load your reservations. Please try again later.';
+      } finally {
+        this.loading = false;
+      }
+    },
+    
+    async fetchReservationDetails(reservationId) {
+      try {
+        // Skip if we already have details for this reservation
+        if (this.reservationDetails[reservationId]) {
+          return;
+        }
+        
+        const response = await this.userService.getReservationById(reservationId);
+        console.log(`Fetched details for reservation ${reservationId}:`, response);
+        
+        const details = await response.json();
+        this.reservationDetails[reservationId] = details;
+        
+        // Fetch room details if we don't already have them
+        if (details.roomId && !this.roomDetails[details.roomId]) {
+          this.fetchRoomDetails(details.roomId);
+        }
+        
+      } catch (error) {
+        console.error(`Error fetching reservation details for ID ${reservationId}:`, error);
+      }
+    },
+    
+    async fetchRoomDetails(roomId) {
+      try {
+        // Skip if we already have details for this room
+        if (this.roomDetails[roomId]) {
+          return;
+        }
+        
+        const response = await this.hotelService.getRoomById(roomId);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch details for room ${roomId}`);
+        }
+        
+        const roomData = await response.json();
+        this.roomDetails[roomId] = roomData;
+        //this.roomTypes[roomId] = roomData.roomType;
+        
+        // Now fetch hotel details if we don't already have them
+        if (roomData.hotelId && !this.hotelDetails[roomData.hotelId]) {
+          this.fetchHotelDetails(roomData.hotelId, roomId);
+        }
+        
+      } catch (error) {
+        console.error(`Error fetching room details for ID ${roomId}:`, error);
+      }
+    },
+    
+    async fetchHotelDetails(hotelId, roomId) {
+      try {
+        // Skip if we already have details for this hotel
+        if (this.hotelDetails[hotelId]) {
+          // Just update the mapping for roomId -> hotelId
+          this.hotelImages[roomId] = this.hotelDetails[hotelId].mainImage;
+          this.hotelNames[roomId] = this.hotelDetails[hotelId].name;
+          return;
+        }
+        
+        const responseMultimedia = await this.hotelService.getHotelMainMultimedia(hotelId);
+        console.log(`Fetched details for hotel ${hotelId}:`, responseMultimedia);
+        const responseHotel = await this.hotelService.getHotelById(hotelId);
+        
+        console.log(`Fetched hotel data for hotel ${hotelId}:`, responseHotel);
+        if (!responseMultimedia.ok || !responseHotel.ok) {
+          throw new Error(`Failed to fetch details for hotel ${hotelId}`);
+        }
+        
+        const hotelData = await responseMultimedia.json();
+        const hotelInfo = await responseHotel.json();
+        this.hotelDetails[hotelId] = hotelData + hotelInfo;
+        
+        // Map the hotel image and name to the room
+        this.hotelImages[roomId] = hotelData.url;
+        this.hotelNames[roomId] = hotelInfo.name;
+        
+      } catch (error) {
+        console.error(`Error fetching hotel details for ID ${hotelId}:`, error);
+      }
+    },
+    
+    formatDate(dateString) {
+      return dateString;
+    },
+    
+    getStatusColor(status) {
+      const colorMap = {
+        'CONFIRMED': 'success',
+        'PENDING': 'warning',
+        'CANCELLED': 'error',
+        'COMPLETED': 'info'
+      };
+      
+      return colorMap[status] || 'grey';
+    },
+    
+    async cancelReservation(reservationId) {
+      // Implementation for cancelling a reservation
+      if (confirm('Are you sure you want to cancel this reservation?')) {
+        try {
+          const response = await fetch(`/api/reservations/${reservationId}/cancel`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to cancel reservation');
+          }
+          
+          // Update the local reservation status
+          const index = this.reservations.findIndex(r => r.id === reservationId);
+          if (index !== -1) {
+            this.reservations[index].status = 'CANCELLED';
+          }
+          
+          this.$toast.success('Reservation cancelled successfully');
+        } catch (error) {
+          console.error('Error cancelling reservation:', error);
+          this.$toast.error('Failed to cancel reservation');
+        }
+      }
+    }
+  }
 };
 </script>
+
 <style scoped>
-.booking-page {
-  font-family: Arial, sans-serif;
-  max-width: 1200px;
+.reservations-container {
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 0 15px;
-  color: #333;
+  padding: 20px;
 }
 
-.main-content {
-  padding: 20px 0;
-}
-
-.hotel-title {
-  font-size: 26px;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.hotel-address {
-  color: #666;
-  margin-bottom: 20px;
-}
-
-.content-container {
+.loading, .error-message, .no-reservations {
   display: flex;
-  gap: 30px;
-  flex-direction: row;
-}
-
-.booking-column {
-  flex: 1;
-}
-
-.description-column {
-  flex: 1.5;
-}
-
-.hotel-card {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 20px;
-}
-
-.hotel-info-card {
-  display: flex;
+  flex-direction: column;
   align-items: center;
-}
-
-.hotel-logo {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  margin-right: 15px;
-  object-fit: cover;
-}
-
-.hotel-details h2 {
-  margin: 0 0 5px 0;
-  font-size: 18px;
-}
-
-.phone {
-  color: #333;
-  margin: 0;
-}
-
-.phone-icon {
-  color: #cc0000;
-  margin-right: 5px;
-}
-
-.price-container {
-  display: flex;
-  align-items: baseline;
-  margin: 20px 0;
-}
-
-.price {
-  font-size: 30px;
-  color: #000;
-  margin: 0 10px 0 0;
-  font-weight: bold;
-}
-
-.per-night {
-  color: #666;
-}
-
-.preferences {
-  margin: 20px 0;
-}
-
-.checkbox-wrapper {
-  display: flex;
-  align-items: center;
-}
-
-.checkbox-input {
-  margin-right: 8px;
-}
-
-.date-selection {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.date-card {
-  flex: 1;
-}
-
-.date-card label {
-  display: block;
-  margin-bottom: 5px;
-  color: #666;
-}
-
-.date-input {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  padding: 8px 10px;
-  border-radius: 4px;
-}
-
-.date-input input {
-  border: none;
-  flex: 1;
-  padding: 0;
-  font-size: 16px;
-  background: transparent;
-}
-
-.calendar-icon {
-  margin-left: 5px;
-}
-
-.room-selection {
-  margin-top: 20px;
-}
-
-.room-title {
-  margin-bottom: 10px;
-  color: #666;
-}
-
-.room-options {
-  margin-top: 5px;
-}
-
-.room-options-row {
-  display: flex;
-  justify-content: flex-start;
-  gap: 30px;
-  margin-bottom: 15px;
-  flex-wrap: wrap;
-}
-
-.room-option {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  min-width: 180px;
-}
-
-.room-option input[type="radio"] {
-  margin-right: 10px;
-}
-
-.description-container {
-  display: flex;
-  gap: 20px;
-}
-
-.text-description {
-  flex: 1;
-}
-
-.hotel-images {
-  flex: 1;
-  margin: 0;
-}
-
-.image-row {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.hotel-main-img {
-  width: 65%;
-  border-radius: 6px;
-  object-fit: cover;
-}
-
-.hotel-small-img {
-  width: 35%;
-  border-radius: 6px;
-  object-fit: cover;
-}
-
-.image-row-bottom {
-  width: 103%;
-  margin-top: 10px;
-}
-
-.hotel-bottom-img {
-  width: 100%;
-  border-radius: 6px;
-  object-fit: cover;
-}
-
-.hotel-description p {
-  margin: 10px 0;
-  line-height: 1.5;
-}
-
-.amenities {
-  margin-top: 20px;
-}
-
-.amenity {
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-}
-
-.amenity-icon {
-  margin-right: 8px;
-  display: inline-block;
-  width: 16px;
+  justify-content: center;
+  min-height: 200px;
   text-align: center;
 }
 
-.blue {
-  color: blue;
+.reservation-card {
+  transition: transform 0.2s;
 }
 
-.red {
-  color: red;
-}
-
-.arrow {
-  color: #333;
-}
-
-.button-container {
-  margin-top: 30px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.buttons-row {
-  display: flex;
-  gap: 10px;
-}
-
-.btn-back {
-  min-width: 170px;
-  border: 1px solid #ccc;
-  color: #333;
-  background-color: white;
-}
-
-.btn-reserve {
-  min-width: 170px;
-  background-color: #0074cc;
-  color: white;
-}
-
-/* Estilos responsivos */
-@media (max-width: 991px) {
-  .content-container {
-    flex-direction: column;
-  }
-
-  .booking-column,
-  .description-column {
-    flex: 1 1 100%;
-  }
-
-  .description-container {
-    flex-direction: column;
-  }
-
-  .text-description,
-  .hotel-images {
-    flex: 1 1 100%;
-  }
-
-  .hotel-images {
-    margin-top: 20px;
-  }
-}
-
-@media (max-width: 767px) {
-  .date-selection {
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .room-options-row {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .room-option {
-    min-width: auto;
-    width: 100%;
-  }
-
-  .buttons-row {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .btn-back,
-  .btn-reserve {
-    width: 100%;
-    min-width: auto;
-  }
-
-  .button-container {
-    justify-content: center;
-  }
-}
-
-@media (max-width: 575px) {
-  .hotel-title {
-    font-size: 22px;
-  }
-
-  .hotel-info-card {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .hotel-logo {
-    margin-bottom: 15px;
-    margin-right: 0;
-  }
-
-  .image-row {
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .hotel-main-img,
-  .hotel-small-img {
-    width: 100%;
-  }
+.reservation-card:hover {
+  transform: translateY(-5px);
 }
 </style>

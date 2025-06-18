@@ -49,4 +49,12 @@ export class UserProfileService {
         return http.put(`/guest-preferences/${preferencesId}`, { guestId, temperature });
     }
 
+    getReservationsByUserId(userId) {
+        return http.get(`/booking/get-booking-by-customer-id?customerId=${userId}`);
+    }
+
+    getReservationById(bookingId) {
+        return http.get(`/booking/get-booking-by-id?id=${bookingId}`);
+    }
+
 }

@@ -24,6 +24,8 @@ import SignUpPage from "../iam/pages/sign-up.component.vue"
 import SignUpRolePage from "../iam/pages/sign-up-role.component.vue"
 import HotelIoTConfigurationPage from "../organizational-management/pages/hotel-iot-configuration.component.vue";
 import HotelBookingSystem from "../organizational-management/pages/hotel-booking.component.vue";
+import GuestReservations    from "../reservations/pages/guest-reservations.component.vue";
+
 const routes = [
     {
         path: '/',
