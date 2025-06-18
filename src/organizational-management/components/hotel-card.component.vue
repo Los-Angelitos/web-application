@@ -12,7 +12,7 @@
       <p class="hotel-name">{{ hotel.name }}</p>
     </div>
     <div class="hotel-price">
-      <p>{{i18n.global.t('hotel.hotel-card-component.from')}} {{ hotel.price }} {{i18n.global.t('hotel.hotel-card-component.per-night')}}</p>
+      <p>{{i18n.global.t('hotel.hotel-card-component.from')}} {{ hotel.price || 249.9 }} {{i18n.global.t('hotel.hotel-card-component.per-night')}}</p>
     </div>
   </div>
 </template>

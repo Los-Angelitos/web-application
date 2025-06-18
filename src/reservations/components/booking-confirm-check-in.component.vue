@@ -56,7 +56,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  z-index: 3500;
 }
 
 .modal-card {

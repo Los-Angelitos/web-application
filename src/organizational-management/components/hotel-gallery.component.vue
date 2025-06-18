@@ -1,8 +1,7 @@
-<!-- HotelGallery.vue -->
 <template>
   <div class="hotel-gallery">
     <!-- Grid de hoteles filtrados -->
-    <div class="gallery-grid">
+    <div class="gallery-grid" v-if="hotels.length > 0 && filteredHotels.length > 0">
       <hotel-card
         v-for="hotel in filteredHotels"
         :key="hotel.id"
@@ -12,14 +11,16 @@
       />
     </div>
 
-    <!-- Mensaje cuando no hay hoteles -->
+    <!-- Mensaje cuando no hay hoteles en la categoría -->
     <div v-if="filteredHotels.length === 0 && hotels.length > 0" class="no-hotels-message">
-      <p>No se encontraron hoteles en esta categoría.</p>
+      <img src="https://cdn-icons-png.flaticon.com/512/7486/7486740.png" alt="No hoteles disponibles" />
+      <p>No hotels available in this category.</p>
     </div>
 
-    <!-- Loading state -->
-    <div v-if="hotels.length === 0" class="loading-message">
-      <p>Cargando hoteles...</p>
+    <!-- Estado de carga -->
+    <div v-if="hotels.length === 0" class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading hotels...</p>
     </div>
   </div>  
 </template>
@@ -40,19 +41,13 @@ export default {
       selectedCategory: 'all'
     };
   },
-  
   computed: {
-    // Hoteles filtrados según la categoría seleccionada
     filteredHotels() {
-      if (this.selectedCategory === 'all') {
-        return this.hotels;
-      }
+      if (this.selectedCategory === 'all') return this.hotels;
       return this.hotels.filter(hotel => hotel.category === this.selectedCategory.toUpperCase());
     }
   },
-
   watch: {
-    // Observar cambios en la ruta para actualizar el filtro
     '$route.query.category': {
       handler(newCategory) {
         this.selectedCategory = newCategory || 'all';
@@ -60,26 +55,20 @@ export default {
       immediate: true
     }
   },
-  
   async created() {
     await this.loadHotels();
   },
-  
   methods: {
     async loadHotels() {
       try {
         const response = await this.hotelApi.getHotels();
-        
-        console.log(response);
         const data = response.data;
 
-        // Clear existing hotels
         this.hotels = [];
 
-        for(let i=0; i<data.length; ++i) {
+        for (let i = 0; i < data.length; ++i) {
           const imageUrl = await this.getMainHotelImage(data[i].id);
           const logoUrl = await this.getLogoHotelImage(data[i].id);
-
           this.hotels.push({
             id: data[i].id,
             logoUrl,
@@ -93,37 +82,31 @@ export default {
             category: data[i].category,
           });
         }
-        
-        // Establecer categoría inicial desde la URL
+
         this.selectedCategory = this.$route.query.category || 'all';
-        
       } catch (error) {
         console.error("Error fetching hotels:", error);
       }
     },
 
     onSelectHotel(hotelId) {
-      console.log(`Selected hotel ID: ${hotelId}`);
       this.$router.push(`/home/hotel/${hotelId}`);
     },
     
     async getMainHotelImage(hotelId) {
       try {
         const response = await this.hotelApi.getHotelMainMultimedia(hotelId);
-        console.log("response", response);
         return response.data.url || 'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg';
-      } catch (error) {
-        console.error(`Error loading main image for hotel ${hotelId}:`, error);
+      } catch {
         return 'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg';
       }
     },
-    
+
     async getLogoHotelImage(hotelId) {
       try {
         const response = await this.hotelApi.getHotelLogoMultimedia(hotelId);
         return response.data.url || 'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg';
-      } catch (error) {
-        console.error(`Error loading logo image for hotel ${hotelId}:`, error);
+      } catch {
         return 'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg';
       }
     }
@@ -145,21 +128,39 @@ export default {
   gap: 20px;
 }
 
-/* Mensaje cuando no hay hoteles */
 .no-hotels-message,
-.loading-message {
-  text-align: center;
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 40px;
   color: #6c757d;
   font-size: 18px;
 }
 
-.no-hotels-message p,
-.loading-message p {
-  margin: 0;
+.no-hotels-message img {
+  width: 150px;
+  margin-bottom: 20px;
+  opacity: 0.8;
 }
 
-/* Responsive grid */
+/* Spinner moderno */
+.spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #007BFF;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 @media (min-width: 640px) {
   .gallery-grid {
     grid-template-columns: repeat(2, 1fr);

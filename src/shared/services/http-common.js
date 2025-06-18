@@ -14,5 +14,5 @@ const http = axios.create({
 });
 
 http.interceptors.request.use(authenticationInterceptor);
-console.log("🔐 Interceptor: autenticación configurada", http);
+//console.log("🔐 Interceptor: autenticación configurada", http);
 export default http;

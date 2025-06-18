@@ -114,6 +114,7 @@
 
 <script>
 import LanguageSwitcher from "./language-switcher.component.vue";
+import {jwtDecode} from "jwt-decode";
 
 export default {
   name: 'TopBarComponent',
@@ -126,14 +127,42 @@ export default {
     };
   },
   methods: {
+    // Using jwt-decode library
+    getLocality() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        return null;
+      }
+      
+      try {
+        const decodedToken = jwtDecode(token);
+        return decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/locality'];
+      } catch (error) {
+        console.error('Error decoding JWT token:', error);
+        return null;
+      }
+    },
     goToPreferences() {
       const userId = localStorage.getItem('userId');
       this.$router.push(`/home/profile/${userId}/preferences`);
       this.closeMobileMenu();
     },
     goToHotel() {
-      const hotelId = localStorage.getItem('hotelId');
-      this.$router.push('/home/hotel/1/overview');
+      const hotelId = this.getLocality();
+      const hotelIdTemp = localStorage.getItem('hotelId');
+      const roleId = localStorage.getItem('roleId');
+      console.log('Navigating to hotel with ID:', hotelId);
+      if(hotelIdTemp) {
+        this.$router.push(`/home/hotel/${hotelIdTemp}/overview`);
+      }else {
+        if(hotelId == 0 || hotelId === null) {
+          if(roleId == 2) this.$router.push('/home/hotel/not-found');
+          else this.$router.push('/home/hotel/set-up');
+        }else {
+          this.$router.push(`/home/hotel/${hotelId}/overview`);
+        }
+      }
+
       this.closeMobileMenu();
     },
     goToProfile() {

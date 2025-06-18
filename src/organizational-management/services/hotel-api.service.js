@@ -25,6 +25,26 @@ export class HotelApiService {
         return http.get(`/multimedia/logo?hotel=${hotelId}`);
     }
 
+    async getHotelPrice(hotelId) {
+        return http.get(`/type-room/get-minimum-price-type-room-by-hotel-id?hotelId=${hotelId}`);
+    }
+
+    async getHotelAllRooms(hotelId) {
+        return http.get(`/room/get-all-rooms?hotelId=${hotelId}`);
+    }
+
+    async processPayment(paymentData) {
+        return http.post(`/payment-customer`, paymentData);
+    }
+
+    async createBooking(bookingData) {
+        return http.post(`/booking/create-booking`, bookingData);
+    }
+
+    async getRoomById(roomId) {
+        return http.get(`/room/get-room-by-id?id=${roomId}`);
+    } 
+
     createHotel(hotel){
         return http.post("/hotels", hotel)
             .then(response => {

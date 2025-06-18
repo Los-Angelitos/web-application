@@ -23,7 +23,9 @@ export default {
     return {
       username: '',
       password: '',
-      roleSelected: ''
+      roleSelected: '',
+      isLoading: false, // Estado para controlar el loading
+      loadingMessage: 'Creating account...' // Mensaje dinámico del loading
     };
   },
   setup() {
@@ -41,6 +43,10 @@ export default {
         });
         return;
       }
+
+      // Activar loading
+      this.isLoading = true;
+      this.loadingMessage = 'Creating account...';
 
       this.toast.add({
         severity: 'success',
@@ -62,84 +68,73 @@ export default {
 
         let signUpRequest = new SignUpRequest(userData.id, userData.name, userData.surname, userData.phone, userData.mail, userData.password);
 
-        if(this.roleSelected === 'guest') {
-          roleIdSelected = 3; // ID de rol para Guest
-          await authenticationStore.dispatch('signUpGuest', signUpRequest)
-          .then(() => {
+        try {
+          if(this.roleSelected === 'guest') {
+            roleIdSelected = 3; // ID de rol para Guest
+            await authenticationStore.dispatch('signUpGuest', signUpRequest);
             console.log("User guest signed up successfully");
             isSignedUp = true;
-          })
-          .catch(error => {
-            this.toast.add({
-              severity: 'error',
-              summary: 'Error signing up',
-              detail: error.response?.data || 'An error occurred during registration.',
-              life: 3000
-            });
-          });    
-        } else if (this.roleSelected === 'admin') {
-          roleIdSelected = 2; // ID de rol para Guest
-          await authenticationStore.dispatch('signUpAdmin', signUpRequest)
-          .then(() => {
+          } else if (this.roleSelected === 'admin') {
+            roleIdSelected = 2; // ID de rol para Admin
+            await authenticationStore.dispatch('signUpAdmin', signUpRequest);
             console.log("User admin signed up successfully");
             isSignedUp = true;
-          })
-          .catch(error => {
-            this.toast.add({
-              severity: 'error',
-              summary: 'Error signing up',
-              detail: error.response?.data || 'An error occurred during registration.',
-              life: 3000
-            });
-          });   
-          
-        } else if (this.roleSelected === 'manager') {
-          roleIdSelected = 1; // ID de rol para Owner
-          await authenticationStore.dispatch('signUpOwner', signUpRequest)
-          .then(() => {
+          } else if (this.roleSelected === 'manager') {
+            roleIdSelected = 1; // ID de rol para Owner
+            await authenticationStore.dispatch('signUpOwner', signUpRequest);
             console.log("User owner signed up successfully");
             isSignedUp = true;
-          })
-          .catch(error => {
+          } else {
             this.toast.add({
               severity: 'error',
-              summary: 'Error signing up',
-              detail: error.response?.data || 'An error occurred during registration.',
+              summary: 'Rol no válido',
+              detail: 'Por favor selecciona un rol válido.',
               life: 3000
             });
-          });   
-
-        } else {
+            this.isLoading = false;
+            return;
+          }
+        } catch (error) {
           this.toast.add({
             severity: 'error',
-            summary: 'Rol no válido',
-            detail: 'Por favor selecciona un rol válido.',
+            summary: 'Error signing up',
+            detail: error.response?.data || 'An error occurred during registration.',
             life: 3000
           });
+          this.isLoading = false;
+          return;
         }
-        
       }
 
       if (isSignedUp && user) {
+        // Cambiar mensaje de loading para el login
+        this.loadingMessage = 'Signing you in...';
+        
         let signInRequest = new SignInRequest(userData.mail, userData.password, roleIdSelected);
 
-        await authenticationStore.dispatch('signIn', signInRequest)
-        .then(() => {
+        try {
+          await authenticationStore.dispatch('signIn', signInRequest);
           console.log("User signed in successfully");
           localStorage.setItem('roleId', roleIdSelected);
-          this.$router.push('/home');
-
-        })
-        .catch(error => {
+          
+          // Pequeño delay para mostrar el mensaje de éxito
+          this.loadingMessage = 'Welcome! Redirecting...';
+          setTimeout(() => {
+            this.$router.push('/home');
+          }, 1000);
+          
+        } catch (error) {
           this.toast.add({
             severity: 'error',
             summary: 'Error al iniciar sesión',
             detail: error.message,
             life: 3000
           });
-        }); 
-
-      } 
+          this.isLoading = false;
+        }
+      } else {
+        this.isLoading = false;
+      }
     },
     sendToSignUp() {
       this.$router.push('/auth/sign-up');
@@ -147,7 +142,6 @@ export default {
   }
 }
 </script>
-
 
 <template>
   <Toast />
@@ -163,25 +157,44 @@ export default {
         <p class="ask">At SweetManager we care about</p>
         <p class="ask"> providing the best possible experience.</p>
 
-
         <p class="ask" style="margin-top:1.2rem; font-size:1.2rem">Who will be this account for?</p>
         <DescriptionRadioButtonComponent
             v-model="roleSelected"
+            :disabled="isLoading"
             :options="[
-    { value: 'guest', label: 'Guest', description: 'I will use my account to search and book a hotel stay.' },
-    { value: 'admin', label: 'Admin', description: 'I will be responsible for managing and handling each stay within a hotel to provide the greatest possible comfort.' },
-    { value: 'manager', label: 'Owner', description: 'I will be on top of all the amenities within my hotel and will manage what is necessary for my guests.' }
-  ]"
+              { value: 'guest', label: 'Guest', description: 'I will use my account to search and book a hotel stay.' },
+              { value: 'admin', label: 'Admin', description: 'I will be responsible for managing and handling each stay within a hotel to provide the greatest possible comfort.' },
+              { value: 'manager', label: 'Owner', description: 'I will be on top of all the amenities within my hotel and will manage what is necessary for my guests.' }
+            ]"
             groupName="accountRole"
         />
 
+        <button 
+          @click="handleLogin" 
+          class="login-button" 
+          :disabled="isLoading"
+          :class="{ 'loading': isLoading }"
+        >
+          <div v-if="isLoading" class="loading-content">
+            <div class="spinner"></div>
+            <span>{{ loadingMessage }}</span>
+          </div>
+          <span v-else>Sign Up</span>
+        </button>
 
-        <button @click="handleLogin" class="login-button">Sign Up</button>
+        <hr class="line-container" :class="{ 'disabled': isLoading }"></hr>
 
-        <hr class="line-container"></hr>
-
-        <div style="margin-top:1rem; font-size:0.8rem;">Already have an account?</div>
-        <button class="crear-cuenta" style="font-size:0.8rem; color: var(--primary-color); background: none; border: none; cursor: pointer; margin-top:-1rem" @click="sendToSignUp">Log In</button>
+        <div style="margin-top:1rem; font-size:0.8rem;" :class="{ 'disabled-text': isLoading }">
+          Already have an account?
+        </div>
+        <button 
+          class="crear-cuenta" 
+          style="font-size:0.8rem; color: var(--primary-color); background: none; border: none; cursor: pointer; margin-top:-1rem" 
+          @click="sendToSignUp"
+          :disabled="isLoading"
+        >
+          Log In
+        </button>
       </div>
     </div>
   </div>
@@ -190,15 +203,17 @@ export default {
 <style scoped>
 
 .web-logos i{
-  flex: 1; /* Hace que cada elemento ocupe el mismo espacio */
-  text-align: center; /* Centra el contenido dentro de cada elemento */
-  font-size: 2rem; /* Tamaño del icono */
+  flex: 1;
+  text-align: center;
+  font-size: 2rem;
 }
+
 .web-logos i:hover {
-  color: #0056b3; /* Cambia el color al pasar el mouse */
+  color: #0056b3;
 }
+
 .crear-cuenta i:hover {
-  color: #0056b3; /* Cambia el color al pasar el mouse */
+  color: #0056b3;
 }
 
 .line-container {
@@ -206,17 +221,25 @@ export default {
   align-items: center;
   font-size: 10px;
   margin-top: 1rem;
+  transition: opacity 0.3s ease;
 }
 
+.line-container.disabled {
+  opacity: 0.5;
+}
 
-
+.disabled-text {
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
 
 .login-logo-image {
-  position: absolute; /* Coloca el logo en una posición absoluta */
-  z-index: 1000; /* Asegura que esté en la capa superior */
-  top: -10%; /* Ajusta la posición vertical */
-  left: 36%; /* Ajusta la posición horizontal */
+  position: absolute;
+  z-index: 1000;
+  top: -10%;
+  left: 36%;
 }
+
 .login-container {
   display: flex;
   justify-content: center;
@@ -226,15 +249,11 @@ export default {
   position: relative;
 }
 
-
 .login-section {
   display: flex;
   justify-content: center;
   width: 100%;
-
 }
-
-
 
 .login-box label {
   display: block;
@@ -252,7 +271,6 @@ export default {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
-
 
 .input-group label {
   display: block;
@@ -282,16 +300,43 @@ button {
   border-radius: 5px;
   cursor: pointer;
   margin-top: 10px;
+  transition: all 0.3s ease;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background-color: #0056b3;
 }
 
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
 
+/* Estilos para el loading spinner */
+.login-button.loading {
+  background-color: #6c757d;
+}
 
+.loading-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
 
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
 
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
 .login-box h2 {
   margin-top: 2rem;
@@ -305,6 +350,7 @@ button:hover {
   width: 100%;
   max-width: 100%
 }
+
 .login-logo-image {
   margin-bottom: 30px;
   margin-left: 1rem;
@@ -317,13 +363,10 @@ button:hover {
   height: auto;
 }
 
-
 .ask {
   font-size: 0.9rem;
   width: 100%;
 }
-
-
 
 .login-button {
   width: 100%;
@@ -335,15 +378,24 @@ button:hover {
   cursor: pointer;
   margin-top: 2rem;
 }
-.login-button:hover {
+
+.login-button:hover:not(:disabled) {
   background-color: #0056b3;
 }
-
 
 .error-message {
   color: red;
   margin-top: 1rem;
   text-align: center;
+}
+
+/* Estilos para radio buttons deshabilitados */
+:deep(.p-radiobutton.p-disabled) {
+  opacity: 0.6;
+}
+
+:deep(.p-radiobutton.p-disabled .p-radiobutton-box) {
+  background-color: #f8f9fa;
 }
 
 @media (max-width: 768px) {
@@ -354,8 +406,8 @@ button:hover {
   .login-section {
     width: 100vw;
     height: 100vh;
-    display: flex; /* Ensure it's a flex container */
-    justify-content: center; /* Center horizontally */
+    display: flex;
+    justify-content: center;
   }
 }
 </style>

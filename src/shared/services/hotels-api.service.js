@@ -2,7 +2,7 @@ import http from "../../shared/services/http-common.js";
 
 export class HotelsApiService {
 
-    getHotelsById(hotelId) {
+    static getHotelsById(hotelId) {
         return http.get(`/hotels/${hotelId}`).then(response => response.data);
     }
 

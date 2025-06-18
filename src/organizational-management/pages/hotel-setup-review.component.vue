@@ -85,7 +85,7 @@ export default {
         const hotelId = localStorage.getItem("hotelId");
 
         if (hotelId) {
-          const hotel = await this.hotelsApiService.getHotelsById(hotelId);
+          const hotel = await HotelsApiService.getHotelsById(hotelId);
           if (hotel) {
             this.hotel = {
               name: hotel.name || "",
@@ -267,7 +267,7 @@ export default {
       await this.hotelsApiService.UpdateHotel({"description": this.hotel.description, "email": this.hotel.email,
         "address": this.hotel.address, "phone": this.hotel.phone, "ownerId": this.hotel.ownerId, "category": this.hotel.category}, hotelId);
 
-      await this.multimediaApiService.createMultimedia({"hotelId": hotelId, "url": this.logoImageData.cloudinaryUrl, "type": "LOGO", "position": 1});
+      //await this.multimediaApiService.createMultimedia({"hotelId": hotelId, "url": this.logoImageData.cloudinaryUrl, "type": "LOGO", "position": 1});
 
       this.$router.push(`/home/hotel/${hotelId}/overview`);
     }
