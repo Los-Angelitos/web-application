@@ -48,6 +48,8 @@ import InventoryIcon from "../../assets/organizational-management/inventory-icon
 import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
+import ReservationsIcon from "../../assets/organizational-management/reservations-icon.svg";
+
 import i18n from "../../i18n.js";
 import { useAuthenticationStore } from '/src/iam/services/authentication.store.js';
 const userId = useAuthenticationStore.state.userId;
@@ -56,6 +58,7 @@ export default {
   components: {MainPageNavigation, LineChart },
   data() {
     return {
+      roleId: null,
       hotelName: '',
       hotelId: null,
       userId: userId,
@@ -64,13 +67,13 @@ export default {
       dashboard: [],
       monthlyDashboard: [],
       navigationItems: [
-        {id: "overview", label: "Overview", path: "/home/hotel/1/overview", icon: OverviewIcon, isActive: false},
-        {id: "analytics", label: "Analytics", path: "/home/hotel/1/analytics", icon: AnalyticsIcon, isActive: true},
-        {id: "providers", label: "Providers", path: "/home/hotel/1/providers", icon: ProvidersIcon, isActive: false},
-        {id: "inventory", label: "Inventory", path: "/home/hotel/1/inventory", icon: InventoryIcon, isActive: false},
-        {id: "rooms", label: "Rooms", path: "/home/hotel/1/rooms", icon: RoomsIcon, isActive: false},
-        {id: "organization", label: "Organization", path: "/home/hotel/1/organization", icon: OrganizationIcon, isActive: false},
-        {id: "devices", label: "Devices", path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: false}
+        {id: "overview", label: "Overview", path: "", icon: OverviewIcon, isActive: true},
+        {id: "analytics", label: "Analytics", path: "", icon: AnalyticsIcon, isActive: false},
+        {id: "providers", label: "Providers", path: "", icon: ProvidersIcon, isActive: false},
+        {id: "inventory", label: "Inventory", path: "", icon: InventoryIcon, isActive: false},
+        {id: "rooms", label: "Rooms", path: "", icon: RoomsIcon, isActive: false},
+        {id: "organization", label: "Organization", path: "", icon: OrganizationIcon, isActive: false},
+        {id: "devices", label: "Devices", path: "", icon: DevicesIcon, isActive: false}
       ],
       activeTab: 'weekly',
       tabs: [
@@ -78,6 +81,13 @@ export default {
         { id: 'monthly' }
       ]
     };
+  },
+
+  mounted() {
+    this.hotelId = this.$route.params.id || null;
+    this.roleId = localStorage.getItem("roleId") || null;
+    console.log("Hotel ID from route:", this.hotelId);
+    this.loadNavigationItems();
   },
 
   computed: {
@@ -157,6 +167,34 @@ export default {
   },
 
   methods: {
+    loadNavigationItems() {
+      // update the path with the hotel ID
+
+      if(this.roleId == 3) {
+        // reactive navigation items for roleId 3
+        console.log("Role ID is 3, setting navigation paths accordingly");
+        this.navigationItems.forEach(item => {
+          item.path = `/home/hotel/${this.hotelId}/${item.id}`;
+        });
+      }else if(this.roleId == 2) {
+        console.log("Role ID is 2, setting navigation paths accordingly");
+        const itemsAdmin = [
+          {id: "overview", label: "Overview", path: `/home/hotel/${this.hotelId}/overview`, icon: OverviewIcon, isActive: true},
+          {id: "analytics", label: "Analytics", path: `/home/hotel/${this.hotelId}/analytics`, icon: AnalyticsIcon, isActive: false},
+          {id: "reservations", label: "Reservations", path: `/home/hotel/${this.hotelId}/reservations`, icon: ReservationsIcon, isActive: false},
+          {id: "rooms", label: "Rooms", path: `/home/hotel/${this.hotelId}/rooms`, icon: RoomsIcon, isActive: false}
+        ]
+
+        this.navigationItems.splice(0, this.navigationItems.length, ...itemsAdmin);
+      }
+      try {
+        this.navigationItems.forEach(item => {
+          item.isActive = item.path === this.$route.path;
+        });
+      } catch (error) {
+        console.error("Error loading navigation items:", error);
+      }
+    },
     async fetchWeeklyData() {
       try {
         const res = await this.dashboardApi.getWeeklyData(this.hotelId);
@@ -198,7 +236,7 @@ export default {
       const hotel = await HotelsApiService.getHotelByOwnerId(this.userId);
 
       this.hotelName = hotel.name;
-      this.hotelId = hotel.id;
+      this.hotelId = hotelId;
 
       try {
         const res = await this.dashboardApi.getWeeklyData(this.hotelId);

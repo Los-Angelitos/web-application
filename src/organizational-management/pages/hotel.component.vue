@@ -10,6 +10,7 @@ import InventoryIcon from "../../assets/organizational-management/inventory-icon
 import RoomsIcon from "../../assets/organizational-management/rooms-icon.svg";
 import OrganizationIcon from "../../assets/organizational-management/organization-icon.svg";
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
+import ReservationsIcon from "../../assets/organizational-management/reservations-icon.svg";
 import {HotelsApiService} from "../../shared/services/hotels-api.service.js";
 
 import {useAuthenticationStore} from '/src/iam/services/authentication.store.js';
@@ -30,13 +31,13 @@ export default {
       allImages: [],
       userId: userId, // Obtenemos el userId del store de autenticación
       navigationItems: [
-        {id: "overview", label: "Overview", path: "/home/hotel/1/overview", icon: OverviewIcon, isActive: true},
-        {id: "analytics", label: "Analytics", path: "/home/hotel/1/analytics", icon: AnalyticsIcon, isActive: false},
-        {id: "providers", label: "Providers", path: "/home/hotel/1/providers", icon: ProvidersIcon, isActive: false},
-        {id: "inventory", label: "Inventory", path: "/home/hotel/1/inventory", icon: InventoryIcon, isActive: false},
-        {id: "rooms", label: "Rooms", path: "/home/hotel/1/rooms", icon: RoomsIcon, isActive: false},
-        {id: "organization", label: "Organization", path: "/home/hotel/1/organization", icon: OrganizationIcon, isActive: false},
-        {id: "devices", label: "Devices", path: "/home/hotel/1/set-up/devices", icon: DevicesIcon, isActive: false}
+        {id: "overview", label: "Overview", path: "", icon: OverviewIcon, isActive: true},
+        {id: "analytics", label: "Analytics", path: "", icon: AnalyticsIcon, isActive: false},
+        {id: "providers", label: "Providers", path: "", icon: ProvidersIcon, isActive: false},
+        {id: "inventory", label: "Inventory", path: "", icon: InventoryIcon, isActive: false},
+        {id: "rooms", label: "Rooms", path: "", icon: RoomsIcon, isActive: false},
+        {id: "organization", label: "Organization", path: "", icon: OrganizationIcon, isActive: false},
+        {id: "devices", label: "Devices", path: "", icon: DevicesIcon, isActive: false}
       ],
       hotel: {
         id: null,
@@ -56,21 +57,61 @@ export default {
         description: false,
         email: false,
         phone: false
-      }
+      },
+      roleId: null
     };
   },
 
   async mounted() {
-    await this.loadHotelMockData(); // ← Simulamos una petición
+    this.hotel.id = this.$route.params.id || null;
+    this.roleId = localStorage.getItem("roleId") || null;
+    console.log("Hotel ID from route:", this.hotel.id);
+
+    await this.loadNavigationItems();
+
+    await this.loadHotelMockData();
   },
 
   methods: {
+    async loadNavigationItems() {
+      // update the path with the hotel ID
+
+      if(this.roleId == 3) {
+        // reactive navigation items for roleId 3
+        console.log("Role ID is 3, setting navigation paths accordingly");
+        this.navigationItems.forEach(item => {
+          item.path = `/home/hotel/${this.hotel.id}/${item.id}`;
+        });
+      }else if(this.roleId == 2) {
+        console.log("Role ID is 2, setting navigation paths accordingly");
+        const itemsAdmin = [
+          {id: "overview", label: "Overview", path: `/home/hotel/${this.hotel.id}/overview`, icon: OverviewIcon, isActive: true},
+          {id: "analytics", label: "Analytics", path: `/home/hotel/${this.hotel.id}/analytics`, icon: AnalyticsIcon, isActive: false},
+          {id: "reservations", label: "Reservations", path: `/home/hotel/${this.hotel.id}/reservations`, icon: ReservationsIcon, isActive: false},
+          {id: "rooms", label: "Rooms", path: `/home/hotel/${this.hotel.id}/rooms`, icon: RoomsIcon, isActive: false}
+        ]
+
+        this.navigationItems.splice(0, this.navigationItems.length, ...itemsAdmin);
+      }
+      try {
+        this.navigationItems.forEach(item => {
+          item.isActive = item.path === this.$route.path;
+        });
+      } catch (error) {
+        console.error("Error loading navigation items:", error);
+      }
+    },
     async loadHotelMockData() {
       try {
         const multimediaService = new MultimediaApiService();
         console.log("User ID:", this.userId);
 
-        this.hotel = await HotelsApiService.getHotelByOwnerId(this.userId);
+        if(this.roleId == 2) {
+          this.hotel = await HotelsApiService.getHotelsById(this.hotel.id);
+          console.log("Hotel data for roleId 2:", this.hotel);
+        }else {
+          this.hotel = await HotelsApiService.getHotelByOwnerId(this.userId);
+        }
 
         if (!this.hotel || !this.hotel.id) {
           console.error("Hotel not found or missing ID");
@@ -78,16 +119,9 @@ export default {
         }
 
         this.hotel.ownerId = this.userId;
-
+        
         const mainMultimedia = await multimediaService.getMainMultimediaByHotelId(this.hotel.id) || [];
         const detailMultimedia = await multimediaService.getDetailsMultimediaByHotelId(this.hotel.id) || [];
-
-        if (!Array.isArray(mainMultimedia)) {
-          console.error("mainMultimedia no es un array:", mainMultimedia);
-        }
-        if (!Array.isArray(detailMultimedia)) {
-          console.error("detailMultimedia no es un array:", detailMultimedia);
-        }
 
         const allImages = [
           ...(Array.isArray(mainMultimedia) ? mainMultimedia : [mainMultimedia]),
@@ -147,7 +181,7 @@ export default {
              <img
                  v-for="(image, index) in filteredImages"
                  :key="index"
-                 :src="image.src"
+                 :src="image.src || 'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg'"
                  :alt="image.alt || 'Hotel Image'"
                  :class="{ 'full-width-image': image.type === 'MAIN' }"
              />
