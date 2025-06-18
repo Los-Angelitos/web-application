@@ -65,6 +65,7 @@ export default {
   async mounted() {
     this.hotel.id = this.$route.params.id || null;
     this.roleId = localStorage.getItem("roleId") || null;
+    this.userId = localStorage.getItem("userId");
     console.log("Hotel ID from route:", this.hotel.id);
 
     await this.loadNavigationItems();

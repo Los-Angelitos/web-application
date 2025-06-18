@@ -235,11 +235,19 @@ export default {
     try {
       const roleId = localStorage.getItem("roleId") || null;
       const hotelId = this.$route.params.id || null;
+      const userId = localStorage.getItem("userId") || null;
+
+      console.log(roleId, hotelId, userId);
       let hotel  = null;
-      if(roleId == 3) {
-        hotel = await HotelsApiService.getHotelByOwnerId(this.userId);
+      if(roleId == 1) {
+        hotel = await HotelsApiService.getHotelByOwnerId(userId);
       }else if(roleId == 2) {
         hotel = await HotelsApiService.getHotelsById(hotelId);
+      }
+
+      if(!hotel) {
+        console.log("No hotel found");
+        return;
       }
 
       console.log("Hotel fetched:", hotel);

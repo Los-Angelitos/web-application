@@ -4,7 +4,7 @@
   />
   <div class="organization-container">
     <div class="org-header">
-      <h1>Hotel</h1>
+      <h1>{{ hotelName }}</h1>
       <span class="subtitle">{{ i18n.global.t('organization.title') }}</span>
       <button-component
           :text="i18n.global.t('organization.header.addButton')"
@@ -164,6 +164,7 @@ export default {
   },
   data() {
     return {
+      hotelName: "",
       hotelId: null,
       roleId: null,
       showModal: false,
@@ -182,6 +183,7 @@ export default {
         {id: "devices", label: "Devices", path: "", icon: DevicesIcon, isActive: false}
       ],
       organizationService: new OrganizationApiService(),
+      hotelService: new HotelsApiService()
     };
   },
   async mounted() {
@@ -191,8 +193,18 @@ export default {
 
     await this.loadNavigationItems();
     await this.loadGuestData();
+    await this.getHotelById();
   },
   methods: {
+    async getHotelById() {
+      try {
+        const response = await HotelsApiService.getHotelsById(this.hotelId);
+        this.hotelName = response?.name || "";
+
+      }catch(e) {
+        console.error("Error fetching hotel by id: ", e);
+      }
+    },
     async loadNavigationItems() {
       // update the path with the hotel ID
 
