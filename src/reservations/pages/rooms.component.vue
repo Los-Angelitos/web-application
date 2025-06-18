@@ -728,13 +728,11 @@ header p {
   align-items: center;
   justify-content: center;
   padding: 40px;
-  background-color: #ffe6e6;
   border-radius: 8px;
   margin-bottom: 20px;
 }
 
 .error-message p {
-  color: #cc0000;
   margin-bottom: 15px;
   text-align: center;
 }

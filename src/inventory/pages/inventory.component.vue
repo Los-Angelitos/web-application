@@ -62,6 +62,10 @@ export default {
   },
   async created() {
     try {
+      this.userId = localStorage.getItem('userId');
+      this.hotelId = this.$route.params.id || null;
+      this.roleId = localStorage.getItem("roleId") || null;
+
       // Fetch hotel by owner ID
       const hotel = await HotelsApiService.getHotelByOwnerId(this.userId);
       if (hotel && hotel.id) {

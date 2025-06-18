@@ -63,17 +63,24 @@ export default {
   },
   async created() {
     try {
-      const res = await this.providerApi.getProviders();
+      this.hotelId = this.$route.params.id || null;
+      this.roleId = localStorage.getItem("roleId") || null;
+
+      const res = await this.providerApi.getProviders(this.hotelId);
       console.log(res);
-      this.providers = res.data
-          .filter(p => p.state === "active")
-          .map(p => Provider.fromDisplayableProvider(p));
+      if(res) {
+        this.providers = res
+            .filter(p => p.state === "active")
+            .map(p => Provider.fromDisplayableProvider(p));
+      }
+
+      console.log(this.providers);
     } catch (error) {
       console.error("Error al obtener los proveedores:", error);
     }
 
     try {
-      const res = await this.hotelApi.getHotelsById(this.hotelId);
+      const res = await HotelsApiService.getHotelsById(this.hotelId);
       this.hotel = Hotel.fromDisplayableHotel(res);
     } catch (error) {
       console.error("Error al obtener hotel:", error);
