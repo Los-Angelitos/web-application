@@ -28,8 +28,24 @@ export class OrganizationApiService {
         return http.get('/user/admins');
     }
 
+    getAdminByEmail(email) {
+        return http.get(`/user/admins?email=${email}`);
+    }
+
+    addAdminToHotel(adminId, hotelId) {
+        return http.put(`/user/admins/${adminId}/hotel`, { hotelId });
+    }
+
+    removeAdminFromHotel(adminId) {
+        return http.put(`/user/admins/${adminId}/hotel`, { hotelId: 0 });
+    }
+
     getAdminById(adminId) {
         return http.get(`/user/admins/${adminId}`);
+    }
+
+    getAdminByHotelId(hotelId) {
+        return http.get(`/user/admins?hotelId=${hotelId}`);
     }
 
     updateAdmin(adminId, adminData) {
