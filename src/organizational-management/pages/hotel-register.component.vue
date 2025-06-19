@@ -5,6 +5,7 @@
         <h1 class="registration-title">{{i18n.global.t('hotel-register.title')}}</h1>
         <p class="registration-subtitle">{{i18n.global.t('hotel-register.subtitle')}}</p>
 
+        <form @submit.prevent="submitForm">
         <div class="registration-form">
           <div class="form-group">
             <InputTextComponent
@@ -67,10 +68,10 @@
                 state="primary"
                 width="300"
                 :disabled="submitting"
-                @click="submitForm"
             ></button-component>
           </div>
         </div>
+        </form>
       </div>
 
       <div class="hotel-images-section">
@@ -292,8 +293,7 @@ export default {
       }
     },
 
-    async submitForm(e) {
-      e.preventDefault();
+    async submitForm() {
       console.log('Submitting hotel registration form...');
       // Validate form
       if (!this.validateForm()) {
