@@ -169,7 +169,7 @@
 
           <form @submit.prevent="saveUser" class="modal-footer">
             <button-component
-                text="Send Invitation"
+                text="Add"
                 state="primary"
                 :width="100"
                 :loading="isAddingAdmin"
@@ -274,7 +274,8 @@ export default {
         console.log(`Loading administrators for hotel ID: ${this.hotelId}`);
         
         // Simulate API call - replace with actual API service
-        const response = await this.simulateAdministratorsAPI();
+        const response = await this.organizationService.getAdminByHotelId(this.hotelId);
+        console.log('Response from getAdminByHotelId:', response);
         
         if (response && response.data) {
           this.administrators = response.data;
@@ -298,38 +299,7 @@ export default {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Mock data - replace this with actual API call
-      const mockAdministrators = [
-        {
-          id: 1,
-          name: 'Mauricio',
-          surname: 'Rojas',
-          email: 'mauricio.rojas@hotel.com',
-          photoURL: '../../assets/images/admin.png',
-          createdAt: '2024-01-15T10:30:00Z',
-          hotelId: this.hotelId,
-          status: 'active'
-        },
-        {
-          id: 2,
-          name: 'Arian',
-          surname: 'Rodriguez',
-          email: 'arian.rodriguez@hotel.com',
-          photoURL: '../../assets/images/admin.png',
-          createdAt: '2024-02-20T14:15:00Z',
-          hotelId: this.hotelId,
-          status: 'active'
-        },
-        {
-          id: 3,
-          name: 'Sofia',
-          surname: 'Martinez',
-          email: 'sofia.martinez@hotel.com',
-          photoURL: null,
-          createdAt: '2024-03-10T09:45:00Z',
-          hotelId: this.hotelId,
-          status: 'active'
-        }
-      ];
+      const mockAdministrators = [];
 
       return {
         data: mockAdministrators,
@@ -443,7 +413,7 @@ export default {
 
     async saveUser() {
       if (this.email.trim() === '') {
-        alert(this.$t('organization.modal.validation.emailRequired'));
+        alert("Please enter a valid email address.");
         return;
       }
 
@@ -451,12 +421,8 @@ export default {
         this.isAddingAdmin = true;
         
         // Simulate API call to add administrator
-        await this.simulateAddAdminAPI(this.email);
+        await this.addAdmin(this.email);
         
-        alert(this.$t('organization.modal.successMessage', { email: this.email }));
-        
-        // Reload administrators list
-        await this.loadAdministrators();
         
         this.email = '';
         this.showModal = false;
@@ -469,21 +435,27 @@ export default {
       }
     },
 
-    async simulateAddAdminAPI(email) {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Mock successful response
-      return {
-        data: {
-          id: Date.now(),
-          email: email,
-          hotelId: this.hotelId,
-          status: 'pending'
-        },
-        status: 201,
-        message: 'Administrator invitation sent successfully'
-      };
+    async addAdmin(email) {
+      const response = await this.organizationService.getAdminByEmail(email);
+      console.log('Response from getAdminByEmail:', response);
+
+      if (!response || !response.data) {
+        alert("The admin with this email does not exist.");
+        return;
+      }
+
+      const adminId = response.data.id;
+      const responseAdd = await this.organizationService.addAdminToHotel(adminId, this.hotelId);
+      console.log('Response from addAdminToHotel:', responseAdd);
+
+      if (responseAdd && responseAdd.status === 200) {
+        console.log('Administrator added successfully:', responseAdd.data);
+        
+        // Reload administrators list
+        await this.loadAdministrators();
+      } else {
+        throw new Error('Failed to add administrator');
+      }
     },
 
     editAdmin(admin) {
@@ -493,31 +465,20 @@ export default {
     },
 
     async removeAdmin(admin) {
-      if (confirm(this.$t('organization.actions.confirmRemove', { name: `${admin.name} ${admin.surname}` }))) {
-        try {
+       try {
+        console.log('Removing admin:', admin);
           // Simulate API call to remove administrator
-          await this.simulateRemoveAdminAPI(admin.id);
+          const response = await this.organizationService.removeAdminFromHotel(admin.id);
+          console.log('Response from removeAdminFromHotel:', response);
           
           // Remove from local list
           this.administrators = this.administrators.filter(a => a.id !== admin.id);
           
-          alert(this.$t('organization.actions.removeSuccess'));
+          alert("Administrator removed successfully.");
           
         } catch (error) {
           console.error('Error removing administrator:', error);
-          alert(this.$t('organization.actions.removeError'));
         }
-      }
-    },
-
-    async simulateRemoveAdminAPI(adminId) {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      return {
-        status: 200,
-        message: 'Administrator removed successfully'
-      };
     },
 
     formatDate(dateString) {
