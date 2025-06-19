@@ -74,6 +74,10 @@ export default {
       } catch (e) {
         console.error("Error al agregar proveedor:", e);
         alert(this.i18n.global.t('providers.addButton.error'));
+      }finally {
+        this.form.name = '';
+        this.form.email = '';
+        this.form.phone = '';
       }
     },
     close() {

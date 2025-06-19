@@ -45,20 +45,20 @@ export class HotelApiService {
         return http.get(`/room/get-room-by-id?id=${roomId}`);
     } 
 
-    createHotel(hotel){
-        return http.post("/hotels", hotel)
-            .then(response => {
-                if(response.status === 201) {
-                    return response.data;
-                }
-                else {
-                    return null;
-                }
-            })
-            .catch(error => {
-                console.error("Error creating hotel:", error);
-                throw error;
-            });
+    async createHotel(hotel){
+        return http.post("/hotels", hotel);
+    }
+    
+    async createFogServer(data) {
+        return http.post("/fog-servers", data);
+    }
+
+    async getFogServerByHotel(hotelId) {
+        return http.get(`/fog-servers?hotelId=${hotelId}`);
+    }
+
+    async updateFogServer(fogServerId, data) {
+        return http.put(`/fog-servers/${fogServerId}`, data);
     }
 
     updateHotel(hotel) {

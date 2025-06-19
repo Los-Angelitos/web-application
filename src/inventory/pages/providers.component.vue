@@ -33,6 +33,7 @@ export default {
   },
   data() {
     return {
+      isLoading: true,
       hotelId: 1,
       hotel: null,
       hotelApi: new HotelsApiService(),
@@ -62,28 +63,33 @@ export default {
     this.loadNavigationItems();
   },
   async created() {
+    this.isLoading = true;
+    
     try {
       this.hotelId = this.$route.params.id || null;
       this.roleId = localStorage.getItem("roleId") || null;
 
-      const res = await this.providerApi.getProviders(this.hotelId);
-      console.log(res);
-      if(res) {
-        this.providers = res
+      // Cargar proveedores y hotel en paralelo
+      const [providersRes, hotelRes] = await Promise.all([
+        this.providerApi.getProviders(this.hotelId),
+        HotelsApiService.getHotelsById(this.hotelId)
+      ]);
+
+      // Procesar proveedores
+      if(providersRes) {
+        this.providers = providersRes
             .filter(p => p.state === "active")
             .map(p => Provider.fromDisplayableProvider(p));
       }
 
+      // Procesar hotel
+      this.hotel = Hotel.fromDisplayableHotel(hotelRes);
+
       console.log(this.providers);
     } catch (error) {
-      console.error("Error al obtener los proveedores:", error);
-    }
-
-    try {
-      const res = await HotelsApiService.getHotelsById(this.hotelId);
-      this.hotel = Hotel.fromDisplayableHotel(res);
-    } catch (error) {
-      console.error("Error al obtener hotel:", error);
+      console.error("Error al cargar los datos:", error);
+    } finally {
+      this.isLoading = false;
     }
   },
   computed: {
@@ -124,21 +130,27 @@ export default {
       }
     },
     async addProvider({ name, email, phone, state, hotelId }) {
+      if(!name || !email || !phone || !state) {
+        alert("Todos los campos son obligatorios para crear un proveedor.");
+        return;
+      }
+
       const provider = new Provider(
           null,
           name,
           email,
           phone,
           state,
-          hotelId
+          this.hotelId
       );
 
       try {
-        await this.providerApi.createProvider(provider);
-        this.providers.push(provider);
-        this.showCreateModal = false;
+        const responseProvider = await this.providerApi.createProvider(provider);
+        this.providers.push(responseProvider?.data);
       } catch (error) {
         console.error("Error al crear provider:", error);
+      }finally{
+        this.showAddModal = false;
       }
     },
 
@@ -162,7 +174,7 @@ export default {
 
     viewDetails(provider, index) {
       this.selectedProviderId = provider.id;
-      this.selectedAvatar = `https://i.pravatar.cc/150?img=${index + 1}`;
+      this.selectedAvatar = `https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg`;
     }
   }
 };
@@ -172,7 +184,17 @@ export default {
   <MainPageNavigation
       :navigationItems="navigationItems"
   />
-  <div class="providers-page">
+  
+  <!-- Loading Spinner -->
+  <div v-if="isLoading" class="loading-container">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p class="loading-text">Cargando...</p>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div v-else class="providers-page">
     <div class="providers-header">
       <div>
         <h1 class="hotel-title">{{ hotelName }}</h1>
@@ -195,7 +217,7 @@ export default {
       >
         <template #image>
           <img
-              :src="`https://i.pravatar.cc/150?img=${index + 1}`"
+              :src="`https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg`"
               alt="Avatar"
               class="provider-image"
           />
@@ -246,6 +268,43 @@ export default {
 </template>
 
 <style scoped>
+/* Estilos para el loading spinner */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 1rem;
+  color: #666;
+  margin: 0;
+}
+
+/* Estilos existentes */
 .providers-page {
   padding: 2rem;
 }
@@ -323,5 +382,4 @@ export default {
   align-items: center;
   margin-bottom: 1.5rem;
 }
-
 </style>

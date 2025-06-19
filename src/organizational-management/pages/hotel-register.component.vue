@@ -14,13 +14,13 @@
           </div>
 
           <div class="form-group">
-            <label for="hotelType" class="combo-label">Tipo de Hotel</label>
+            <label for="hotelType" class="combo-label">Hotel Type</label>
             <select
                 id="hotelType"
                 v-model="hotelType"
                 class="combo-select"
             >
-              <option value="">Selecciona un tipo de hotel</option>
+              <option value="">Select Hotel Type</option>
               <option value="featured">Featured</option>
               <option value="near-lake">Near the Lake</option>
               <option value="with-pool">With a Pool</option>
@@ -63,7 +63,7 @@
 
           <div class="form-buttons">
             <button-component
-                :text="submitting ? 'Registrando...' : i18n.global.t('hotel-register.registration-form.button')"
+                :text="submitting ? 'Registering...' : i18n.global.t('hotel-register.registration-form.button')"
                 state="primary"
                 width="300"
                 :disabled="submitting"
@@ -87,7 +87,7 @@
             <div v-if="uploadingImages.main" class="upload-overlay">
               <div class="upload-spinner">
                 <i class="fas fa-spinner fa-spin"></i>
-                <span>Subiendo imagen...</span>
+                <span>Uploading image...</span>
               </div>
             </div>
           </div>
@@ -104,7 +104,7 @@
               <div v-if="uploadingImages.room" class="upload-overlay">
                 <div class="upload-spinner">
                   <i class="fas fa-spinner fa-spin"></i>
-                  <span>Subiendo...</span>
+                  <span>Uploading...</span>
                 </div>
               </div>
             </div>
@@ -120,7 +120,7 @@
               <div v-if="uploadingImages.beach" class="upload-overlay">
                 <div class="upload-spinner">
                   <i class="fas fa-spinner fa-spin"></i>
-                  <span>Subiendo...</span>
+                  <span>Uploading...</span>
                 </div>
               </div>
             </div>
@@ -200,17 +200,9 @@ export default {
         room: false,
         beach: false
       },
-      cloudinary: new Cloudinary()
-    }
-  },
-  props: {
-    hotelApiService: {
-      type: Object,
-      default: () => new HotelApiService()
-    },
-    multimediaApiService: {
-      type: Object,
-      default: () => new MultimediaApiService()
+      cloudinary: new Cloudinary(),
+      hotelApiService: new HotelApiService(),
+      multimediaApiService: new MultimediaApiService()
     }
   },
   methods: {
@@ -300,7 +292,9 @@ export default {
       }
     },
 
-    async submitForm() {
+    async submitForm(e) {
+      e.preventDefault();
+      console.log('Submitting hotel registration form...');
       // Validate form
       if (!this.validateForm()) {
         return;
@@ -353,12 +347,14 @@ export default {
 
         console.log('Submitting hotel data:', hotelData);
 
-        let response = await this.hotelApiService.createHotel(hotelData);
-        if (response) {
-          localStorage.setItem("hotelId", response.id);
-          await this.multimediaApiService.createMultimedia({"hotelId": response.id, "url": this.mainImage.cloudinaryUrl, "type": "MAIN", "position": 1});
-          await this.multimediaApiService.createMultimedia({"hotelId": response.id, "url": this.roomImage.cloudinaryUrl, "type": "DETAIL", "position": 2});
-          await this.multimediaApiService.createMultimedia({"hotelId": response.id, "url": this.beachImage.cloudinaryUrl, "type": "DETAIL", "position": 3});
+        const response = await this.hotelApiService.createHotel(hotelData);
+        if (response && response.data.id) {
+          localStorage.setItem("hotelId", response.data.id);
+          if(this.mainImage.cloudinaryUrl && this.roomImage.cloudinaryUrl && this.beachImage.cloudinaryUrl) {
+            await this.multimediaApiService.createMultimedia({"hotelId": response.data.id, "url": this.mainImage.cloudinaryUrl, "type": "MAIN", "position": 1});
+            await this.multimediaApiService.createMultimedia({"hotelId": response.data.id, "url": this.roomImage.cloudinaryUrl, "type": "DETAIL", "position": 2});
+            await this.multimediaApiService.createMultimedia({"hotelId": response.data.id, "url": this.beachImage.cloudinaryUrl, "type": "DETAIL", "position": 3});
+          }
           this.$router.push('/home/hotel/set-up/details');
         } else {
           throw new Error('No response from server');
@@ -399,6 +395,12 @@ export default {
 
       if (!this.phone.trim()) {
         this.errorMessage = 'Por favor ingrese el número de teléfono';
+        this.showErrorModal = true;
+        return false;
+      }
+
+      if(this.phone && this.phone.length < 9) {
+        this.errorMessage = 'El número de teléfono debe tener al menos 9 dígitos';
         this.showErrorModal = true;
         return false;
       }

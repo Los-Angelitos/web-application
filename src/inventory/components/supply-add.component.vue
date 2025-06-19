@@ -1,7 +1,7 @@
 <template>
   <div class="modal-overlay" @click.self="close">
     <div class="modal-card">
-      <div class="modal-icon">📦{{this.hotelId}}</div>
+      <div class="modal-icon">📦</div>
       <h3 class="modal-title">{{ i18n.global.t('inventory.addButton.title')}}</h3>
 
       <div class="form-group">

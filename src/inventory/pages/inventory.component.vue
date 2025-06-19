@@ -34,6 +34,7 @@ export default {
   },
   data() {
     return {
+      isLoading: true,
       hotelId: 1,
       supplies: [],
       providers: [],
@@ -61,6 +62,8 @@ export default {
     this.loadNavigationItems();
   },
   async created() {
+    this.isLoading = true;
+    
     try {
       this.userId = localStorage.getItem('userId');
       this.hotelId = this.$route.params.id || null;
@@ -75,18 +78,25 @@ export default {
         console.error("No hotel found for the user or missing hotel ID.");
         return;
       }
-      // Fetch supplies
-      let nofilteredsupplies = await this.supplierApi.getSupplies(this.hotelId);
-      this.supplies = nofilteredsupplies.filter(supply => supply.state === "ACTIVE");
 
+      // Cargar supplies y providers en paralelo para optimizar el tiempo de carga
+      const [suppliesData, providersData] = await Promise.all([
+        this.supplierApi.getSupplies(this.hotelId),
+        this.providerApi.getProviders(this.hotelId)
+      ]);
+
+      // Procesar supplies
+      this.supplies = suppliesData.filter(supply => supply.state === "ACTIVE");
       console.log("Supplies loaded successfully.");
 
-      // Fetch providers
-      this.providers = await this.providerApi.getProviders(this.hotelId);
+      // Procesar providers
+      this.providers = providersData;
       console.log("Providers loaded successfully.");
 
     } catch (error) {
       console.error("Error during initialization:", error);
+    } finally {
+      this.isLoading = false;
     }
   },
   methods: {
@@ -187,7 +197,17 @@ export default {
   <MainPageNavigation
       :navigationItems="navigationItems"
   />
-  <div class="inventory-page">
+  
+  <!-- Loading Spinner -->
+  <div v-if="isLoading" class="loading-container">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p class="loading-text">Cargando inventario...</p>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div v-else class="inventory-page">
     <h1 class="hotel-title">{{this.hotelName}}</h1>
     <h2 class="section-title">{{ i18n.global.t('inventory.title')}}</h2>
     <div class="inventory-actions">
@@ -259,6 +279,43 @@ export default {
 </template>
 
 <style scoped>
+/* Estilos para el loading spinner */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 1rem;
+  color: #666;
+  margin: 0;
+}
+
+/* Estilos existentes */
 .inventory-page {
   padding: 2rem;
   font-family: 'Segoe UI', sans-serif;
