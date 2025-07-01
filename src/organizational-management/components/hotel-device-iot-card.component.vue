@@ -59,7 +59,7 @@ export default {
             UID: {{ device.uId }}
             </p>
             <p class="device-ip-address">
-            API Key: {{ device.rfidApiKey }}
+            API Key: {{ device.apiKey }}
             </p>
             <p class="device-ip-address device-room">
             Room: #{{ device.roomId }}
