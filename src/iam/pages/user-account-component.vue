@@ -167,8 +167,8 @@ export default {
         return false;
       }
 
-      // 'hotel-configuration' solo visible para Owner (1)
-      if (item.id === 'hotel-configuration' && roleId !== 1) {
+      // 'hotel-configuration' solo visible para Owner (1) y Admin (2)
+      if (item.id === 'hotel-configuration' && roleId === 3) {
         return false;
       }
 
