@@ -1,4 +1,6 @@
+import axios from "axios";
 import http from "../../shared/services/http-common.js"
+import { authenticationInterceptor } from "../../iam/services/authentication.interceptor.js";
 
 export class HotelApiService {
     getHotels() {
@@ -59,6 +61,52 @@ export class HotelApiService {
 
     async updateFogServer(fogServerId, data) {
         return http.put(`/fog-servers/${fogServerId}`, data);
+    }
+
+    async createThermostat(thermostat) {
+        return http.post("/thermostat/create-thermostat", thermostat);
+    }
+
+    async createSmokeSensor(smokeSensor) {
+         const http = axios.create({
+            baseURL: `https://sweet-manager-api.runasp.net/api`,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            },
+        });
+        
+        http.interceptors.request.use(authenticationInterceptor);
+
+        return http.post("/smokesensor/create-smoke-sensor", smokeSensor);
+    }
+
+    async createRfidCard(rfidCard) {
+        return http.post("/rfid-card", rfidCard);
+    }
+
+    async getThermostats(hotelId) {
+        return http.get(`/thermostat/get-all-thermostats?hotelId=${hotelId}`);
+    }
+
+    async getSmokeSensors(hotelId) {
+        const http = axios.create({
+            baseURL: `https://sweet-manager-api.runasp.net/api`,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            },
+        });
+        
+        http.interceptors.request.use(authenticationInterceptor);
+
+        return http.get(`/smokesensor/get-all-smoke-sensors?hotelId=${hotelId}`);
+    }
+
+    async getRfidCards(hotelId) {
+        return http.get(`/rfid-card/hotel/${hotelId}`);
     }
 
     updateHotel(hotel) {

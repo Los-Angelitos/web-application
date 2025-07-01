@@ -9,21 +9,21 @@
         <p class="hotel-subtitle">Devices IoT</p>
       </div>
       <div class="new-device-section">
-        <p class="new-device-text">¿Nuevo dispositivo?</p>
-        <button class="solicitar-btn" @click="requestDevice">Solicitar</button>
+        <p class="new-device-text">New device?</p>
+        <button class="solicitar-btn" @click="requestDevice">Require</button>
       </div>
     </div>
 
     <!-- Pantalla de carga mientras se obtienen los dispositivos -->
     <div v-if="loading" class="loading-container">
       <div class="loading-spinner"></div>
-      <p>Cargando dispositivos...</p>
+      <p>Loading devices...</p>
     </div>
 
     <!-- Mensaje de error si falla la carga -->
     <div v-else-if="error" class="error-container">
       <p>{{ error }}</p>
-      <button @click="fetchDevices" class="retry-btn">Reintentar</button>
+      <button @click="fetchDevices" class="retry-btn">Retry</button>
     </div>
 
     <!-- Contenedor de dispositivos -->
@@ -34,7 +34,7 @@
     </div>
   </div>
 
-    <ModalComponent v-model="showModal" title="" :showCloseButton="true" :closeOnOverlayClick="true" :width="'500px'" :height="'auto'" :backgroundColor="'#ffffff'">
+    <ModalComponent v-model="showModal" title="" :showCloseButton="true" :closeOnOverlayClick="true" :width="'500px'" :height="'auto'" :backgroundColor="'#ffffff'" v-if="showModal && this.rooms.length > 0">
         <template #image>
             <img src="../../assets/iot/plug-in-icon.svg" alt="Modal Image" />
         </template>
@@ -43,28 +43,72 @@
         </template>
         <template #body>
             <form class="form">
-                <div class="form-group">
-                    <InputTextComponent v-model="mac" label="MAC" />
+                <div class="form-group" v-if="type !== 'RFID'">
+                    <div class="mac-input-container">
+                        <InputTextComponent v-model="mac" label="MAC" />
+                        <button type="button" class="generate-mac-btn" @click="() => mac = macs[Math.floor(Math.random() * macs.length)]">
+                            GENERATE
+                        </button>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <InputTextComponent v-model="ip" label="IP Address" />
+                    <InputTextComponent v-model="ip" label="IP Address" v-if="type !== 'RFID'" />
                 </div>
+
+                <div class="form-group">
+                    <InputTextComponent v-model="rfidApiKey" label="RFID API Key" v-if="type === 'RFID'" />
+                </div>
+
+                <div class="form-group">
+                    <InputTextComponent v-model="uId" label="RFID UID" v-if="type === 'RFID'" />
+                </div>
+
                 <div class="form-group">
                     <select v-model="type" class="form-control">
-                        <option value="Termostato">Termostat</option>
-                        <option value="Otro">Other</option>
+                        <option value="" disabled selected>Select a device</option>
+                        <option value="Thermostat">Thermostat</option>
+                        <option value="Smoke Sensor">Smoke Sensor</option>
+                        <option value="RFID">RFID Card</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select v-model="room" class="form-control">
+                        <option value="" disabled selected>Select a room</option>
+                        <option v-for="room in rooms" :value="room.id">
+                            Room {{ room.id }} - State: {{ room.state }}
+                        </option>
                     </select>
                 </div>
 
             </form>
         </template>
         <template #footer>
-            <ButtonComponent class="btn primary" state="primary" @click="saveDevice">Guardar</ButtonComponent>
-            <ButtonComponent class="btn secondary" state="basic" @click="showModal = false">Cancelar</ButtonComponent>
+            <ButtonComponent 
+                class="btn primary" 
+                state="primary" 
+                :disabled="savingDevice" 
+                @click="saveDevice"
+            >
+                <span v-if="savingDevice" class="save-loading">
+                    <div class="save-spinner"></div>
+                    Saving...
+                </span>
+                <span v-else>Save</span>
+            </ButtonComponent>
+
+            <ButtonComponent 
+                class="btn secondary" 
+                state="basic" 
+                :disabled="savingDevice" 
+                @click="showModal = false"
+            >
+                Cancel
+            </ButtonComponent>
         </template>
     </ModalComponent>
   
 </template>
+
 
 <script>
 import HotelDeviceIoTCard from "../components/hotel-device-iot-card.component.vue";
@@ -80,7 +124,8 @@ import OrganizationIcon from "../../assets/organizational-management/organizatio
 import DevicesIcon from "../../assets/organizational-management/devices-icon.svg";
 import ReservationsIcon from "../../assets/organizational-management/reservations-icon.svg";
 import MainPageNavigation from "../components/main-page-navigation.component.vue";
-import { HotelApiService } from "../services/hotel-api.service";
+import { HotelApiService } from "../services/hotel-api.service.js";
+import { RoomApiService } from "../../reservations/services/room-api.service.js";
 
 
 export default {
@@ -97,6 +142,7 @@ export default {
       hotelId: null,
       roleId: null,
       loading: true,
+      savingDevice: false, // Added separate loading state for saving
       navigationItems: [
         {id: "overview", label: "Overview", path: "", icon: OverviewIcon, isActive: true},
         {id: "analytics", label: "Analytics", path: "", icon: AnalyticsIcon, isActive: false},
@@ -108,9 +154,30 @@ export default {
       ],
       error: null,
       devices: [],
+      rooms: [],
       hotelName: '',
       showModal: false,
-      hotelApiService: new HotelApiService()
+      hotelApiService: new HotelApiService(),
+      roomService: new RoomApiService(),
+      mac: '',
+      ip: '',
+      type: '',
+      room: '',
+      rfidApiKey: '',
+      uId: '',
+      macs: [
+        "00:1A:2B:3C:4D:5E",
+        "01:2B:3C:4D:5E:6F",
+        "02:3C:4D:5E:6F:70",
+        "03:4D:5E:6F:70:81",
+        "04:5E:6F:70:81:92",
+        "05:6F:70:81:92:03",
+        "06:70:81:92:03:14",
+        "07:81:92:03:14:25",
+        "08:92:03:14:25:36",
+        "09:03:14:25:36:47",
+        "0A:14:25:36:47:58",
+      ]
     };
   },
   async mounted() {
@@ -119,10 +186,34 @@ export default {
       console.log("Hotel ID from route:", this.hotelId);
 
     this.loadNavigationItems();
-    this.fetchDevices();
     this.fetchHotelName();
+    await this.fetchRooms();
+    await this.fetchDevices();
   },
   methods: {
+    async fetchRooms() {
+      try {
+        if(!this.hotelId) {
+          console.error("Hotel ID is not set.");
+          return;
+        }
+
+        const response = await this.roomService.getAllRooms(this.hotelId);
+        if (response && response.data) {
+          this.rooms = response.data.map(room => ({
+            id: room.id,
+            state: room.state
+          }));
+
+          console.log("Rooms fetched successfully:", this.rooms);
+        } else {
+          console.error("No rooms found in response:", response);
+        }
+
+      }catch(e) {
+        console.error("Error fetching rooms:", e);
+      }
+    },  
     async fetchHotelName() {
       try {
         if (!this.hotelId) {
@@ -168,64 +259,141 @@ export default {
       }
     },
     requestDevice() {
+      this.resetForm();
       this.showModal = true;
     },
-    fetchDevices() {
+    async fetchDevices() {
       this.loading = true;
       this.error = null;
       
-      setTimeout(() => {
-        try {
-          this.devices = [
-            {
-              id: 1,
-              type: 'Termostato',
-              physicalAddress: 'MAC: 27:8d:5f:9c:54:6a',
-              ipAddress: '192.168.1.15',
-              lastSeen: '1 hour ago',
-              status: 'ACTIVE',
-            },
-            {
-              id: 2,
-              type: 'Termostato',
-              physicalAddress: 'MAC: 27:8d:5f:9c:54:6b',
-              ipAddress: '192.168.1.16',
-              lastSeen: '7 minutes ago',
-              status: 'ACTIVE',
-            },
-            {
-              id: 3,
-              type: 'Termostato',
-              physicalAddress: 'MAC: 27:8d:5f:9c:54:6c',
-              ipAddress: '192.168.1.17',
-              lastSeen: '2 minutes ago',
-              status: 'INACTIVE',
-            },
-            {
-              id: 4,
-              type: 'Termostato',
-              physicalAddress: 'MAC: 27:8d:5f:9c:54:6d',
-              ipAddress: '192.168.1.18',
-              lastSeen: '1 hour ago',
-              status: 'ACTIVE',
-            }
-          ];
-          
+      try {
+        if (!this.hotelId) {
+          console.error("Hotel ID is not set.");
+          this.error = "Something went wrong. Please try again.";
           this.loading = false;
-        } catch (err) {
-          this.error = "Error al cargar los dispositivos. Por favor intente de nuevo.";
-          this.loading = false;
-          console.error('Error fetching devices:', err);
+          return;
         }
-      }, 800); 
+
+        const thermostats = await this.hotelApiService.getThermostats(this.hotelId);
+        const smokeSensors = await this.hotelApiService.getSmokeSensors(this.hotelId);
+        const rfidCards = await this.hotelApiService.getRfidCards(this.hotelId);
+
+
+        this.devices = [
+          ...thermostats.data.map(device => ({
+            id: device.id,
+            type: 'Thermostat',
+            roomId: device.roomId,
+            ipAddress: device.ipAddress,
+            macAddress: device.macAddress,
+            temperature: device.temperature,
+            state: device.state,
+            lastUpdate: new Date(device.lastUpdate).toLocaleString()
+          })),
+          ...smokeSensors.data.map(device => ({
+            id: device.id,
+            type: 'Smoke Sensor',
+            roomId: device.roomId,
+            ipAddress: device.ipAddress,
+            macAddress: device.macAddress,
+            lastAnalogicValue: device.lastAnalogicValue,
+            state: device.state,
+            lastAlertTime: new Date(device.lastAlertTime).toLocaleString()
+          })),
+          ...rfidCards.data.map(device => ({
+            id: device.id,
+            type: 'RFID',
+            roomId: device.roomId,
+            apiKey: device.apiKey,
+            uId: device.uId
+          }))
+        ];
+          
+        this.loading = false;
+      } catch (err) {
+        console.error('Error fetching devices:', err);
+        this.error = "Error loading devices. Please try again.";
+        this.loading = false;
+      }
     },
-    saveDevice() {
-      console.log('Dispositivo guardado:', {
-        mac: this.mac,
-        ip: this.ip,
-        type: this.type
-      });
-      this.showModal = false;
+    async saveDevice() {
+      // Prevent double requests
+      if (this.savingDevice) {
+        return;
+      }
+
+      // Validation for RFID devices
+      if (this.type === 'RFID') {
+        if (!this.rfidApiKey || !this.uId || !this.room) {
+          alert("Please fill in all fields for RFID device.");
+          return;
+        }
+      } else {
+        // Validation for other devices
+        if (!this.mac || !this.ip || !this.type || !this.room) {
+          alert("Please fill in all fields.");
+          return;
+        }
+      }
+
+      this.savingDevice = true;
+
+      try {
+        if (this.type === 'Thermostat') {
+          await this.hotelApiService.createThermostat({
+            "roomId": this.room,
+            "ipAddress": this.ip,
+            "macAddress": this.mac,
+            "temperature": 20,
+            "state": "ACTIVE",
+            "lastUpdate": new Date().toISOString()
+          });
+        } else if (this.type === 'Smoke Sensor') {
+          console.log("ola", {
+            "roomId": this.room,
+            "ipAddress": this.ip,
+            "macAddress": this.mac,
+            "lastAnalogicValue": 0,
+            "state": "ACTIVE",
+            "lastAlertTime": new Date().toISOString()
+          })
+          await this.hotelApiService.createSmokeSensor({
+            "roomId": this.room,
+            "ipAddress": this.ip,
+            "macAddress": this.mac,
+            "lastAnalogicValue": 0,
+            "state": "ACTIVE",
+            "lastAlertTime": new Date().toISOString()
+          });
+        } else if (this.type === 'RFID') {
+          await this.hotelApiService.createRfidCard({
+            "roomId": this.room,
+            "apiKey": this.rfidApiKey,
+            "uId": this.uId
+          });
+        }
+
+        // Refresh devices list
+        await this.fetchDevices();
+        
+        // Close modal and reset form
+        this.showModal = false;
+        this.resetForm();
+        
+      } catch (err) {
+        console.error('Error creating device:', err);
+        alert('Error creating device. Please try again.');
+      } finally {
+        this.savingDevice = false;
+      }
+    },
+    resetForm() {
+      this.mac = '';
+      this.ip = '';
+      this.type = '';
+      this.room = '';
+      this.rfidApiKey = '';
+      this.uId = '';
     }
   }
 };
@@ -242,6 +410,55 @@ export default {
     text-align: center;
 }
 
+.mac-input-container {
+  position: relative;
+}
+
+.generate-mac-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+  height: fit-content;
+  transition: background-color 0.2s;
+  position: absolute;
+  right: 10px;
+  top: 15%;
+}
+
+.generate-mac-btn:hover {
+  background-color: #0056b3;
+}
+
+.generate-mac-btn:active {
+  background-color: #004494;
+}
+
+/* Save button loading styles */
+.save-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.save-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 2px solid white;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
 /* Estilos del form */
 .form {
@@ -332,8 +549,6 @@ select {
   gap: 20px;
 }
 
-
-
 /* Estilos de carga */
 .loading-container {
   text-align: center;
@@ -349,11 +564,6 @@ select {
   height: 30px;
   animation: spin 1s linear infinite;
   margin: 0 auto 15px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 
 /* Estilos de error */
