@@ -1,5 +1,7 @@
 <script>
 import termostatIcon from "../../assets/iot/termostat.svg";
+import smokeSensorIcon from "../../assets/iot/smokesensor.png";
+import rfidIcon from "../../assets/iot/rfid.png";
 export default {
     name: "HotelDeviceIoT",
     props: {
@@ -12,8 +14,14 @@ export default {
         getDeviceIcon(type) {
             console.log(this.device);
             switch (type) {
-                case "Termostato":
+                case "Thermostat":
                     return termostatIcon;
+                case "Smoke Sensor":
+                    return smokeSensorIcon;
+                case "RFID":
+                    return rfidIcon;
+                default:
+                    return termostatIcon; // Default icon if type is unknown
             }
         }
     }
@@ -27,20 +35,38 @@ export default {
                 <img :src="getDeviceIcon(device.type)" :alt="device.type" />
             </div>
         </div>
-        <div class="device-info">
+        <div class="device-info" v-if="device.type !== 'RFID'">
             <h3 class="device-type">{{ device.type }}</h3>
             <p class="device-address">
-            Physical address: {{ device.physicalAddress }}
+            Physical address: {{ device.macAddress }}
             </p>
             <p class="device-ip-address">
             IP address: {{ device.ipAddress }}
             </p>
-            <p class="device-last-seen">
-            Last use: {{ device.lastSeen }}
+            <p class="device-ip-address device-room">
+            Room: #{{ device.roomId }}
+            </p>
+            <p class="device-last-seen" v-if="device.lastUpdate">
+                Last seen: {{ device.lastUpdate ? device.lastUpdate : 'N/A' }}
+            </p>
+            <p class="device-last-seen" v-else>
+                Last seen: {{ device.lastAlertTime ? device.lastAlertTime : 'N/A' }}
             </p>
         </div>
-        <div class="device-status" :class="device.status.toLowerCase()">
-            {{ device.status }}
+        <div class="device-info" v-else>
+            <h3 class="device-type">{{ device.type }}</h3>
+            <p class="device-address">
+            UID: {{ device.uId }}
+            </p>
+            <p class="device-ip-address">
+            API Key: {{ device.apiKey }}
+            </p>
+            <p class="device-ip-address device-room">
+            Room: #{{ device.roomId }}
+            </p>
+        </div>
+        <div class="device-status active">
+            ACTIVE
         </div>
     </div>
 </template>
@@ -57,6 +83,7 @@ export default {
   flex-direction: column;
   padding: 20px;
   position: relative;
+  height: 100%;
 }
 
 .device-icon {

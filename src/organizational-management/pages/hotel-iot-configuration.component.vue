@@ -211,31 +211,36 @@ export default {
         return this.hotel ? this.hotel.name : 'Unknown Hotel';
     },
     async getFogServerByHotel() {
-  try {
-    let hotelId = localStorage.getItem("hotelId") || this.$route.params.id;
+      try {
+        let hotelId = localStorage.getItem("hotelId") || this.$route.params.id;
 
-    const response = await this.hotelService.getFogServerByHotel(hotelId);
-    if (response.status === 200 && response.data) {
-      const fogServer = response.data;
-      this.hotel.fogId = fogServer.id;
-      this.hotel.fogServerIp = fogServer.ipAddress;
-      this.hotel.fogServerSubnetMask = fogServer.subnetMask;
-      this.hotel.fogServerStatus = fogServer.status || 'Active'; // Default if not provided
-      this.showCardCompleted = true;
-    } else {
-      this.showCardCompleted = false;
-    }
-  } catch (error) {
-    console.error('Error fetching Fog Server data:', error);
-    this.showCardCompleted = false;
-  }
-},
-enableEdit() {
-  this.editingMode = true;
-  this.form.name = this.hotel.name;
-  this.form.serverIp = this.hotel.fogServerIp;
-  this.form.subnetMask = this.hotel.fogServerSubnetMask;
-},
+        const response = await this.hotelService.getFogServerByHotel(hotelId);
+        if (response.status === 200 && response.data) {
+          const fogServer = response.data;
+          this.hotel.fogId = fogServer.id;
+          this.hotel.fogServerIp = fogServer.ipAddress;
+          this.hotel.fogServerSubnetMask = fogServer.subnetMask;
+          this.hotel.fogServerStatus = fogServer.status || 'Active'; // Default if not provided
+          this.showCardCompleted = true;
+
+          // checking if the fog ip is not in localstorage
+          if (!localStorage.getItem("fogServerIp")) {
+            localStorage.setItem("fogServerIp", fogServer.ipAddress);
+          }
+        } else {
+          this.showCardCompleted = false;
+        }
+      } catch (error) {
+        console.error('Error fetching Fog Server data:', error);
+        this.showCardCompleted = false;
+      }
+    },
+    enableEdit() {
+      this.editingMode = true;
+      this.form.name = this.hotel.name;
+      this.form.serverIp = this.hotel.fogServerIp;
+      this.form.subnetMask = this.hotel.fogServerSubnetMask;
+    },
     async getHotel() {
         try {
             let hotelId = localStorage.getItem("hotelId");
@@ -290,7 +295,10 @@ enableEdit() {
           this.hotel.fogServerStatus = 'Active'; // Assuming the server is active after creation
 
           this.showSuccess = true;
+          localStorage.setItem("fogServerIp", this.form.serverIp);
+          
           this.form = { name: '', serverIp: '', subnetMask: '' }; // Reset form
+
         } else {
           console.error('Failed to save configuration:', response.status, response.statusText);
           alert('Failed to save configuration. Please try again.');

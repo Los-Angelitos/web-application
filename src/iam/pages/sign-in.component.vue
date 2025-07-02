@@ -8,6 +8,8 @@ import { mapActions } from 'vuex';
 import SignInRequest from "../model/sign-in.request.js";
 import DescriptionRadioButtonComponent from "../components/description-radio-button.component.vue";
 import { useAuthenticationStore } from "../services/authentication.store";
+import { HotelApiService } from "../../organizational-management/services/hotel-api.service.js";
+import {jwtDecode} from "jwt-decode";
 
 export default {
   name: "SignInPage",
@@ -23,6 +25,7 @@ export default {
       password: '',
       roleSelected: '',
       isLoading: false, // Estado para controlar el loading
+      hotelService: new HotelApiService()
     };
   },
   setup() {
@@ -34,6 +37,15 @@ export default {
   },
   methods: {
     ...mapActions(['GetUserId']),
+    getLocality(token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        return decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/locality'];
+      } catch (error) {
+        console.error('Error decoding JWT token:', error);
+        return null;
+      }
+    },
     async handleLogin() {
       console.log("Handling login with:", this.username, this.password, this.roleSelected);
       
@@ -85,6 +97,32 @@ export default {
       } finally {
         // Desactivar loading independientemente del resultado
         this.isLoading = false;
+      }
+
+      try{
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("No token found in localStorage.");
+          return;
+        }
+        const hotelId = this.getLocality(token);
+        console.log("Hotel ID from token:", hotelId);
+        
+        const response = await this.hotelService.getFogServerByHotel(hotelId);
+        if (response.status === 200 && response.data) {
+          const fogServer = response.data;
+          // checking if the fog ip is not in localstorage
+          if (!localStorage.getItem("fogServerIp")) {
+            localStorage.setItem("fogServerIp", fogServer.ipAddress);
+          }
+
+          console.log("Fog server data:", fogServer);
+        }else {
+          console.log("No fog server data found for the hotel.");
+        }
+
+      }catch(e) {
+        console.error("Fog server not found:", e);
       }
 
       //this.GetUserId(user.id);

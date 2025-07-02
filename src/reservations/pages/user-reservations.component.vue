@@ -9,7 +9,7 @@
 
     <!-- Loading state -->
     <div v-if="loading" class="loading-container">
-      <p>{{ $t('user-reservations.loading') || 'Cargando reservas...' }}</p>
+      <p>{{ 'Loading...' }}</p>
     </div>
 
     <!-- Error state -->
@@ -29,12 +29,12 @@
       <BasicCardComponent
           v-for="(reservation, index) in reservations"
           :key="reservation.id"
-          :title="reservation.hotelName || 'Hotel'"
+          :title="hotelNames[reservation.roomId] || reservation.hotelName || 'Hotel Desconocido'"
           class="reservation-card"
       >
         <template #image>
           <div class="hotel-logo-container">
-            <img :src="reservation.hotelLogo || defaultHotelImage"
+            <img :src="hotelImages[reservation.roomId] || defaultHotelImage"
                  :alt="`${reservation.hotelName} Logo`"
                  class="hotel-logo" />
           </div>
@@ -47,7 +47,7 @@
             </div>
             <div class="reservation-dates">
               <span class="date-label">Check-out:</span>
-              <span>{{ formatDate(reservation.finishDate) }}</span>
+              <span>{{ formatDate(reservation.endDate) }}</span>
             </div>
             <div class="reservation-description" v-if="reservation.description">
               <span>{{ reservation.description }}</span>
@@ -93,6 +93,8 @@ import BreadCrumb from "../../shared/components/breadcrumb.component.vue";
 import BasicCardComponent from "../../shared/components/basic-card.component.vue";
 import { BookingApiService } from "../services/booking-api.service.js";
 import userMock from "../../mocks/iam/user-profile-account.json";
+import { UserProfileService } from "../../iam/services/user-profile.service.js";
+import { HotelApiService } from "../../organizational-management/services/hotel-api.service.js";
 
 export default {
   name: "MyReservationsPage",
@@ -107,23 +109,33 @@ export default {
       loading: false,
       error: null,
       bookingService: new BookingApiService(),
+      userService: new UserProfileService(),
+      hotelService: new HotelApiService(),
       defaultHotelImage: new URL('../../assets/images/hotel-image-4.png', import.meta.url).href,
       breadcrumbPath: [
         { name: "Account", route: "" },
         { name: "My Reservations", route: "" }
-      ]
+      ],
+      userId: null,
+      reservationDetails: {},
+      roomDetails: {},
+      hotelDetails: {},
+      hotelImages: {},
+      hotelNames: {},
+      roomTypes: {}
+
     };
   },
-  mounted() {
-    this.fetchUserData();
-    this.loadReservations();
+  async mounted() {
+    this.userId = localStorage.getItem('userId') || this.getCustomerIdFromToken();
+    await this.fetchUserData();
+    await this.fetchReservations();
   },
   methods: {
     fetchUserData() {
       setTimeout(() => {
-        this.userData = userMock;
-        this.breadcrumbPath[0].route = `/home/profile/${this.userData.id}`;
-        this.breadcrumbPath[1].route = `/home/profile/${this.userData.id}/reservations`;
+        this.breadcrumbPath[0].route = `/home/profile/${this.userId}`;
+        this.breadcrumbPath[1].route = `/home/profile/${this.userId}/reservations`;
       }, 300);
     },
 
@@ -255,78 +267,112 @@ export default {
       }
     },
 
-    // 🚀 MÉTODO ACTUALIZADO: Cargar las reservas del customer con información del hotel usando el hotel ID del token
-    async loadReservations() {
+    async fetchReservations() {
       this.loading = true;
       this.error = null;
-
+      
       try {
-        const customerId = this.getCustomerIdFromToken();
-        if (!customerId) {
-          throw new Error('No se pudo obtener el ID del cliente');
-        }
-
-        console.log('🔄 Cargando reservas para customer ID:', customerId);
-        const response = await this.bookingService.getBookingsByCustomer(customerId);
-        const reservationsData = response.data || [];
-
-        console.log('📋 Reservas obtenidas:', reservationsData);
-
-        // 🏨 NUEVO: Obtener el hotel ID del token para usar como respaldo
-        const defaultHotelId = this.getHotelIdFromToken();
-
-        // 🏨 Enriquecer cada reserva con información completa del hotel
-        const enrichedReservations = await Promise.all(
-            reservationsData.map(async (reservation) => {
-              try {
-                // Usar el hotelId de la reserva o el del token como respaldo
-                const hotelIdToUse = reservation.hotelId || defaultHotelId;
-
-                if (hotelIdToUse) {
-                  console.log(`🏨 Obteniendo información del hotel ID: ${hotelIdToUse}`);
-                  const hotelResponse = await this.bookingService.getHotelById(hotelIdToUse);
-                  const hotelData = hotelResponse.data;
-
-                  console.log(`✅ Información del hotel ${hotelIdToUse}:`, hotelData);
-
-                  return {
-                    ...reservation,
-                    hotelName: hotelData.name || 'Hotel Sin Nombre',
-                    hotelDescription: hotelData.description || '',
-                    hotelAddress: hotelData.address || '',
-                    hotelPhone: hotelData.phone || '',
-                    hotelEmail: hotelData.email || '',
-                    hotelCategory: hotelData.category || '',
-                    // Mantener el logo original si existe, sino usar imagen por defecto
-                    hotelLogo: reservation.hotelLogo || this.defaultHotelImage,
-                    // Guardar el ID del hotel usado
-                    hotelId: hotelIdToUse
-                  };
-                }
-                return {
-                  ...reservation,
-                  hotelName: 'Hotel Desconocido',
-                  hotelLogo: this.defaultHotelImage
-                };
-              } catch (hotelError) {
-                console.warn(`⚠️ Error obteniendo datos del hotel ${reservation.hotelId || defaultHotelId}:`, hotelError);
-                return {
-                  ...reservation,
-                  hotelName: reservation.hotelId ? `Hotel ID: ${reservation.hotelId}` : (defaultHotelId ? `Hotel ID: ${defaultHotelId}` : 'Hotel Desconocido'),
-                  hotelLogo: this.defaultHotelImage
-                };
-              }
-            })
-        );
-
-        this.reservations = enrichedReservations;
-        console.log('✅ Reservas cargadas con información completa de hoteles:', this.reservations);
-
+        // 1. Get all reservations
+        const response = await this.userService.getReservationsByUserId(this.userId);
+        console.log('Fetched reservations:', response);
+        
+        this.reservations = response.data;
+        console.log('Reservations:', this.reservations);
+        
+        // 2. Fetch details for all reservations in parallel
+        await Promise.all(
+          this.reservations.map(reservation => {
+            return this.fetchReservationDetails(reservation.id);
+          })
+        );      
       } catch (error) {
-        console.error('❌ Error loading reservations:', error);
-        this.error = `Error al cargar las reservas: ${error.message}. Por favor, inténtalo de nuevo.`;
+        console.error('Error fetching reservations:', error);
+        this.error = 'Unable to load your reservations. Please try again later.';
       } finally {
         this.loading = false;
+      }
+    },
+    
+    async fetchReservationDetails(reservationId) {
+      try {
+        // Skip if we already have details for this reservation
+        if (this.reservationDetails[reservationId]) {
+          return;
+        }
+        
+        const response = await this.userService.getReservationById(reservationId);
+        console.log(`Fetched details for reservation ${reservationId}:`, response.data);
+        this.reservationDetails[reservationId] = response.data;
+        
+        // Fetch room response if we don't already have them
+        if (response.data.roomId && !this.roomDetails[response.data.roomId]) {
+          this.fetchRoomDetails(response.data.roomId);
+        }
+        
+      } catch (error) {
+        console.error(`Error fetching reservation response for ID ${reservationId}:`, error);
+      }
+    },
+    
+    async fetchRoomDetails(roomId) {
+      try {
+        // Skip if we already have details for this room
+        if (this.roomDetails[roomId]) {
+          return;
+        }
+        
+        const response = await this.hotelService.getRoomById(roomId);
+        console.log(`Fetched details for room ${roomId}:`, response.data);
+        
+        const roomData = response.data;
+        this.roomDetails[roomId] = roomData;
+        //this.roomTypes[roomId] = roomData.roomType;
+        
+        // Now fetch hotel details if we don't already have them
+        if (roomData.hotelId && !this.hotelDetails[roomData.hotelId]) {
+          this.fetchHotelDetails(roomData.hotelId, roomId);
+        }
+        
+      } catch (error) {
+        console.error(`Error fetching room details for ID ${roomId}:`, error);
+      }
+    },
+    
+    async fetchHotelDetails(hotelId, roomId) {
+      try {
+        // Skip if we already have details for this hotel
+        if (this.hotelDetails[hotelId]) {
+          // Just update the mapping for roomId -> hotelId
+          this.hotelImages[roomId] = this.hotelDetails[hotelId].mainImage;
+          this.hotelNames[roomId] = this.hotelDetails[hotelId].name;
+          return;
+        }
+        
+        const responseMultimedia = await this.hotelService.getHotelMainMultimedia(hotelId);
+        console.log(`Fetched details for hotel ${hotelId}:`, responseMultimedia);
+        const responseHotel = await this.hotelService.getHotelById(hotelId);
+        
+        console.log(`Fetched hotel data for hotel ${hotelId}:`, responseHotel);
+        
+        const hotelData = responseMultimedia.data;
+        const hotelInfo = responseHotel.data;
+        this.hotelDetails[hotelId] = hotelData + hotelInfo;
+        
+        // Map the hotel image and name to the room
+        this.hotelImages[roomId] = hotelData.url;
+        this.hotelNames[roomId] = hotelInfo.name;
+
+
+        //summary of all fetched
+        console.log(`Hotel details for ${hotelId}:`, this.hotelDetails[hotelId]);
+        console.log(`Hotel image for room ${roomId}:`, this.hotelImages[roomId]);
+        console.log(`Hotel name for room ${roomId}:`, this.hotelNames[roomId]);
+        console.log(`Room type for room ${roomId}:`, this.roomTypes[roomId]);
+        console.log(`Reservation details for ${hotelId}:`, this.reservationDetails);
+        console.log(`Reservations by roomid ${roomId}:`, this.reservations.filter(r => r.roomId === roomId));
+        
+      } catch (error) {
+        console.error(`Error fetching hotel details for ID ${hotelId}:`, error);
       }
     },
 
